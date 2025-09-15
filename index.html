@@ -201,6 +201,32 @@
         .vibrating-bell {
             animation: bell-shake 0.8s ease-in-out infinite;
         }
+
+        .inventory-card-details {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .inventory-card.expanded .inventory-card-details {
+            max-height: 500px; /* A large enough value to show all content */
+            transition: max-height 0.5s ease-in;
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+
+        .stock-progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background-color: #e2e8f0; /* slate-200 */
+            overflow: hidden;
+        }
+        .stock-progress-bar-inner {
+            height: 100%;
+            transition: width 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -238,13 +264,22 @@
 
                 <div class="absolute bottom-4 left-0 right-0 text-center text-xs text-slate-400">
                     <p>Powered by Al-Badr</p>
-                    <p>01069913150</p>
+                    <a href="http://badre.site/" target="_blank" class="font-semibold text-sky-500 hover:text-sky-600 transition-colors">Website</a>
                 </div>
             </div>
         </div>
     </div>
 
     <div id="app-container" class="hidden">
+        <div id="in-app-maintenance-view" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4 text-center">
+            <div class="login-panel-enter w-full max-w-lg">
+                <div class="w-24 h-24 bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-amber-500/30 animate-pulse">
+                    <i data-lucide="wrench" class="w-12 h-12"></i>
+                </div>
+                <h1 class="text-4xl font-black text-white mb-4">Under Maintenance</h1>
+                <p id="in-app-maintenance-message" class="text-slate-300 text-lg max-w-md mx-auto">The system is currently down for scheduled maintenance. Please check back later.</p>
+            </div>
+        </div>
         <div class="w-full max-w-7xl mx-auto p-4">
             <div id="pos-view" class="flex flex-col lg:flex-row h-[calc(100vh-2rem)] gap-4">
                 <div class="w-full lg:w-3/5 panel p-6 flex flex-col">
@@ -256,7 +291,7 @@
                             <div id="user-info" class="text-right relative"></div>
                         </div>
                         <div class="relative mb-4">
-                            <input type="text" id="search-input" placeholder="Search for a product..." class="w-full p-3 pr-10 input-field"/>
+                            <input type="text" id="search-input" placeholder="Search for a product by name or code..." class="w-full p-3 pr-10 input-field"/>
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><i data-lucide="search" class="text-[var(--text-secondary)]"></i></div>
                         </div>
                         <div class="flex-grow overflow-y-auto pl-2">
@@ -264,49 +299,48 @@
                         </div>
                         <div id="add-new-product-section" class="hidden mt-4 pt-4 border-t border-[var(--panel-border)]">
                             <h3 class="text-xl font-bold text-[var(--text-primary)] mb-3">Add New Product to List</h3>
-                            <div class="bg-gray-50 p-4 rounded-lg grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-                                
-                                <!-- Product Name -->
-                                <div class="md:col-span-4">
+                            <div class="bg-gray-50 p-4 rounded-lg space-y-4">
+                                <!-- Row 1: Name -->
+                                <div>
                                     <label for="new-product-name" class="block text-sm font-medium text-[var(--text-secondary)] mb-1">Product Name</label>
                                     <div class="relative">
                                         <i data-lucide="package" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
                                         <input type="text" id="new-product-name" class="w-full p-2 pl-10 input-field">
                                     </div>
                                 </div>
-                        
-                                <!-- Price -->
-                                <div class="md:col-span-2">
-                                    <label for="new-product-price" class="block text-sm font-medium text-[var(--text-secondary)] mb-1">Price</label>
-                                    <div class="relative">
-                                        <i data-lucide="tag" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                                        <input type="number" id="new-product-price" class="w-full p-2 pl-10 input-field">
+                                <!-- Row 2: Pricing -->
+                                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                    <div>
+                                        <label for="new-product-purchase-price" class="block text-sm font-medium text-[var(--text-secondary)] mb-1">Purchase Price</label>
+                                        <input type="number" id="new-product-purchase-price" placeholder="0.00" class="w-full p-2 input-field">
+                                    </div>
+                                    <div>
+                                        <label for="new-product-profit-margin" class="block text-sm font-medium text-[var(--text-secondary)] mb-1">Profit Margin (%)</label>
+                                        <input type="number" id="new-product-profit-margin" placeholder="e.g., 25" class="w-full p-2 input-field">
+                                    </div>
+                                    <div>
+                                        <label for="new-product-price" class="block text-sm font-medium text-[var(--text-secondary)] mb-1">Selling Price</label>
+                                        <input type="number" id="new-product-price" placeholder="0.00" class="w-full p-2 input-field font-bold bg-slate-200">
                                     </div>
                                 </div>
-                        
-                                <!-- Quantity -->
-                                <div class="md:col-span-2">
-                                    <label for="new-product-quantity" class="block text-sm font-medium text-[var(--text-secondary)] mb-1">On-Hand</label>
-                                     <div class="relative">
-                                        <i data-lucide="boxes" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                                        <input type="number" id="new-product-quantity" class="w-full p-2 pl-10 input-field">
+                                <!-- Row 3: Stock & Add -->
+                                <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
+                                    <div class="md:col-span-4">
+                                        <label for="new-product-quantity" class="block text-sm font-medium text-[var(--text-secondary)] mb-1">On-Hand Quantity</label>
+                                        <input type="number" id="new-product-quantity" class="w-full p-2 input-field">
                                     </div>
-                                </div>
-                                
-                                <!-- Imported Toggle -->
-                                <div class="md:col-span-2 flex flex-col items-center justify-center">
-                                     <label class="block text-sm font-medium text-[var(--text-secondary)] mb-1">Imported</label>
-                                     <label class="relative inline-flex items-center cursor-pointer">
-                                        <input type="checkbox" id="unlimited-stock-checkbox" class="sr-only peer">
-                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                                    </label>
-                                </div>
-                        
-                                <!-- Add Button -->
-                                <div class="md:col-span-2 flex items-center justify-center">
-                                    <button id="add-new-product-btn" class="w-10 h-10 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold rounded-full shadow-lg transition-all transform hover:scale-110">
-                                        <i data-lucide="plus" class="h-6 w-6"></i>
-                                    </button>
+                                    <div class="md:col-span-4 flex flex-col items-center justify-center pt-5">
+                                         <label class="relative inline-flex items-center cursor-pointer">
+                                            <input type="checkbox" id="unlimited-stock-checkbox" class="sr-only peer">
+                                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                            <span class="ms-3 text-sm font-medium text-gray-900">Imported (Unlimited)</span>
+                                        </label>
+                                    </div>
+                                    <div class="md:col-span-4 flex items-center justify-end">
+                                        <button id="add-new-product-btn" class="w-12 h-12 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold rounded-full shadow-lg transition-all transform hover:scale-110">
+                                            <i data-lucide="plus" class="h-7 w-7"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -566,6 +600,38 @@
                     </div>
                 </div>
             </div>
+            
+            <div id="inventory-view" class="hidden-view h-[calc(100vh-2rem)] p-6 flex-col panel view-enter-effect">
+                <!-- Header -->
+                <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200">
+                     <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+                            <i data-lucide="archive" class="w-7 h-7"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-bold text-slate-800">Inventory Management</h2>
+                            <p class="text-sm text-slate-500">View and manage product stock.</p>
+                        </div>
+                    </div>
+                    <button id="back-to-pos-from-inventory-btn" class="flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg shadow-lg"><i data-lucide="arrow-left"></i><span>Back</span></button>
+                </div>
+
+                <!-- Search and Filter -->
+                <div class="mb-4">
+                     <div class="relative flex-grow w-full">
+                        <input type="text" id="inventory-search-input" placeholder="Search by product name or code..." class="w-full p-3 pr-10 input-field"/>
+                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><i data-lucide="search" class="text-[var(--text-secondary)]"></i></div>
+                    </div>
+                </div>
+
+                <!-- Inventory Grid -->
+                <div class="flex-grow overflow-y-auto pr-2">
+                    <div id="inventory-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <!-- Inventory product cards will be injected here -->
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
     <div id="edit-expense-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -659,9 +725,9 @@
         </div>
     </div>
     <div id="edit-product-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="login-panel-enter w-full max-w-md">
-            <div class="relative panel bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-slate-300/20">
-                <div class="flex items-center gap-4 mb-6">
+        <div class="login-panel-enter w-full max-w-4xl">
+            <div class="relative panel bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-slate-300/20 max-h-[90vh] flex flex-col">
+                <div class="flex-shrink-0 flex items-center gap-4 mb-6">
                     <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-400 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-500/30">
                         <i data-lucide="package-plus" class="w-7 h-7"></i>
                     </div>
@@ -672,63 +738,117 @@
                 </div>
                 
                 <input type="hidden" id="edit-product-id">
-                <div class="space-y-4">
-                    <!-- Product Name -->
-                    <div>
-                        <label for="edit-product-name" class="block text-sm font-medium text-slate-600 mb-1">Product Name</label>
-                        <div class="relative">
-                            <i data-lucide="package" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                            <input type="text" id="edit-product-name" class="w-full p-3 pl-10 input-field rounded-lg border-slate-200">
-                        </div>
-                    </div>
-                    <!-- Price -->
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label for="edit-product-price" class="block text-sm font-medium text-slate-600 mb-1">Price</label>
-                            <div class="relative">
-                                <i data-lucide="tag" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                                <input type="number" id="edit-product-price" class="w-full p-3 pl-10 input-field rounded-lg border-slate-200">
+                
+                <div class="flex-grow overflow-y-auto pr-4 -mr-4 space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
+                        <!-- Left Column -->
+                        <div class="space-y-4">
+                            <!-- Product Name -->
+                            <div>
+                                <label for="edit-product-name" class="block text-sm font-medium text-slate-600 mb-1">Product Name</label>
+                                <div class="relative">
+                                    <i data-lucide="package" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                    <input type="text" id="edit-product-name" class="w-full p-3 pl-10 input-field rounded-lg border-slate-200">
+                                </div>
+                            </div>
+                            
+                            <!-- Stock Management -->
+                            <div class="grid grid-cols-2 gap-4 items-end">
+                                <div>
+                                    <label for="edit-product-quantity" class="block text-sm font-medium text-slate-600 mb-1">On-Hand</label>
+                                    <div class="relative">
+                                        <i data-lucide="boxes" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                        <input type="number" id="edit-product-quantity" class="w-full p-3 pl-10 input-field rounded-lg border-slate-200">
+                                    </div>
+                                </div>
+                                <div class="pb-1">
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="edit-unlimited-stock-checkbox" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        <span class="ms-3 text-sm font-medium text-slate-600">Unlimited</span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                        <!-- Quantity -->
-                        <div>
-                            <label for="edit-product-quantity" class="block text-sm font-medium text-slate-600 mb-1">On-Hand</label>
-                            <div class="relative">
-                                <i data-lucide="boxes" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
-                                <input type="number" id="edit-product-quantity" class="w-full p-3 pl-10 input-field rounded-lg border-slate-200">
+
+                        <!-- Right Column -->
+                        <div class="space-y-4">
+                            <!-- Pricing details -->
+                            <div class="grid grid-cols-3 gap-4">
+                                <div>
+                                    <label for="edit-product-purchase-price" class="block text-sm font-medium text-slate-600 mb-1">Purchase</label>
+                                    <input type="number" id="edit-product-purchase-price" class="w-full p-3 input-field rounded-lg border-slate-200">
+                                </div>
+                                <div>
+                                    <label for="edit-product-profit-margin" class="block text-sm font-medium text-slate-600 mb-1">Profit %</label>
+                                    <input type="number" id="edit-product-profit-margin" class="w-full p-3 input-field rounded-lg border-slate-200">
+                                </div>
+                                <div>
+                                    <label for="edit-product-price" class="block text-sm font-medium text-slate-600 mb-1">Selling</label>
+                                    <input type="number" id="edit-product-price" class="w-full p-3 input-field rounded-lg border-slate-200 font-bold bg-slate-100">
+                                </div>
+                            </div>
+                            
+                            <!-- Discount -->
+                            <div>
+                                <label for="edit-product-discount" class="block text-sm font-medium text-slate-600 mb-1">Discount (%)</label>
+                                <div class="relative">
+                                    <i data-lucide="percent" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                    <input type="number" id="edit-product-discount" placeholder="e.g., 15" class="w-full p-3 pl-10 input-field rounded-lg border-slate-200">
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <!-- Imported Toggle -->
-                    <div class="flex items-center justify-between pt-2 px-1">
-                        <label class="text-sm font-medium text-slate-600">Imported (Unlimited Stock)</label>
-                        <label class="relative inline-flex items-center cursor-pointer">
-                            <input type="checkbox" id="edit-unlimited-stock-checkbox" class="sr-only peer">
-                            <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
-                        </label>
-                    </div>
+                    
                     <!-- Product Codes -->
-                    <div class="pt-4 border-t border-slate-200/80">
+                    <div class="pt-6 border-t border-slate-200/80">
                         <label class="block text-sm font-medium text-slate-600 mb-2">Product Codes/Variations</label>
-                        <div id="product-codes-list" class="space-y-2 mb-3 max-h-32 overflow-y-auto">
+                        <div id="product-codes-list" class="space-y-3 mb-4 max-h-48 overflow-y-auto pr-2">
                             <!-- Existing codes will be listed here -->
                         </div>
-                        <div class="grid grid-cols-12 gap-2">
-                            <div class="col-span-7">
-                                <input type="text" id="new-product-code-input" placeholder="Code/Variation Name" class="w-full p-2 input-field rounded-lg border-slate-200">
-                            </div>
-                            <div class="col-span-3">
-                                <input type="number" id="new-product-code-quantity" placeholder="Qty" class="w-full p-2 input-field rounded-lg border-slate-200 text-center">
-                            </div>
-                            <div class="col-span-2">
-                                <button id="add-product-code-btn" class="w-full h-full flex items-center justify-center p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg">
-                                    <i data-lucide="plus" class="w-5 h-5"></i>
-                                </button>
+                        <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200/80">
+                            <h5 class="text-sm font-semibold flex items-center gap-2 mb-3 text-slate-600">
+                                <i data-lucide="plus-circle" class="w-4 h-4 text-green-500"></i>
+                                <span>Add New Variation</span>
+                            </h5>
+                            <div class="flex flex-col md:flex-row items-start md:items-end gap-3">
+                                <div class="w-full md:w-1/4">
+                                    <label class="block text-xs font-medium text-slate-500 mb-1">Variation Name / Code</label>
+                                    <input type="text" id="new-product-code-input" placeholder="e.g., L, Blue, #12345" class="w-full p-2 input-field rounded-lg text-sm">
+                                </div>
+                                <div class="w-full flex-grow grid grid-cols-2 md:grid-cols-5 gap-2">
+                                    <div>
+                                        <label class="block text-xs font-medium text-slate-500 mb-1">Purchase</label>
+                                        <input type="number" id="new-product-code-purchase-price" placeholder="0.00" class="w-full p-2 input-field rounded-lg text-sm">
+                                    </div>
+                                    <div>
+                                         <label class="block text-xs font-medium text-slate-500 mb-1">Profit %</label>
+                                        <input type="number" id="new-product-code-profit-margin" placeholder="25" class="w-full p-2 input-field rounded-lg text-sm">
+                                    </div>
+                                    <div>
+                                         <label class="block text-xs font-medium text-slate-500 mb-1">Selling</label>
+                                        <input type="number" id="new-product-code-price" placeholder="0.00" class="w-full p-2 input-field rounded-lg text-sm font-bold bg-slate-200">
+                                    </div>
+                                    <div>
+                                         <label class="block text-xs font-medium text-slate-500 mb-1">Qty</label>
+                                        <input type="number" id="new-product-code-quantity" placeholder="0" class="w-full p-2 input-field rounded-lg text-sm">
+                                    </div>
+                                    <div>
+                                         <label class="block text-xs font-medium text-slate-500 mb-1">Disc. %</label>
+                                        <input type="number" id="new-product-code-discount" placeholder="10" class="w-full p-2 input-field rounded-lg text-sm">
+                                    </div>
+                                </div>
+                                <div class="w-full md:w-auto flex-shrink-0">
+                                    <button id="add-product-code-btn" class="w-full md:w-auto h-full flex items-center justify-center gap-2 p-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold">
+                                        <i data-lucide="plus" class="w-4 h-4"></i>
+                                        <span class="hidden md:inline">Add</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="flex justify-between items-center mt-8 pt-6 border-t border-slate-200/80">
+                <div class="flex-shrink-0 flex justify-between items-center mt-8 pt-6 border-t border-slate-200/80">
                     <button id="modal-delete-product-btn" class="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center gap-2 font-semibold transition-all transform hover:scale-105">
                         <i data-lucide="trash-2" class="h-4 w-4"></i><span>Delete</span>
                     </button>
@@ -736,6 +856,59 @@
                         <button id="modal-edit-cancel-btn" class="px-5 py-2.5 bg-white hover:bg-slate-50 text-slate-600 font-bold rounded-lg shadow-sm border border-slate-200 transition-all">Cancel</button>
                         <button id="modal-save-btn" class="px-5 py-2.5 btn-primary rounded-lg font-bold btn-glow transform transition-transform hover:scale-105">Save Changes</button>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="edit-product-code-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-[55] p-4">
+        <div class="login-panel-enter w-full max-w-lg">
+            <div class="relative panel bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-slate-300/20">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+                        <i data-lucide="edit" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-800">Edit Variation</h3>
+                        <p class="text-sm text-slate-500">Update variation details below.</p>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="edit-product-code-original-code">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label for="edit-code-name-input" class="block text-sm font-medium text-slate-600 mb-1">Variation Name / Code</label>
+                        <input type="text" id="edit-code-name-input" class="w-full p-3 input-field rounded-lg border-slate-200">
+                    </div>
+                    <div class="grid grid-cols-3 gap-4">
+                        <div>
+                            <label for="edit-code-purchase-price" class="block text-sm font-medium text-slate-600 mb-1">Purchase</label>
+                            <input type="number" id="edit-code-purchase-price" class="w-full p-3 input-field rounded-lg border-slate-200">
+                        </div>
+                        <div>
+                            <label for="edit-code-profit-margin" class="block text-sm font-medium text-slate-600 mb-1">Profit %</label>
+                            <input type="number" id="edit-code-profit-margin" class="w-full p-3 input-field rounded-lg border-slate-200">
+                        </div>
+                        <div>
+                            <label for="edit-code-price" class="block text-sm font-medium text-slate-600 mb-1">Selling</label>
+                            <input type="number" id="edit-code-price" class="w-full p-3 input-field rounded-lg border-slate-200 font-bold bg-slate-100">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="edit-code-quantity" class="block text-sm font-medium text-slate-600 mb-1">Quantity</label>
+                            <input type="number" id="edit-code-quantity" class="w-full p-3 input-field rounded-lg border-slate-200">
+                        </div>
+                        <div>
+                            <label for="edit-code-discount" class="block text-sm font-medium text-slate-600 mb-1">Discount %</label>
+                            <input type="number" id="edit-code-discount" class="w-full p-3 input-field rounded-lg border-slate-200">
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-slate-200/80">
+                    <button id="modal-edit-code-cancel-btn" class="px-5 py-2.5 bg-white hover:bg-slate-50 text-slate-600 font-bold rounded-lg shadow-sm border border-slate-200 transition-all">Cancel</button>
+                    <button id="modal-save-code-btn" class="px-5 py-2.5 btn-primary rounded-lg font-bold btn-glow transform transition-transform hover:scale-105">Save Changes</button>
                 </div>
             </div>
         </div>
@@ -780,6 +953,24 @@
                         </div>
                     </div>
                     
+                     <!-- Maintenance Mode -->
+                    <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-700 flex items-center gap-3 mb-2"><i data-lucide="server-off" class="w-5 h-5 text-amber-500"></i>Maintenance Mode</h4>
+                        <p class="text-sm text-slate-500 mb-4">Temporarily disable access to the app for all users.</p>
+                        <div class="flex items-center justify-between mb-4">
+                            <label for="maintenance-mode-toggle" class="font-medium text-slate-600">Enable Maintenance Mode</label>
+                            <label class="relative inline-flex items-center cursor-pointer">
+                                <input type="checkbox" id="maintenance-mode-toggle" class="sr-only peer">
+                                <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
+                            </label>
+                        </div>
+                        <div id="maintenance-message-controls" class="hidden">
+                            <label for="maintenance-message-input" class="block text-sm font-medium text-slate-600 mb-1">Custom Message</label>
+                            <textarea id="maintenance-message-input" class="input-field w-full p-3 rounded-lg border-slate-200" rows="3"></textarea>
+                            <button id="save-maintenance-settings-btn" class="w-full mt-3 px-5 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-all transform hover:scale-105 font-semibold">Save Settings</button>
+                        </div>
+                    </div>
+
                     <!-- Owner Password -->
                     <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200/80">
                         <h4 class="font-bold text-slate-700 flex items-center gap-3 mb-2"><i data-lucide="key-round" class="w-5 h-5 text-orange-500"></i>Manager Password</h4>
@@ -1115,126 +1306,94 @@
         </div>
     </div>
 
-    <div id="developer-info-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="login-panel-enter w-full max-w-md text-center">
-            <div class="relative panel bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-slate-300/20">
-                <button id="developer-info-close-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+    <div id="developer-info-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div class="login-panel-enter w-full max-w-4xl">
+            <div class="relative panel bg-slate-50/80 backdrop-blur-2xl rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
+                <button id="developer-info-close-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-500 bg-white/50 hover:bg-slate-200/80 transition-colors z-10">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
-                
-                <!-- Developer Picture -->
-                <img src="https://i.ibb.co/gZLR0jJd/5990e47e-caab-4e0a-ab8c-4ebd601a9bb7.jpg" alt="Developer Picture" class="w-32 h-32 rounded-full mx-auto mb-4 ring-4 ring-white/50 shadow-lg">
-
-                <h3 class="text-3xl font-bold text-slate-800">Badr E Mohameed</h3>
-                <p class="text-slate-500 mt-1">Software Developer & Graphic Designer</p>
-                
-                
-
-                <div class="mt-6 text-slate-600 text-left space-y-4 max-h-[30vh] overflow-y-auto pr-3 text-sm">
-                    <div>
-                        <h5 class="font-bold text-slate-700 flex items-center gap-2 mb-2">
-                            <i data-lucide="briefcase" class="w-4 h-4 text-sky-500"></i>
-                            Experience
-                        </h5>
-                        <p class="text-sm text-slate-500 mb-2">5+ years in developing programming systems:</p>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md">JavaScript</span>
-                            <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md">SQL</span>
-                            <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md">C# (Windows)</span>
-                            <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md">PHP (Web)</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <h5 class="font-bold text-slate-700 flex items-center gap-2 mb-2">
-                            <i data-lucide="cpu" class="w-4 h-4 text-purple-500"></i>
-                            Software Used
-                        </h5>
-                        <div class="flex flex-wrap gap-2">
-                            <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md">Visual Studio</span>
-                            <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md">MySQL / SQL Server</span>
-                            <span class="bg-slate-100 text-slate-700 px-2 py-1 rounded-md">Firebase</span>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h5 class="font-bold text-slate-700 flex items-center gap-2 mb-2">
-                            <i data-lucide="check-circle" class="w-4 h-4 text-green-500"></i>
-                            Skills
-                        </h5>
-                        <ul class="space-y-1 list-disc list-inside text-slate-500">
-                            <li>Designing and developing integrated POS systems</li>
-                            <li>Database management and UI integration</li>
-                            <li>Creating sales and inventory reports</li>
-                            <li>Technical support and periodic system updates</li>
-                            <li>Data security and system protection</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="mt-6 pt-6 border-t border-slate-200/80">
-                   <h4 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-4">Contact Information</h4>
-                   <div class="flex items-center justify-center flex-wrap gap-4">
-                        <a href="https://copilot.microsoft.com/shares/kLEnBBnZfAjjwrdegWx7x" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-purple-100 hover:text-purple-600 transition-colors" title="My AI Powered CV">
-                           <i data-lucide="sparkles" class="w-6 h-6"></i>
+                <!-- Left Column -->
+                <div class="w-full md:w-1/3 bg-white/40 p-8 flex flex-col items-center justify-center text-center border-r border-slate-200/60">
+                    <img src="https://i.ibb.co/gZLR0jJd/5990e47e-caab-4e0a-ab8c-4ebd601a9bb7.jpg" alt="Developer Picture" class="w-32 h-32 rounded-full mb-4 ring-4 ring-white/60 shadow-lg">
+                    <h3 class="text-2xl font-bold text-slate-800">Badr Ibrahim Mohamed</h3>
+                    <p class="text-slate-500 mt-1 font-semibold">Graphic & Software Designer</p>
+                    <div class="mt-4 pt-4 border-t border-slate-200/80 w-full text-sm text-slate-600 space-y-2">
+                         <a href="tel:+201069913150" class="flex items-center justify-center gap-2 hover:text-sky-600 transition-colors">
+                            <i data-lucide="phone" class="w-4 h-4"></i>
+                            <span>+201069913150</span>
                         </a>
-                        <a href="https://www.facebook.com/bdr.e.mohmed" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-blue-100 hover:text-blue-600 transition-colors" title="Facebook">
+                        <a href="mailto:bdr.e.mohameed@gmail.com" class="flex items-center justify-center gap-2 hover:text-sky-600 transition-colors">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            <span>bdr.e.mohameed@gmail.com</span>
+                        </a>
+                    </div>
+                    <div class="flex items-center justify-center flex-wrap gap-3 mt-6">
+                        <a href="https://badre.site/" target="_blank" class="p-3 bg-white/70 rounded-full text-sky-800 hover:bg-sky-500 hover:text-white transition-all transform hover:scale-110 shadow-md" title="Portfolio">
+                           <i data-lucide="globe" class="w-6 h-6"></i>
+                        </a>
+                        <a href="https://www.facebook.com/bdr.e.mohmed" target="_blank" class="p-3 bg-white/70 rounded-full text-slate-600 hover:bg-blue-600 hover:text-white transition-colors" title="Facebook">
                            <svg class="w-6 h-6" role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         </a>
-                        <a href="https://x.com/bdr_e_mohameed" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-black hover:text-white transition-colors" title="X">
-                            <svg class="w-6 h-6" role="img" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.931ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
-                        </a>
-                        <a href="https://www.instagram.com/bdr_e_mohamed" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-pink-100 hover:text-pink-600 transition-colors" title="Instagram">
+                        <a href="https://www.instagram.com/bdr_e_mohamed" target="_blank" class="p-3 bg-white/70 rounded-full text-slate-600 hover:bg-pink-600 hover:text-white transition-colors" title="Instagram">
                             <i data-lucide="instagram" class="w-6 h-6"></i>
                         </a>
-                         <a href="https://t.me/bdr_e_mohameed" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-sky-100 hover:text-sky-500 transition-colors" title="Telegram">
-                           <svg class="w-6 h-6" role="img" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M.413 11.013a.56.56 0 0 0 .114.65l3.2 2.664 1.328 4.28a.56.56 0 0 0 .963.24l1.968-3.327 3.511 2.58a.56.56 0 0 0 .81-.213l5.584-14.82a.56.56 0 0 0-.82-.62L.52 10.4a.56.56 0 0 0-.107.613zm.873.344L18.42 5.32 6.45 12.9l-4.29-3.564-.874.323z"/></svg>
-                        </a>
-                        <a href="https://github.com/bdremohameed" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-gray-200 hover:text-gray-800 transition-colors" title="GitHub (Badr Ibrahem Mohammed)">
+                        <a href="https://github.com/bdremohameed" target="_blank" class="p-3 bg-white/70 rounded-full text-slate-600 hover:bg-gray-800 hover:text-white transition-colors" title="GitHub">
                             <i data-lucide="github" class="w-6 h-6"></i>
-                        </a>
-                        <a href="https://soundcloud.com/bdr_e_mohameed" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-orange-100 hover:text-orange-500 transition-colors" title="SoundCloud">
-                            <svg class="w-6 h-6" role="img" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M11.996 17.583c-2.836 0-5.14-2.28-5.14-5.097 0-2.816 2.304-5.097 5.14-5.097 2.835 0 5.138 2.28 5.138 5.097 0 2.817-2.303 5.097-5.138 5.097zm-7.662-5.097c0 1.964 1.11 3.703 2.76 4.545V8.026c-1.65 1.05-2.76 2.73-2.76 4.46zM0 12.486c0-3.93 2.55-7.23 6.02-8.52v1.65c-2.43 1.34-4.14 3.8-4.14 6.87s1.71 5.53 4.14 6.87v1.65C2.55 19.826 0 16.416 0 12.486zm21.238 4.655c1.65-.843 2.762-2.582 2.762-4.545s-1.112-3.703-2.762-4.545v9.09zm2.762-4.545c0-3.93-2.55-7.23-6.02-8.52v1.65c2.43 1.34 4.14 3.8 4.14 6.87s-1.71 5.53-4.14 6.87v1.65c3.47-1.4 6.02-4.59 6.02-8.52z"/></svg>
-                        </a>
-                        <a href="https://www.pinterest.com/bdr_e_mohameed" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-red-100 hover:text-red-600 transition-colors" title="Pinterest">
-                           <svg class="w-6 h-6" role="img" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 0C5.373 0 0 5.373 0 12c0 5.1 3.156 9.427 7.5 11.188-.1-.937-.225-2.438.05-3.468.275-1.013 1.7-7.2 1.7-7.2s-.425-.85-.425-2.1c0-1.975 1.138-3.45 2.55-3.45 1.2 0 1.775.9 1.775 1.988 0 1.212-.763 3.025-.15 4.725.513 1.425 2.925.337 2.925-2.587 0-2.888-2.063-5.025-5.625-5.025-3.75 0-6.137 2.787-6.137 5.925 0 1.05.375 2.163.85 2.738.1.112.112.212.087.337-.075.313-.25 1.025-.3 1.238-.038.162-.163.2-.338.137-1.35-.613-2.2-2.6-2.2-4.225 0-3.387 2.45-6.225 6.75-6.225 3.525 0 6.225 2.525 6.225 5.763 0 3.512-2.212 6.337-5.262 6.337-1.025 0-2.013-.537-2.35-1.162 0 0-.5 1.913-.625 2.375-.2.837-.7 1.837-.963 2.437C10.125 23.587 11.037 24 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0z"/></svg>
-                        </a>
-                        <a href="https://www.tiktok.com/@bdr_e_mohameed" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-black hover:text-white transition-colors" title="TikTok">
-                            <svg class="w-6 h-6" role="img" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.05-4.84-.95-6.43-2.88-1.59-1.93-2.19-4.39-1.8-6.84.4-2.45 2.05-4.52 4.13-5.63.45-.24.9-.44 1.38-.61.02-3.78.01-7.55.01-11.33 0-.47 0-.94.01-1.42Z"/></svg>
-                        </a>
-                        <a href="https://www.linkedin.com/in/bdremohameed" target="_blank" class="p-3 bg-slate-100 rounded-full text-slate-600 hover:bg-blue-100 hover:text-blue-700 transition-colors" title="LinkedIn">
-                           <svg class="w-6 h-6" role="img" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z"/></svg>
                         </a>
                    </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
-    <div id="unconfirmed-invoices-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-        <div class="login-panel-enter w-full max-w-5xl">
-             <div class="relative panel bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-slate-300/20 h-[80vh] flex flex-col">
-                <button id="unconfirmed-invoices-close-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
-                    <i data-lucide="x" class="w-6 h-6"></i>
-                </button>
-                <div class="flex-shrink-0 flex items-center gap-4 mb-6">
-                     <div class="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-400 text-white rounded-3xl flex items-center justify-center shadow-lg shadow-yellow-500/30">
-                        <i data-lucide="clipboard-check" class="w-10 h-10"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-2xl font-bold text-slate-800">Unconfirmed Invoices</h3>
-                        <p class="text-sm text-slate-500">Confirm or cancel recent transactions.</p>
-                    </div>
-                </div>
-                <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden">
-                    <div class="flex flex-col h-full overflow-y-auto bg-slate-50/70 rounded-lg p-2 border border-slate-200/80">
-                        <div id="unconfirmed-invoices-list" class="space-y-3">
-                            <!-- Unconfirmed invoices will be injected here -->
+                <!-- Right Column -->
+                <div class="w-full md:w-2/3 p-8 relative overflow-y-auto">
+                    <div class="space-y-6">
+                        <div>
+                            <h4 class="font-bold text-slate-800 flex items-center gap-3 mb-3 text-xl">
+                                <i data-lucide="user-round" class="w-6 h-6 text-sky-500"></i>
+                                <span>About Me</span>
+                            </h4>
+                            <p class="text-slate-600 leading-relaxed">
+                                Creative graphic designer and software developer from Faiyum, Egypt with over 3 years of experience in print and digital advertising. Skilled in using 3D elements, Adobe Creative Suite, and modern web technologies to deliver high-quality, impactful visual projects and user experiences.
+                            </p>
                         </div>
-                    </div>
-                    <div id="unconfirmed-invoice-details" class="bg-white rounded-lg p-4 border border-slate-200 overflow-y-auto">
-                        <div class="flex items-center justify-center h-full text-slate-400">
-                            <p>Select an invoice to view details.</p>
+                        
+                        <div>
+                            <h4 class="font-bold text-slate-800 flex items-center gap-3 mb-4 text-xl">
+                                <i data-lucide="sparkles" class="w-6 h-6 text-green-500"></i>
+                                <span>My Services</span>
+                            </h4>
+                            <ul class="space-y-2 text-slate-600">
+                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Software Systems Design</span></li>
+                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Database Management</span></li>
+                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Sales and Inventory Reports</span></li>
+                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Technical Support & System Updates</span></li>
+                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Data Security & System Protection</span></li>
+                            </ul>
+                        </div>
+                        
+                        <div>
+                            <h4 class="font-bold text-slate-800 flex items-center gap-3 mb-4 text-xl">
+                                <i data-lucide="layers" class="w-6 h-6 text-purple-500"></i>
+                                <span>Skills & Technologies</span>
+                            </h4>
+                            <div class="space-y-4">
+                                <div>
+                                     <h5 class="font-semibold text-slate-500 mb-2">Programming Languages</h5>
+                                     <div class="flex flex-wrap gap-2">
+                                        <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">JavaScript</span>
+                                        <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">SQL</span>
+                                        <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">C#</span>
+                                        <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">PHP</span>
+                                    </div>
+                                </div>
+                                 <div>
+                                     <h5 class="font-semibold text-slate-500 mb-2">Software Used</h5>
+                                     <div class="flex flex-wrap gap-2">
+                                        <span class="bg-sky-100 text-sky-800 text-sm font-medium px-3 py-1 rounded-full">Visual Studio</span>
+                                        <span class="bg-sky-100 text-sky-800 text-sm font-medium px-3 py-1 rounded-full">MySQL / SQL Server</span>
+                                        <span class="bg-sky-100 text-sky-800 text-sm font-medium px-3 py-1 rounded-full">Firebase</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1449,6 +1608,10 @@
             const returnsView = document.getElementById('returns-view');
             const invoiceDetailsView = document.getElementById('invoice-details-view');
             const expensesView = document.getElementById('expenses-view');
+            const inventoryView = document.getElementById('inventory-view');
+            const backToPosFromInventoryBtn = document.getElementById('back-to-pos-from-inventory-btn');
+            const inventoryGrid = document.getElementById('inventory-grid');
+            const inventorySearchInput = document.getElementById('inventory-search-input');
             const productsGrid = document.getElementById('products-grid');
             const searchInput = document.getElementById('search-input');
             const cartItemsTbody = document.getElementById('cart-items');
@@ -1631,6 +1794,17 @@
             const addProductCodeBtn = document.getElementById('add-product-code-btn');
             const productCodesList = document.getElementById('product-codes-list');
 
+            // Edit Product Code Modal elements
+            const editProductCodeModal = document.getElementById('edit-product-code-modal');
+            const modalSaveCodeBtn = document.getElementById('modal-save-code-btn');
+            const modalEditCodeCancelBtn = document.getElementById('modal-edit-code-cancel-btn');
+
+            // Maintenance Modal Elements
+            const maintenanceModeToggle = document.getElementById('maintenance-mode-toggle');
+            const maintenanceMessageControls = document.getElementById('maintenance-message-controls');
+            const maintenanceMessageInput = document.getElementById('maintenance-message-input');
+            const saveMaintenanceSettingsBtn = document.getElementById('save-maintenance-settings-btn');
+            
             // New Cancellation Notes Modal
             const cancellationNotesModal = document.getElementById('cancellation-notes-modal');
             const cancellationNotesInput = document.getElementById('cancellation-notes-input');
@@ -2004,7 +2178,7 @@
                     const isOutOfStock = product.quantity <= 0;
                     const isLowStock = product.quantity > 0 && product.quantity <= 5;
 
-                    let cardClasses = 'product-card product-card-enter';
+                    let cardClasses = 'product-card product-card-enter relative';
                     if (isOutOfStock) cardClasses += ' out-of-stock';
                     if (isLowStock) cardClasses += ' low-stock';
 
@@ -2016,12 +2190,31 @@
                         productCardDiv.disabled = true;
                     }
 
+                    const hasCodes = product.codes && product.codes.length > 0;
+                    const discount = product.discount || 0;
+                    let priceHTML = '';
+
+                    if (discount > 0) {
+                        const discountedPrice = product.price * (1 - discount / 100);
+                        priceHTML = `
+                            <div class="flex items-baseline gap-2">
+                                <p class="text-xl font-black text-red-600">${discountedPrice.toFixed(2)}</p>
+                                <p class="text-sm font-bold text-slate-400 line-through">${product.price.toFixed(2)}</p>
+                            </div>
+                        `;
+                    } else {
+                        priceHTML = `<p class="text-xl font-black text-[var(--accent-color)]">${product.price > 0 ? `${product.price.toFixed(2)}` : '-'}</p>`;
+                    }
+
+
                     productCardDiv.innerHTML = `
                         ${isOnlineMode && canEdit ? `
                         <button class="edit-product-btn absolute top-2 right-2 z-10 p-1.5 bg-white/80 backdrop-blur-sm rounded-full hover:bg-yellow-200 text-[var(--text-secondary)] hover:text-black transition-colors" data-id="${product.id}">
                             <i data-lucide="pencil" class="h-4 w-4"></i>
                         </button>
                         ` : ''}
+                        ${hasCodes ? `<div class="absolute top-2 left-2 p-1 bg-purple-100/80 backdrop-blur-sm rounded-full" title="This product has multiple variations/codes"><i data-lucide="git-branch-plus" class="w-4 h-4 text-purple-600"></i></div>` : ''}
+                        ${discount > 0 ? `<div class="absolute top-2 ${hasCodes ? 'left-10' : 'left-2'} px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full z-10">-${discount}%</div>` : ''}
 
                         <div class="flex-grow p-4 flex flex-col justify-between">
                             <div>
@@ -2032,7 +2225,7 @@
                             </div>
 
                             <div class="mt-3">
-                                <p class="text-xl font-black text-[var(--accent-color)]">${product.price > 0 ? `${product.price.toFixed(2)}` : '-'}</p>
+                                ${priceHTML}
                                 <div class="product-stock text-xs font-medium inline-block px-2 py-0.5 rounded-full mt-1 ${isLowStock && !isOutOfStock ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}">
                                     ${isOutOfStock ? 'Out of Stock' : `${product.quantity} in stock`}
                                 </div>
@@ -2121,8 +2314,8 @@
                 productCodeModalTitle.textContent = product.name;
                 productCodesSelectionList.innerHTML = '';
                 
-                const handleAddToCart = (code) => {
-                    addToCart(product, 1, code);
+                const handleAddToCart = (code, price) => {
+                    addToCart(product, 1, code, price);
                     productCodeModal.classList.add('hidden');
                 };
 
@@ -2137,22 +2330,41 @@
                     
                     button.className = `w-full text-left p-3 rounded-lg font-semibold flex justify-between items-center ${bgColor}`;
                     button.disabled = !inStock;
+                    const codePrice = codeObj.price || product.price;
+                    const codeDiscount = codeObj.discount || 0;
+                    let finalPrice = codePrice;
+                    if (codeDiscount > 0) {
+                        finalPrice = codePrice * (1 - codeDiscount / 100);
+                    }
+
                     button.innerHTML = `
-                        <span>${codeObj.code}</span>
-                        <span class="text-sm font-bold ${lowStock ? 'text-amber-700' : ''} ${!inStock ? 'text-red-700' : 'text-slate-600'}">
-                            ${inStock ? `${codeObj.quantity} in stock` : 'Out of Stock'}
-                        </span>
+                        <span>${codeObj.code} ${codeDiscount > 0 ? `<span class="text-xs text-red-500 font-bold">(-${codeDiscount}%)</span>` : ''}</span>
+                        <div class="text-right">
+                            ${codeDiscount > 0 ? `<span class="text-sm font-bold text-slate-400 line-through">${codePrice.toFixed(2)}</span>` : ''}
+                            <span class="font-bold text-slate-700 ml-2">${finalPrice.toFixed(2)} EGP</span>
+                            <span class="text-sm font-medium ${lowStock ? 'text-amber-700' : ''} ${!inStock ? 'text-red-700' : 'text-slate-600'}">
+                                ${inStock ? `${codeObj.quantity} in stock` : 'Out of Stock'}
+                            </span>
+                        </div>
                     `;
-                    button.onclick = () => handleAddToCart(codeObj.code);
+                    button.onclick = () => handleAddToCart(codeObj.code, finalPrice);
                     productCodesSelectionList.appendChild(button);
                 });
 
-                productCodeSkipBtn.onclick = () => handleAddToCart(null);
+                productCodeSkipBtn.onclick = () => {
+                    // Also apply main product discount if no code is selected
+                    const discount = product.discount || 0;
+                    let finalPrice = product.price;
+                    if (discount > 0) {
+                        finalPrice = product.price * (1 - discount / 100);
+                    }
+                    handleAddToCart(null, finalPrice);
+                };
 
                 productCodeModal.classList.remove('hidden');
             };
 
-            const addToCart = (product, quantityToAdd = 1, selectedCode = null) => {
+            const addToCart = (product, quantityToAdd = 1, selectedCode = null, selectedPrice = null) => {
                 if (!product || typeof product.id === 'undefined') {
                     return;
                 }
@@ -2163,6 +2375,21 @@
                 const existingItem = cart.find(item => item.cartId === cartItemId);
                 
                 let currentStock;
+                let itemPrice;
+
+                if (selectedPrice !== null) {
+                    // Price is pre-calculated and passed in (for items with codes or base product)
+                    itemPrice = selectedPrice;
+                } else {
+                    // This is a fallback, but the price should ideally be pre-calculated
+                    const discount = product.discount || 0;
+                    itemPrice = product.price;
+                    if (discount > 0) {
+                        itemPrice = product.price * (1 - discount / 100);
+                    }
+                }
+
+
                 if (selectedCode) {
                     const codeObj = product.codes.find(c => c.code === selectedCode);
                     currentStock = codeObj ? codeObj.quantity : 0;
@@ -2180,7 +2407,9 @@
                 if (existingItem) {
                     existingItem.quantity += quantityToAdd;
                 } else {
-                    cart.push({ ...product, name: cartItemName, cartId: cartItemId, quantity: quantityToAdd, discount: 0, code: selectedCode });
+                    const newItem = { ...product, price: itemPrice, name: cartItemName, cartId: cartItemId, quantity: quantityToAdd, discount: 0, code: selectedCode };
+                    delete newItem.codes;
+                    cart.push(newItem);
                 }
                 renderCart();
             };
@@ -2394,6 +2623,12 @@
                             }
                             
                             const productData = productDoc.data();
+
+                            // If it's a return and the product has unlimited stock, skip the logic that adds the quantity back.
+                            if (isReturnMode && productData.quantity === Infinity) {
+                                continue; // Skip to the next product
+                            }
+                            
                             let hasCodeUpdates = false;
 
                             items.forEach(item => {
@@ -2935,6 +3170,226 @@
                 }
             };
             
+            const renderInventoryList = () => {
+                const searchTerm = inventorySearchInput.value.toLowerCase();
+                let productsToRender = products.filter(p => {
+                    const nameMatch = p.name.toLowerCase().includes(searchTerm);
+                    const codeMatch = p.codes && p.codes.some(c => c.code.toLowerCase().includes(searchTerm));
+                    return nameMatch || codeMatch;
+                });
+                productsToRender.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+
+                inventoryGrid.innerHTML = '';
+                if (productsToRender.length === 0) {
+                    inventoryGrid.innerHTML = '<p class="col-span-full text-center text-[var(--text-secondary)] py-10">No products found.</p>';
+                    return;
+                }
+
+                productsToRender.forEach(product => {
+                    const card = document.createElement('div');
+                    const isUnlimited = product.quantity === Infinity;
+                    const isOutOfStock = !isUnlimited && product.quantity <= 0;
+                    const isLowStock = !isUnlimited && product.quantity > 0 && product.quantity <= 5;
+
+                    const hasCodes = product.codes && product.codes.length > 0;
+                    const discount = product.discount || 0;
+
+                    // Stock Progress Bar Logic
+                    let stockPercentage = 0;
+                    let stockColorClass = 'bg-red-500'; // Out of stock
+                    if (isUnlimited) {
+                        stockPercentage = 100;
+                        stockColorClass = 'bg-sky-500';
+                    } else if (!isOutOfStock) {
+                        // Assuming "full" stock is 50 for visualization.
+                        stockPercentage = Math.min((product.quantity / 50) * 100, 100);
+                        if (stockPercentage > 20) {
+                            stockColorClass = 'bg-green-500';
+                        } else {
+                            stockColorClass = 'bg-yellow-500';
+                        }
+                    }
+
+                    let priceDisplayHTML = '';
+                    if (discount > 0) {
+                        const discountedPrice = product.price * (1 - discount / 100);
+                        priceDisplayHTML = `
+                            <p class="text-lg font-bold text-slate-400 line-through">${product.price.toFixed(2)}</p>
+                            <p class="text-2xl font-black text-red-600">${discountedPrice.toFixed(2)}</p>
+                        `;
+                    } else {
+                        priceDisplayHTML = `<p class="text-2xl font-black text-slate-900">${product.price.toFixed(2)}</p>`;
+                    }
+
+                    let detailsHTML = '';
+                    if (hasCodes) {
+                        const codesList = product.codes.map(code => {
+                            const codePrice = code.price || product.price;
+                            const codeDiscount = code.discount || 0;
+                            let finalPrice = codePrice;
+                            if (codeDiscount > 0) {
+                                finalPrice = codePrice * (1 - codeDiscount / 100);
+                            }
+                            return `
+                            <div class="flex justify-between items-center text-sm py-2 border-b border-slate-100 last:border-b-0">
+                                <div>
+                                    <span class="text-slate-700 font-semibold">${code.code} ${codeDiscount > 0 ? `<span class="text-xs text-red-500 font-bold">(-${codeDiscount}%)</span>` : ''}</span>
+                                    <span class="ml-2 text-xs bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full font-mono">${code.quantity} units</span>
+                                </div>
+                                <div class="text-right">
+                                    ${codeDiscount > 0 ? `<span class="text-xs font-bold text-slate-400 line-through">${codePrice.toFixed(2)}</span>` : ''}
+                                    <span class="font-mono font-bold text-slate-800 ml-1">${finalPrice.toFixed(2)} EGP</span>
+                                </div>
+                            </div>
+                        `}).join('');
+
+                        detailsHTML = `
+                            <div class="inventory-card-details">
+                                <div class="p-4 bg-slate-50/70 border-t border-slate-200/60">
+                                    <h5 class="text-xs font-bold text-slate-500 uppercase mb-2">Variations & Stock</h5>
+                                    <div class="space-y-1">${codesList}</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+
+                    card.className = 'inventory-card bg-white rounded-xl border border-slate-200/80 shadow-sm overflow-hidden flex flex-col transition-all hover:shadow-lg hover:border-blue-400/50 group relative';
+                    card.innerHTML = `
+                        <div class="p-4 flex-grow cursor-pointer inventory-card-header">
+                            <div class="flex items-start gap-4">
+                                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-slate-100 rounded-lg">
+                                    <i data-lucide="package" class="w-7 h-7 text-slate-500"></i>
+                                </div>
+                                <div class="flex-grow">
+                                    <p class="font-bold text-slate-800 leading-tight">${product.name}</p>
+                                    <div class="flex items-baseline mt-1 gap-2">
+                                        ${priceDisplayHTML}
+                                        <span class="text-sm font-semibold text-slate-500">EGP</span>
+                                    </div>
+                                </div>
+                            </div>
+                             ${discount > 0 ? `<div class="absolute top-2 right-2 px-2 py-1 bg-red-500 text-white text-xs font-bold rounded-full z-10">-${discount}%</div>` : ''}
+
+                            <div class="mt-4">
+                                <div class="flex justify-between items-center text-sm font-medium text-slate-500 mb-1">
+                                    <span>Stock Level</span>
+                                    <span class="font-bold font-mono ${isUnlimited ? 'text-sky-600' : (isLowStock ? 'text-yellow-600' : (isOutOfStock ? 'text-red-600' : 'text-green-600'))}">
+                                        ${isUnlimited ? 'Unlimited' : product.quantity}
+                                    </span>
+                                </div>
+                                <div class="stock-progress-bar">
+                                    <div class="stock-progress-bar-inner ${stockColorClass}" style="width: ${stockPercentage}%;"></div>
+                                </div>
+                            </div>
+                             ${hasCodes ? `
+                                <div class="flex items-center gap-2 mt-3 text-purple-600 bg-purple-50 px-2 py-1 rounded-md text-xs font-bold">
+                                    <i data-lucide="git-branch-plus" class="w-4 h-4"></i>
+                                    <span>${product.codes.length} Variations</span>
+                                    <i data-lucide="chevron-down" class="chevron-icon transition-transform ml-auto"></i>
+                                </div>` 
+                                : ''
+                             }
+                        </div>
+                        ${detailsHTML}
+                         <div class="border-t border-slate-200/80">
+                             <button data-id="${product.id}" class="inventory-edit-btn w-full flex items-center justify-center gap-2 py-2.5 text-sm rounded-b-xl bg-slate-50 hover:bg-yellow-100 text-slate-600 hover:text-yellow-800 font-semibold transition-colors">
+                                <i data-lucide="pencil" class="h-4 w-4 pointer-events-none"></i>
+                                <span>Edit Product Details</span>
+                            </button>
+                        </div>
+                    `;
+                    inventoryGrid.appendChild(card);
+                });
+                lucide.createIcons();
+            };
+
+            const openEditProductModal = (productToEdit) => {
+                if (productToEdit) {
+                    editProductIdInput.value = productToEdit.id;
+                    editProductNameInput.value = productToEdit.name;
+                    document.getElementById('edit-product-purchase-price').value = productToEdit.purchasePrice || '';
+                    document.getElementById('edit-product-profit-margin').value = productToEdit.profitMargin || '';
+                    editProductPriceInput.value = productToEdit.price;
+                    document.getElementById('edit-product-discount').value = productToEdit.discount || '';
+                    
+                    const isUnlimited = productToEdit.quantity === Infinity;
+                    editUnlimitedStockCheckbox.checked = isUnlimited;
+
+                    const hasCodes = productToEdit.codes && productToEdit.codes.length > 0;
+                    
+                    editProductQuantityInput.disabled = isUnlimited || hasCodes;
+
+                    if (isUnlimited) {
+                        editProductQuantityInput.value = '';
+                        editProductQuantityInput.placeholder = 'Unlimited';
+                    } else {
+                        editProductQuantityInput.value = productToEdit.quantity || 0;
+                        editProductQuantityInput.placeholder = hasCodes ? 'Auto-calculated' : '';
+                    }
+
+                    productCodesList.innerHTML = '';
+                    (productToEdit.codes || []).forEach(codeObj => {
+                        const codeEl = document.createElement('div');
+                        codeEl.className = 'product-code-entry bg-white p-3 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-slate-50 cursor-pointer transition-colors';
+                        codeEl.dataset.code = codeObj.code;
+                        codeEl.dataset.purchasePrice = codeObj.purchasePrice || 0;
+                        codeEl.dataset.profitMargin = codeObj.profitMargin || 0;
+                        codeEl.dataset.price = codeObj.price || 0;
+                        codeEl.dataset.quantity = codeObj.quantity || 0;
+                        codeEl.dataset.discount = codeObj.discount || 0;
+                        
+                        codeEl.innerHTML = `
+                             <div class="w-full sm:w-1/4 pointer-events-none">
+                                <div class="flex items-center justify-between">
+                                    <span class="font-bold text-slate-800 code-name">${codeObj.code}</span>
+                                </div>
+                            </div>
+                            <div class="flex-grow grid grid-cols-2 sm:grid-cols-5 gap-2 w-full pointer-events-none">
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500">Purchase</label>
+                                    <span class="font-semibold text-sm">${(codeObj.purchasePrice || 0).toFixed(2)}</span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500">Profit %</label>
+                                    <span class="font-semibold text-sm">${codeObj.profitMargin || 0}%</span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500">Selling</label>
+                                    <span class="font-semibold text-sm">${(codeObj.price || 0).toFixed(2)}</span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500">Qty</label>
+                                    <span class="font-semibold text-sm">${codeObj.quantity || 0}</span>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-medium text-slate-500">Disc. %</label>
+                                    <span class="font-semibold text-sm">${codeObj.discount || 0}%</span>
+                                </div>
+                            </div>
+                            <button class="delete-product-code-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100 z-10">
+                                <i data-lucide="x-circle" class="w-5 h-5 pointer-events-none"></i>
+                            </button>
+                        `;
+                        
+                        codeEl.querySelector('.delete-product-code-btn').onclick = (e) => {
+                            e.stopPropagation(); // prevent opening the edit modal
+                            e.target.closest('.product-code-entry').remove();
+                            updateTotalQuantityInModal();
+                        };
+
+                        codeEl.addEventListener('click', () => openEditCodeModal(codeEl));
+                        
+                        productCodesList.appendChild(codeEl);
+                    });
+
+                    editProductNameInput.disabled = false;
+                    editProductPriceInput.disabled = false;
+                    modalDeleteProductBtn.style.display = 'flex';
+                    editProductModal.classList.remove('hidden');
+                    lucide.createIcons();
+                }
+            };
+
             const renderSavedInvoicesList = () => {
                 let invoicesToRender = isOnlineMode ? firestoreInvoices : JSON.parse(localStorage.getItem('savedInvoices')) || [];
                 let returnsToCalc = isOnlineMode ? firestoreReturns : JSON.parse(localStorage.getItem('savedReturns')) || [];
@@ -3163,6 +3618,7 @@
                 returnsView.classList.add('hidden-view');
                 invoiceDetailsView.classList.add('hidden-view');
                 expensesView.classList.add('hidden-view');
+                inventoryView.classList.add('hidden-view');
                 posView.classList.remove('hidden-view');
                 posView.classList.add('flex'); 
             }
@@ -3176,6 +3632,18 @@
                 expensesView.classList.remove('hidden-view');
                 expensesView.classList.add('flex');
                 deleteAllExpensesBtn.style.display = isDeveloperMode ? 'flex' : 'none';
+                lucide.createIcons();
+            };
+
+            const showInventoryView = () => {
+                renderInventoryList();
+                posView.classList.add('hidden-view');
+                invoicesView.classList.add('hidden-view');
+                returnsView.classList.add('hidden-view');
+                invoiceDetailsView.classList.add('hidden-view');
+                expensesView.classList.add('hidden-view');
+                inventoryView.classList.remove('hidden-view');
+                inventoryView.classList.add('flex');
                 lucide.createIcons();
             };
 
@@ -3322,15 +3790,16 @@
                     returnsForThisInvoice = allReturns.filter(r => r.originalInvoiceId === invoiceId);
                 }
 
-                const createDetailsBlock = (invoiceData, title, isReturn = false) => {
+                const createDetailsBlock = (invoiceData, title, isReturn = false, isComparison = false) => {
                     let itemsHTML = '';
                     invoiceData.items.forEach(item => {
                         const itemTotal = (item.price * item.quantity) - (item.discount || 0);
                         itemsHTML += `
                             <tr class="border-b border-slate-100 last:border-b-0">
-                                <td class="p-3 text-right font-semibold text-slate-700">${item.name}</td>
-                                <td class="p-3 text-center text-slate-600">${item.quantity}</td>
-                                <td class="p-3 text-center text-slate-600 font-mono">${item.price.toFixed(2)}</td>
+                                <td class="p-3 text-right">
+                                    <p class="font-semibold text-slate-800">${item.name}</p>
+                                    <p class="text-xs text-slate-500">${item.quantity} x ${item.price.toFixed(2)}</p>
+                                </td>
                                 <td class="p-3 text-center text-red-600 font-mono">${(item.discount || 0).toFixed(2)}</td>
                                 <td class="p-3 text-left font-bold text-slate-800 font-mono">${itemTotal.toFixed(2)}</td>
                             </tr>`;
@@ -3340,53 +3809,35 @@
                     const change = invoiceData.tendered - invoiceData.total;
 
                     return `
-                        <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden">
-                            <div class="p-5 ${isReturn ? 'bg-red-50' : 'bg-slate-50'} border-b border-slate-200">
-                                <h4 class="text-xl font-bold ${isReturn ? 'text-red-700' : 'text-slate-800'} flex items-center gap-3">
-                                    <i data-lucide="${isReturn ? 'receipt' : 'file-text'}" class="w-6 h-6"></i>
+                        <div class="bg-white rounded-2xl shadow-lg border border-slate-200/80 overflow-hidden flex flex-col h-full">
+                            <div class="p-5 ${isReturn ? 'bg-red-50' : (isComparison ? 'bg-blue-50' : 'bg-slate-50')} border-b border-slate-200">
+                                <h4 class="text-xl font-bold ${isReturn ? 'text-red-700' : (isComparison ? 'text-blue-700' : 'text-slate-800')} flex items-center gap-3">
+                                    <i data-lucide="${isReturn ? 'receipt' : (isComparison ? 'copy' : 'file-text')}" class="w-6 h-6"></i>
                                     <span>${title}</span>
                                 </h4>
+                                ${invoiceData.editedTimestamp ? `<p class="text-xs text-slate-500 font-mono mt-1 pl-9">Edited: ${new Date(invoiceData.editedTimestamp).toLocaleString('ar-EG-u-nu-latn')}</p>` : ''}
                             </div>
 
-                            <div class="p-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-6 gap-y-4">
-                                <div class="flex items-start gap-3">
-                                    <i data-lucide="calendar" class="w-5 h-5 text-slate-400 mt-1"></i>
-                                    <div><p class="text-sm text-slate-500">التاريخ</p><p class="font-bold text-slate-700">${new Date(invoiceData.timestamp).toLocaleDateString('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric', hour:'2-digit', minute:'2-digit' })}</p></div>
-                                </div>
-                                <div class="flex items-start gap-3">
-                                    <i data-lucide="user" class="w-5 h-5 text-slate-400 mt-1"></i>
-                                    <div><p class="text-sm text-slate-500">العميل</p><p class="font-bold text-slate-700">${invoiceData.customerName || 'N/A'}</p></div>
-                                </div>
-                                <div class="flex items-start gap-3">
-                                    <i data-lucide="phone" class="w-5 h-5 text-slate-400 mt-1"></i>
-                                    <div><p class="text-sm text-slate-500">الهاتف</p><p class="font-bold text-slate-700">${invoiceData.customerPhone || 'N/A'}</p></div>
-                                </div>
+                            <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
+                                <div class="flex items-start gap-3"><i data-lucide="hash" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">رقم الفاتورة</p><p class="font-bold text-slate-700 font-mono">${invoiceData.id}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="calendar" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">التاريخ</p><p class="font-bold text-slate-700">${new Date(invoiceData.timestamp).toLocaleDateString('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric', hour:'2-digit', minute:'2-digit' })}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="user" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">العميل</p><p class="font-bold text-slate-700">${invoiceData.customerName || 'N/A'}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="phone" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">الهاتف</p><p class="font-bold text-slate-700">${invoiceData.customerPhone || 'N/A'}</p></div></div>
                                 ${!isReturn ? `
-                                <div class="flex items-start gap-3">
-                                    <i data-lucide="credit-card" class="w-5 h-5 text-slate-400 mt-1"></i>
-                                    <div><p class="text-sm text-slate-500">وسيلة الدفع</p><p class="font-bold text-slate-700">${invoiceData.paymentMethod}</p></div>
-                                </div>
-                                <div class="flex items-start gap-3">
-                                    <i data-lucide="user-check" class="w-5 h-5 text-slate-400 mt-1"></i>
-                                    <div><p class="text-sm text-slate-500">البائع</p><p class="font-bold text-slate-700">${invoiceData.sellerName || 'N/A'} (${invoiceData.cashierCode || 'N/A'})</p></div>
-                                </div>
+                                <div class="flex items-start gap-3"><i data-lucide="credit-card" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">وسيلة الدفع</p><p class="font-bold text-slate-700">${invoiceData.paymentMethod}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="user-check" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">البائع</p><p class="font-bold text-slate-700">${invoiceData.sellerName || 'N/A'} (${invoiceData.cashierCode || 'N/A'})</p></div></div>
                                 ` : `
-                                <div class="flex items-start gap-3">
-                                    <i data-lucide="file-input" class="w-5 h-5 text-slate-400 mt-1"></i>
-                                    <div><p class="text-sm text-slate-500">الفاتورة الأصلية</p><p class="font-bold text-slate-700 font-mono">${invoiceData.originalInvoiceId}</p></div>
-                                </div>
+                                <div class="flex items-start gap-3"><i data-lucide="file-input" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">الفاتورة الأصلية</p><p class="font-bold text-slate-700 font-mono">${invoiceData.originalInvoiceId}</p></div></div>
                                 `}
                             </div>
 
-                            <div class="px-5 pb-5">
+                            <div class="px-5 pb-5 flex-grow">
                                 <h5 class="font-bold text-slate-600 mb-2">الأصناف</h5>
                                 <div class="border rounded-lg overflow-hidden">
-                                    <table class="w-full text-sm text-right">
+                                    <table class="w-full text-sm">
                                         <thead class="bg-slate-50">
                                             <tr>
                                                 <th class="p-3 text-right font-semibold text-slate-500">الصنف</th>
-                                                <th class="p-3 text-center font-semibold text-slate-500">الكمية</th>
-                                                <th class="p-3 text-center font-semibold text-slate-500">السعر</th>
                                                 <th class="p-3 text-center font-semibold text-slate-500">الخصم</th>
                                                 <th class="p-3 text-left font-semibold text-slate-500">الإجمالي</th>
                                             </tr>
@@ -3396,8 +3847,8 @@
                                 </div>
                             </div>
 
-                            <div class="p-5 bg-slate-50 border-t border-slate-200">
-                                <div class="max-w-sm ml-auto space-y-2 text-right">
+                            <div class="p-5 bg-slate-50 border-t border-slate-200 mt-auto">
+                                <div class="max-w-sm ml-auto space-y-2 text-right text-sm">
                                     <div class="flex justify-between items-center text-slate-600"><span>الإجمالي الفرعي:</span><span class="font-mono font-semibold">${invoiceData.subtotal.toFixed(2)}</span></div>
                                     ${!isReturn ? `<div class="flex justify-between items-center text-slate-600"><span>إجمالي الخصم:</span><span class="font-mono font-semibold text-red-600">${totalDiscount.toFixed(2)}</span></div>` : ''}
                                     <hr class="border-slate-200">
@@ -3417,20 +3868,20 @@
                 if (invoice.originalInvoiceData) {
                     detailsHTML = `
                         <div class="text-center mb-6">
-                            <h4 class="text-3xl font-extrabold text-slate-800">${invoice.id}</h4>
+                            <h4 class="text-2xl font-extrabold text-slate-800">${invoice.id}</h4>
                             <p class="text-slate-500 mt-1">مقارنة بين الفاتورة الأصلية والمعدلة</p>
                         </div>
                         <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                            ${createDetailsBlock(invoice.originalInvoiceData, 'الفاتورة الأصلية')}
+                            ${createDetailsBlock(invoice.originalInvoiceData, 'الفاتورة الأصلية', false, true)}
                             ${createDetailsBlock(invoice, 'الفاتورة المعدلة')}
                         </div>
                     `;
                 } else {
-                    detailsHTML = createDetailsBlock(invoice, `تفاصيل الفاتورة`);
+                     detailsHTML = `<div class="max-w-3xl mx-auto">${createDetailsBlock(invoice, `تفاصيل الفاتورة`)}</div>`;
                 }
                 
                 if(returnsForThisInvoice.length > 0) {
-                    detailsHTML += `<div class="mt-8 space-y-8">`;
+                    detailsHTML += `<div class="max-w-3xl mx-auto mt-8 space-y-8">`;
                     returnsForThisInvoice.forEach(ret => {
                          detailsHTML += createDetailsBlock(ret, `تفاصيل المرتجع: ${ret.id}`, true);
                     });
@@ -3509,6 +3960,7 @@
 
                     if (isDeveloperMode) {
                          dropdownHTML += `
+                            <a href="#" id="inventory-management-btn" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 text-[var(--text-primary)]"><i data-lucide="archive" class="w-5 h-5 text-purple-500"></i><span>Inventory</span></a>
                             <a href="#" id="worker-permissions-btn" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 text-[var(--text-primary)]"><i data-lucide="user-cog" class="w-5 h-5 text-teal-500"></i><span>Manager Settings</span></a>
                             <a href="#" id="invoice-customization-btn" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 text-[var(--text-primary)]"><i data-lucide="file-cog" class="w-5 h-5 text-blue-500"></i><span>Invoice Settings</span></a>
                             <a href="#" id="shift-report-btn" class="flex items-center gap-2 p-2 rounded hover:bg-gray-100 text-[var(--text-primary)]"><i data-lucide="file-clock" class="w-5 h-5 text-indigo-500"></i><span>Sales Reports</span></a>
@@ -3553,6 +4005,10 @@
 
                     if (isDeveloperMode) {
                         document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+                        document.getElementById('inventory-management-btn').addEventListener('click', () => {
+                            showInventoryView();
+                            settingsDropdown.classList.add('hidden');
+                        });
                         document.getElementById('worker-permissions-btn').addEventListener('click', () => {
                             workerPermissionsModal.classList.remove('hidden');
                             renderCashierProfiles();
@@ -3661,6 +4117,8 @@
                     return;
                 }
                 const name = newProductNameInput.value.trim();
+                const purchasePrice = parseFloat(document.getElementById('new-product-purchase-price').value) || 0;
+                const profitMargin = parseFloat(document.getElementById('new-product-profit-margin').value) || 0;
                 const price = parseFloat(newProductPriceInput.value);
                 const isUnlimited = unlimitedStockCheckbox.checked;
                 const quantity = isUnlimited ? Infinity : parseInt(newProductQuantityInput.value, 10);
@@ -3682,10 +4140,12 @@
 
                 try {
                     const productsCollectionPath = `users/${userId}/products`;
-                    await addDoc(collection(db, productsCollectionPath), { name, price, quantity });
+                    await addDoc(collection(db, productsCollectionPath), { name, price, quantity, purchasePrice, profitMargin });
                     showAlert(`Product "${name}" was successfully added to the list.`);
                     newProductNameInput.value = '';
                     newProductPriceInput.value = '';
+                    document.getElementById('new-product-purchase-price').value = '';
+                    document.getElementById('new-product-profit-margin').value = '';
                     newProductQuantityInput.value = '';
                     unlimitedStockCheckbox.checked = false;
                     newProductQuantityInput.disabled = false;
@@ -4080,9 +4540,7 @@
                         
                         // Read all product documents at once
                         const productDocsSnapshots = productRefs.length > 0 ? await Promise.all(productRefs.map(ref => transaction.get(ref))) : [];
-                        const productDocs = productDocsSnapshots.map(snap => ({ exists: snap.exists(), data: snap.exists() ? snap.data() : null, ref: snap.ref }));
-
-
+                        
                         // --- STAGE 2: ALL WRITES ---
 
                         // 1. Update archive status
@@ -4111,14 +4569,14 @@
                         for (const item of invoiceData.items) {
                             if (item.id.startsWith('custom-')) continue;
                             
-                            const productDoc = productDocs[productDocIndex];
+                            const productDocSnapshot = productDocsSnapshots[productDocIndex];
                             productDocIndex++;
 
-                            if (productDoc && productDoc.exists) {
-                                const productData = productDoc.data;
+                            if (productDocSnapshot && productDocSnapshot.exists()) {
+                                const productData = productDocSnapshot.data();
                                 
                                 if (item.code) {
-                                    const codeIndex = productData.codes.findIndex(c => c.code === item.code);
+                                    const codeIndex = (productData.codes || []).findIndex(c => c.code === item.code);
                                     if(codeIndex > -1) {
                                         productData.codes[codeIndex].quantity += item.quantity;
                                         productData.quantity = productData.codes.reduce((sum, c) => sum + c.quantity, 0);
@@ -4126,7 +4584,17 @@
                                 } else if (productData.quantity !== Infinity){
                                     productData.quantity += item.quantity;
                                 }
-                                transaction.update(productDoc.ref, { quantity: productData.quantity, codes: productData.codes });
+                                
+                                // Construct a safe update payload to avoid 'undefined' errors
+                                const updatePayload = {
+                                    quantity: productData.quantity,
+                                };
+                                // Only include the 'codes' field if it's an array on the product data.
+                                if (Array.isArray(productData.codes)) {
+                                    updatePayload.codes = productData.codes;
+                                }
+                                
+                                transaction.update(productDocSnapshot.ref, updatePayload);
                             }
                         }
                         
@@ -4232,6 +4700,7 @@
                 settingsModal.classList.remove('hidden');
                 lucide.createIcons();
                 await fetchAndDisplayAuthorizedUsers();
+                await loadMaintenanceSettingsForModal();
             };
 
             const fetchAndDisplayAuthorizedUsers = async () => {
@@ -4259,6 +4728,23 @@
                 }
             };
             
+            const loadMaintenanceSettingsForModal = async () => {
+                try {
+                    const docRef = doc(db, 'configuration', 'maintenance');
+                    const docSnap = await getDoc(docRef);
+                    let currentSettings = { enabled: false, message: 'Our system is currently down for scheduled maintenance. We should be back online shortly. Thank you for your patience.'};
+                    if (docSnap.exists()) {
+                        currentSettings = { ...currentSettings, ...docSnap.data() };
+                    }
+                    maintenanceModeToggle.checked = currentSettings.enabled;
+                    maintenanceMessageInput.value = currentSettings.message;
+                    maintenanceMessageControls.style.display = currentSettings.enabled ? 'block' : 'none';
+                } catch (error) {
+                    console.error("Error loading maintenance settings for modal:", error);
+                    showAlert('Could not load maintenance settings.');
+                }
+            };
+
             const populateCashierDropdown = () => {
                 const select = document.getElementById('cashier-select');
                 select.innerHTML = '<option value="">-- Select Cashier --</option>';
@@ -4821,7 +5307,11 @@
             });
             searchInput.addEventListener('input', (e) => {
                 const searchTerm = e.target.value.toLowerCase();
-                const filteredProducts = products.filter(p => p.name.toLowerCase().includes(searchTerm));
+                const filteredProducts = products.filter(p => {
+                    const nameMatch = p.name.toLowerCase().includes(searchTerm);
+                    const codeMatch = p.codes && p.codes.some(c => c.code.toLowerCase().includes(searchTerm));
+                    return nameMatch || codeMatch;
+                });
                 renderProducts(filteredProducts);
             });
             productsGrid.addEventListener('click', async (e) => {
@@ -4836,51 +5326,7 @@
                     }
                     const productId = editBtn.dataset.id;
                     const productToEdit = products.find(p => p.id === productId);
-                    if (productToEdit) {
-                        editProductIdInput.value = productToEdit.id;
-                        editProductNameInput.value = productToEdit.name;
-                        editProductPriceInput.value = productToEdit.price;
-                        
-                        const isUnlimited = productToEdit.quantity === Infinity;
-                        editUnlimitedStockCheckbox.checked = isUnlimited;
-
-                        const hasCodes = productToEdit.codes && productToEdit.codes.length > 0;
-                        
-                        editProductQuantityInput.disabled = isUnlimited || hasCodes;
-
-                        if (isUnlimited) {
-                            editProductQuantityInput.value = '';
-                            editProductQuantityInput.placeholder = 'Unlimited';
-                        } else {
-                            editProductQuantityInput.value = productToEdit.quantity || 0;
-                            editProductQuantityInput.placeholder = hasCodes ? 'Auto-calculated' : '';
-                        }
-
-                        productCodesList.innerHTML = '';
-                        (productToEdit.codes || []).forEach(codeObj => {
-                            const codeEl = document.createElement('div');
-                            codeEl.className = 'flex items-center justify-between bg-slate-100 p-2 rounded-md gap-2';
-                            codeEl.innerHTML = `
-                                <span class="font-medium text-slate-700 flex-grow">${codeObj.code}</span>
-                                <input type="number" value="${codeObj.quantity}" class="product-code-quantity-input w-20 p-1 input-field text-center rounded">
-                                <button class="delete-product-code-btn text-red-400 hover:text-red-600 p-1">
-                                    <i data-lucide="x-circle" class="w-4 h-4"></i>
-                                </button>
-                            `;
-                            codeEl.querySelector('.delete-product-code-btn').onclick = (e) => {
-                                e.target.closest('div').remove();
-                                updateTotalQuantityInModal();
-                            };
-                            codeEl.querySelector('.product-code-quantity-input').oninput = updateTotalQuantityInModal;
-                            productCodesList.appendChild(codeEl);
-                        });
-
-                        editProductNameInput.disabled = false;
-                        editProductPriceInput.disabled = false;
-                        modalDeleteProductBtn.style.display = 'flex';
-                        editProductModal.classList.remove('hidden');
-                        lucide.createIcons();
-                    }
+                    openEditProductModal(productToEdit);
                 } else if (productCard && !productCard.disabled) {
                     const productToAdd = products.find(p => p.id === productCard.dataset.id);
                     if(productToAdd) {
@@ -4892,15 +5338,47 @@
                     }
                 }
             });
+
+            inventoryGrid.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.inventory-edit-btn');
+                const card = e.target.closest('.inventory-card');
+                const header = e.target.closest('.inventory-card-header');
+
+                if (editBtn) {
+                    e.stopPropagation(); 
+                    const productId = editBtn.dataset.id;
+                    const productToEdit = products.find(p => p.id === productId);
+                    openEditProductModal(productToEdit);
+                } else if (header && card) {
+                    const details = card.querySelector('.inventory-card-details');
+                    if (details) {
+                        // Close other expanded cards
+                        const allCards = inventoryGrid.querySelectorAll('.inventory-card.expanded');
+                        allCards.forEach(otherCard => {
+                            if(otherCard !== card) {
+                                otherCard.classList.remove('expanded');
+                            }
+                        });
+                        // Toggle the clicked card
+                        card.classList.toggle('expanded');
+                    }
+                }
+            });
+
             modalSaveBtn.addEventListener('click', async () => {
                 const productId = editProductIdInput.value;
                 const isUnlimited = editUnlimitedStockCheckbox.checked;
                 
-                const codeElements = productCodesList.querySelectorAll('.flex');
+                const codeElements = productCodesList.querySelectorAll('.product-code-entry');
                 const codes = Array.from(codeElements).map(div => {
-                    const code = div.querySelector('span').textContent;
-                    const quantity = parseInt(div.querySelector('input').value, 10);
-                    return { code, quantity: isNaN(quantity) ? 0 : quantity };
+                    return {
+                        code: div.dataset.code,
+                        purchasePrice: parseFloat(div.dataset.purchasePrice) || 0,
+                        profitMargin: parseFloat(div.dataset.profitMargin) || 0,
+                        price: parseFloat(div.dataset.price) || 0,
+                        quantity: parseInt(div.dataset.quantity, 10) || 0,
+                        discount: parseInt(div.dataset.discount, 10) || 0
+                    };
                 });
 
                 const totalQuantityFromCodes = codes.reduce((sum, item) => sum + item.quantity, 0);
@@ -4908,7 +5386,10 @@
                 
                 const newData = {
                     name: editProductNameInput.value,
+                    purchasePrice: parseFloat(document.getElementById('edit-product-purchase-price').value) || 0,
+                    profitMargin: parseFloat(document.getElementById('edit-product-profit-margin').value) || 0,
                     price: parseFloat(editProductPriceInput.value),
+                    discount: parseInt(document.getElementById('edit-product-discount').value, 10) || 0,
                     quantity: isUnlimited ? Infinity : (hasCodes ? totalQuantityFromCodes : parseInt(editProductQuantityInput.value, 10)),
                     codes: codes
                 };
@@ -4982,6 +5463,7 @@
             backToPosBtn.addEventListener('click', showPosView);
             backToPosFromReturnsBtn.addEventListener('click', showPosView);
             backToPosFromExpensesBtn.addEventListener('click', showPosView);
+            backToPosFromInventoryBtn.addEventListener('click', showPosView);
             backToInvoicesBtn.addEventListener('click', () => {
                 invoiceDetailsView.classList.add('hidden-view');
                 invoicesView.classList.remove('hidden-view');
@@ -4993,6 +5475,7 @@
             returnSearchInput.addEventListener('input', renderSavedReturnsList);
             returnStartDateInput.addEventListener('change', renderSavedReturnsList);
             returnEndDateInput.addEventListener('change', renderSavedReturnsList);
+            inventorySearchInput.addEventListener('input', renderInventoryList);
             viewCustomersBtn.addEventListener('click', openCustomersModal);
             customersCloseBtn.addEventListener('click', () => customersModal.classList.add('hidden'));
             downloadCustomersBtn.addEventListener('click', downloadCustomersAsExcel);
@@ -5121,7 +5604,7 @@
             const updateTotalQuantityInModal = () => {
                 if (editProductModal.classList.contains('hidden')) return;
 
-                const codeElements = productCodesList.querySelectorAll('.flex');
+                const codeElements = productCodesList.querySelectorAll('.grid');
                 if (codeElements.length > 0) {
                     const totalQuantityFromCodes = Array.from(codeElements).reduce((sum, div) => {
                         const quantityInput = div.querySelector('.product-code-quantity-input');
@@ -5167,26 +5650,73 @@
 
             addProductCodeBtn.addEventListener('click', () => {
                 const newCode = newProductCodeInput.value.trim();
-                const newQuantity = parseInt(newProductCodeQuantity.value, 10) || 0;
+                const newPurchasePrice = parseFloat(document.getElementById('new-product-code-purchase-price').value) || 0;
+                const newProfitMargin = parseFloat(document.getElementById('new-product-code-profit-margin').value) || 0;
+                const newPrice = parseFloat(document.getElementById('new-product-code-price').value) || 0;
+                const newQuantity = parseInt(document.getElementById('new-product-code-quantity').value, 10) || 0;
+                const newDiscount = parseInt(document.getElementById('new-product-code-discount').value, 10) || 0;
 
                 if (newCode) {
                     const codeEl = document.createElement('div');
-                    codeEl.className = 'flex items-center justify-between bg-slate-100 p-2 rounded-md gap-2';
+                    codeEl.className = 'product-code-entry bg-white p-3 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-4';
                     codeEl.innerHTML = `
-                        <span class="font-medium text-slate-700 flex-grow">${newCode}</span>
-                        <input type="number" value="${newQuantity}" class="product-code-quantity-input w-20 p-1 input-field text-center rounded">
-                        <button class="delete-product-code-btn text-red-400 hover:text-red-600 p-1">
-                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                         <div class="w-full sm:w-1/4">
+                            <div class="flex items-center justify-between">
+                                <span class="font-bold text-slate-800 code-name">${newCode}</span>
+                                <button class="delete-product-code-btn sm:hidden text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100">
+                                    <i data-lucide="x-circle" class="w-5 h-5 pointer-events-none"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="flex-grow grid grid-cols-2 sm:grid-cols-5 gap-2 w-full">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Purchase</label>
+                                <input type="number" value="${newPurchasePrice || ''}" class="product-code-purchase-price-input p-1.5 input-field text-center text-sm rounded-md w-full">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Profit %</label>
+                                <input type="number" value="${newProfitMargin || ''}" class="product-code-profit-margin-input p-1.5 input-field text-center text-sm rounded-md w-full">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Selling</label>
+                                <input type="number" value="${newPrice || ''}" class="product-code-price-input p-1.5 input-field text-center text-sm rounded-md font-bold bg-slate-100 w-full">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Qty</label>
+                                <input type="number" value="${newQuantity}" class="product-code-quantity-input p-1.5 input-field text-center text-sm rounded-md w-full">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-500 mb-1">Disc. %</label>
+                                <input type="number" value="${newDiscount || ''}" class="product-code-discount-input p-1.5 input-field text-center text-sm rounded-md w-full">
+                            </div>
+                        </div>
+                        <button class="delete-product-code-btn hidden sm:block text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100">
+                            <i data-lucide="x-circle" class="w-5 h-5 pointer-events-none"></i>
                         </button>
                     `;
+                    
+                    const purchaseInput = codeEl.querySelector('.product-code-purchase-price-input');
+                    const profitInput = codeEl.querySelector('.product-code-profit-margin-input');
+                    const sellingInput = codeEl.querySelector('.product-code-price-input');
+
+                    purchaseInput.addEventListener('input', () => calculateSellingPrice(purchaseInput, profitInput, sellingInput));
+                    profitInput.addEventListener('input', () => calculateSellingPrice(purchaseInput, profitInput, sellingInput));
+
                     codeEl.querySelector('.delete-product-code-btn').onclick = (e) => {
-                        e.target.closest('div').remove();
+                        e.target.closest('.product-code-entry').remove();
                         updateTotalQuantityInModal();
                     };
                     codeEl.querySelector('.product-code-quantity-input').oninput = updateTotalQuantityInModal;
                     productCodesList.appendChild(codeEl);
+                    
+                    // Clear input fields for adding a new variation
                     newProductCodeInput.value = '';
-                    newProductCodeQuantity.value = '';
+                    document.getElementById('new-product-code-purchase-price').value = '';
+                    document.getElementById('new-product-code-profit-margin').value = '';
+                    document.getElementById('new-product-code-price').value = '';
+                    document.getElementById('new-product-code-quantity').value = '';
+                    document.getElementById('new-product-code-discount').value = '';
+
                     lucide.createIcons();
                     updateTotalQuantityInModal();
                 }
@@ -5195,6 +5725,99 @@
             productCodeCloseBtn.addEventListener('click', () => {
                 productCodeModal.classList.add('hidden');
             });
+
+            modalEditCodeCancelBtn.addEventListener('click', () => editProductCodeModal.classList.add('hidden'));
+
+            const openEditCodeModal = (codeCardElement) => {
+                const code = codeCardElement.dataset.code;
+                
+                document.getElementById('edit-product-code-original-code').value = code;
+                document.getElementById('edit-code-name-input').value = code;
+                document.getElementById('edit-code-purchase-price').value = codeCardElement.dataset.purchasePrice;
+                document.getElementById('edit-code-profit-margin').value = codeCardElement.dataset.profitMargin;
+                document.getElementById('edit-code-price').value = codeCardElement.dataset.price;
+                document.getElementById('edit-code-quantity').value = codeCardElement.dataset.quantity;
+                document.getElementById('edit-code-discount').value = codeCardElement.dataset.discount;
+
+                editProductCodeModal.classList.remove('hidden');
+                lucide.createIcons();
+            };
+
+            const saveProductCodeChanges = () => {
+                const originalCode = document.getElementById('edit-product-code-original-code').value;
+                const codeCardElement = productCodesList.querySelector(`.product-code-entry[data-code="${originalCode}"]`);
+
+                if (!codeCardElement) {
+                    showAlert('Could not find the variation to update.');
+                    return;
+                }
+
+                // Read new values from modal
+                const newCode = document.getElementById('edit-code-name-input').value.trim();
+                const newPurchasePrice = parseFloat(document.getElementById('edit-code-purchase-price').value) || 0;
+                const newProfitMargin = parseFloat(document.getElementById('edit-code-profit-margin').value) || 0;
+                const newPrice = parseFloat(document.getElementById('edit-code-price').value) || 0;
+                const newQuantity = parseInt(document.getElementById('edit-code-quantity').value, 10) || 0;
+                const newDiscount = parseInt(document.getElementById('edit-code-discount').value, 10) || 0;
+
+                if (!newCode) {
+                    showAlert('Variation name/code cannot be empty.');
+                    return;
+                }
+
+                // Update the dataset attributes on the card in the main modal
+                codeCardElement.dataset.code = newCode;
+                codeCardElement.dataset.purchasePrice = newPurchasePrice;
+                codeCardElement.dataset.profitMargin = newProfitMargin;
+                codeCardElement.dataset.price = newPrice;
+                codeCardElement.dataset.quantity = newQuantity;
+                codeCardElement.dataset.discount = newDiscount;
+
+                // Update the display HTML of the card
+                codeCardElement.innerHTML = `
+                     <div class="w-full sm:w-1/4 pointer-events-none">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-800 code-name">${newCode}</span>
+                        </div>
+                    </div>
+                    <div class="flex-grow grid grid-cols-2 sm:grid-cols-5 gap-2 w-full pointer-events-none">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500">Purchase</label>
+                            <span class="font-semibold text-sm">${newPurchasePrice.toFixed(2)}</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500">Profit %</label>
+                            <span class="font-semibold text-sm">${newProfitMargin}%</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500">Selling</label>
+                            <span class="font-semibold text-sm">${newPrice.toFixed(2)}</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500">Qty</label>
+                            <span class="font-semibold text-sm">${newQuantity}</span>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500">Disc. %</label>
+                            <span class="font-semibold text-sm">${newDiscount}%</span>
+                        </div>
+                    </div>
+                    <button class="delete-product-code-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100 z-10">
+                        <i data-lucide="x-circle" class="w-5 h-5 pointer-events-none"></i>
+                    </button>
+                `;
+                
+                // Re-attach delete listener
+                codeCardElement.querySelector('.delete-product-code-btn').onclick = (e) => {
+                    e.stopPropagation();
+                    e.target.closest('.product-code-entry').remove();
+                    updateTotalQuantityInModal();
+                };
+
+                lucide.createIcons({ parentElement: codeCardElement });
+                editProductCodeModal.classList.add('hidden');
+                updateTotalQuantityInModal();
+            };
 
 
             invoicesListTbody.addEventListener('click', (e) => {
@@ -5289,6 +5912,25 @@
             cancelAccountSessionBtn.addEventListener('click', cancelAccountSession);
             
             permissionsCloseBtn.addEventListener('click', () => workerPermissionsModal.classList.add('hidden'));
+
+            maintenanceModeToggle.addEventListener('change', () => {
+                maintenanceMessageControls.style.display = maintenanceModeToggle.checked ? 'block' : 'none';
+            });
+
+            saveMaintenanceSettingsBtn.addEventListener('click', async () => {
+                const settings = {
+                    enabled: maintenanceModeToggle.checked,
+                    message: maintenanceMessageInput.value.trim()
+                };
+                try {
+                    const docRef = doc(db, 'configuration', 'maintenance');
+                    await setDoc(docRef, settings);
+                    showAlert('Maintenance settings saved successfully.');
+                } catch (error) {
+                    console.error("Error saving maintenance settings:", error);
+                    showAlert('Failed to save maintenance settings.');
+                }
+            });
             
             document.addEventListener('click', (e) => {
                 const settingsDropdown = document.getElementById('settings-dropdown');
@@ -5599,6 +6241,7 @@
                 setupReturnsListener();
                 setupExpensesListener();
                 setupArchiveListener();
+                setupInAppMaintenanceListener(); // Call the maintenance listener after login
 
                 if (systemLockInterval) clearInterval(systemLockInterval);
                 checkSystemLock(); // Initial check on login
@@ -5675,9 +6318,86 @@
                 newExpenseTypeInput.value = '';
             });
 
+            const newProductPurchasePriceInput = document.getElementById('new-product-purchase-price');
+            const newProductProfitMarginInput = document.getElementById('new-product-profit-margin');
+            
+            const editProductPurchasePriceInput = document.getElementById('edit-product-purchase-price');
+            const editProductProfitMarginInput = document.getElementById('edit-product-profit-margin');
+
+            const newProductCodePurchasePriceInput = document.getElementById('new-product-code-purchase-price');
+            const newProductCodeProfitMarginInput = document.getElementById('new-product-code-profit-margin');
+            const newProductCodePriceInput = document.getElementById('new-product-code-price');
+
+            const editCodePurchasePriceInput = document.getElementById('edit-code-purchase-price');
+            const editCodeProfitMarginInput = document.getElementById('edit-code-profit-margin');
+            const editCodePriceInput = document.getElementById('edit-code-price');
+            
+            const calculateSellingPrice = (purchasePriceInput, profitMarginInput, sellingPriceInput) => {
+                const purchasePrice = parseFloat(purchasePriceInput.value) || 0;
+                const profitMargin = parseFloat(profitMarginInput.value) || 0;
+                if (purchasePrice > 0) {
+                    const sellingPrice = purchasePrice * (1 + profitMargin / 100);
+                    sellingPriceInput.value = sellingPrice.toFixed(2);
+                } else {
+                    sellingPriceInput.value = '';
+                }
+            };
+
+            newProductPurchasePriceInput.addEventListener('input', () => calculateSellingPrice(newProductPurchasePriceInput, newProductProfitMarginInput, newProductPriceInput));
+            newProductProfitMarginInput.addEventListener('input', () => calculateSellingPrice(newProductPurchasePriceInput, newProductProfitMarginInput, newProductPriceInput));
+
+            editProductPurchasePriceInput.addEventListener('input', () => calculateSellingPrice(editProductPurchasePriceInput, editProductProfitMarginInput, editProductPriceInput));
+            editProductProfitMarginInput.addEventListener('input', () => calculateSellingPrice(editProductPurchasePriceInput, editProductProfitMarginInput, editProductPriceInput));
+
+            newProductCodePurchasePriceInput.addEventListener('input', () => calculateSellingPrice(newProductCodePurchasePriceInput, newProductCodeProfitMarginInput, newProductCodePriceInput));
+            newProductCodeProfitMarginInput.addEventListener('input', () => calculateSellingPrice(newProductCodePurchasePriceInput, newProductCodeProfitMarginInput, newProductCodePriceInput));
+
+            editCodePurchasePriceInput.addEventListener('input', () => calculateSellingPrice(editCodePurchasePriceInput, editCodeProfitMarginInput, editCodePriceInput));
+            editCodeProfitMarginInput.addEventListener('input', () => calculateSellingPrice(editCodePurchasePriceInput, editCodeProfitMarginInput, editCodePriceInput));
+
+            modalSaveCodeBtn.addEventListener('click', saveProductCodeChanges);
+
+            function setupInAppMaintenanceListener() {
+                if (!isOnlineMode || !userId) return;
+                const maintenanceView = document.getElementById('in-app-maintenance-view');
+                const maintenanceMessageEl = document.getElementById('in-app-maintenance-message');
+                
+                const docRef = doc(db, 'configuration', 'maintenance');
+                onSnapshot(docRef, (docSnap) => {
+                    let settings = { enabled: false, message: 'The system is currently down for scheduled maintenance. Please check back later.' };
+                    if (docSnap.exists()) {
+                        settings = { ...settings, ...docSnap.data() };
+                    }
+                    
+                    if (settings.enabled) {
+                        maintenanceMessageEl.textContent = settings.message;
+                        maintenanceView.classList.remove('hidden');
+                        lucide.createIcons();
+                    } else {
+                        maintenanceView.classList.add('hidden');
+                    }
+                }, (error) => {
+                     console.error("Error listening to maintenance status:", error);
+                });
+            }
+            
+            // --- App Initialization ---
+            initializeFirebase();
+
+            if (auth) {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        await initializeUserSession(user);
+                    } else {
+                        tearDownUserSession();
+                    }
+                });
+            }
+
         });
     </script>
 
 </body>
 </html>
+
 
