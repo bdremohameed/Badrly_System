@@ -273,11 +273,16 @@
     <div id="app-container" class="hidden">
         <div id="in-app-maintenance-view" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4 text-center">
             <div class="login-panel-enter w-full max-w-lg">
-                <div class="w-24 h-24 bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-amber-500/30 animate-pulse">
-                    <i data-lucide="wrench" class="w-12 h-12"></i>
+                <div class="relative panel bg-slate-800/50 backdrop-blur-xl p-8 sm:p-12 rounded-2xl shadow-2xl shadow-slate-900/20">
+                    <button id="maintenance-help-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white transition-colors" title="Help Center">
+                        <i data-lucide="life-buoy" class="w-6 h-6"></i>
+                    </button>
+                    <div class="w-24 h-24 bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-amber-500/30 animate-pulse">
+                        <i data-lucide="wrench" class="w-12 h-12"></i>
+                    </div>
+                    <h1 class="text-4xl font-black text-white mb-4">Under Maintenance</h1>
+                    <p id="in-app-maintenance-message" class="text-slate-300 text-lg max-w-md mx-auto">The system is currently down for scheduled maintenance. Please check back later.</p>
                 </div>
-                <h1 class="text-4xl font-black text-white mb-4">Under Maintenance</h1>
-                <p id="in-app-maintenance-message" class="text-slate-300 text-lg max-w-md mx-auto">The system is currently down for scheduled maintenance. Please check back later.</p>
             </div>
         </div>
         <div class="w-full max-w-7xl mx-auto p-4">
@@ -1174,7 +1179,7 @@
             </div>
         </div>
     </div>
-    <div id="help-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+    <div id="help-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-[210] p-4">
         <div class="login-panel-enter w-full max-w-lg text-center">
              <div class="relative panel bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-slate-300/20">
                 <button id="help-close-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
@@ -1199,6 +1204,9 @@
                     <button id="send-complaint-btn" class="w-full flex items-center justify-center gap-2 btn-primary py-3 rounded-lg shadow-lg btn-glow transform transition-transform hover:scale-105">
                         <i data-lucide="send"></i><span>Send Message</span>
                     </button>
+                </div>
+                <div class="mt-4 text-center text-xs text-slate-500">
+                    or contact us via the <a href="http://badre.site/" target="_blank" class="font-semibold text-sky-500 hover:text-sky-600 transition-colors">website</a>
                 </div>
             </div>
         </div>
@@ -1716,6 +1724,7 @@
             const ownerDeleteAllReturnsBtn = document.getElementById('owner-delete-all-returns-btn');
             const ownerDeleteArchiveBtn = document.getElementById('owner-delete-archive-btn');
             const loginHelpBtn = document.getElementById('login-help-btn');
+            const maintenanceHelpBtn = document.getElementById('maintenance-help-btn');
             const dangerZoneModal = document.getElementById('danger-zone-modal');
             const dangerZoneCloseBtn = document.getElementById('danger-zone-close-btn');
             const openDangerZoneBtn = document.getElementById('open-danger-zone-btn');
@@ -5038,11 +5047,37 @@
                 
                 const productSales = filteredInvoices.reduce((acc, inv) => {
                     inv.items.forEach(item => {
-                        if (!acc[item.name]) {
-                            acc[item.name] = { quantity: 0, totalValue: 0 };
+                        if (item.id.startsWith('custom-')) return;
+                        
+                        const originalProduct = products.find(p => p.id === item.id);
+                        if (!originalProduct) return;
+
+                        const key = item.name;
+
+                        if (!acc[key]) {
+                            acc[key] = {
+                                quantity: 0,
+                                totalSalesValue: 0,
+                                totalDiscount: 0,
+                                totalPurchaseValue: 0,
+                                purchasePrice: originalProduct.purchasePrice || 0,
+                                profitMargin: originalProduct.profitMargin || 0,
+                                sellingPrice: item.price
+                            };
+                            
+                            if (item.code) {
+                                const codeData = originalProduct.codes?.find(c => c.code === item.code);
+                                if (codeData) {
+                                    acc[key].purchasePrice = codeData.purchasePrice || originalProduct.purchasePrice || 0;
+                                    acc[key].profitMargin = codeData.profitMargin || originalProduct.profitMargin || 0;
+                                }
+                            }
                         }
-                        acc[item.name].quantity += item.quantity;
-                        acc[item.name].totalValue += (item.price * item.quantity) - (item.discount || 0);
+
+                        acc[key].quantity += item.quantity;
+                        acc[key].totalSalesValue += (item.price * item.quantity) - (item.discount || 0);
+                        acc[key].totalDiscount += (item.discount || 0);
+                        acc[key].totalPurchaseValue += acc[key].purchasePrice * item.quantity;
                     });
                     return acc;
                 }, {});
@@ -5050,6 +5085,13 @@
                 const topSellingProducts = Object.entries(productSales)
                     .sort(([,a],[,b]) => b.quantity - a.quantity)
                     .slice(0, 10);
+
+                // --- Calculations for Overall Product Profit ---
+                const allProductsSold = Object.values(productSales);
+                const totalPurchaseValueOfAllProducts = allProductsSold.reduce((sum, product) => sum + product.totalPurchaseValue, 0);
+                const totalSalesValueOfAllProducts = allProductsSold.reduce((sum, product) => sum + product.totalSalesValue, 0);
+                const totalNetProfitOfAllProducts = totalSalesValueOfAllProducts - totalPurchaseValueOfAllProducts;
+
 
                 // --- HTML Generation ---
                 const createStatCard = (label, value, icon, colorClass) => `
@@ -5084,7 +5126,20 @@
 
                 const paymentRows = Object.entries(paymentMethodTotals).map(([method, total]) => [method, total.toFixed(2) + ' ج.م']);
                 const cashierRows = Object.entries(cashierTotals).map(([name, total]) => [name, total.toFixed(2) + ' ج.م']);
-                const productRows = topSellingProducts.map(([name, data]) => [name, data.quantity, data.totalValue.toFixed(2) + ' ج.م']);
+                const productRows = topSellingProducts.map(([name, data]) => {
+                    const netProfit = data.totalSalesValue - data.totalPurchaseValue;
+                    return [
+                        name, 
+                        data.quantity,
+                        data.purchasePrice.toFixed(2),
+                        `${data.profitMargin}%`,
+                        data.sellingPrice.toFixed(2),
+                        data.totalDiscount.toFixed(2),
+                        data.totalPurchaseValue.toFixed(2),
+                        data.totalSalesValue.toFixed(2) + ' ج.م',
+                        netProfit.toFixed(2) + ' ج.م'
+                    ];
+                });
 
                 reportContent.innerHTML = `
                     <div dir="rtl" class="text-right">
@@ -5105,7 +5160,56 @@
                             ${createTable('المبيعات حسب البائع', [{label: 'البائع', align: 'right'}, {label: 'المجموع', align: 'left', isBold: true}], cashierRows)}
                         </div>
                         
-                        ${createTable('المنتجات الأكثر مبيعًا', [{label: 'المنتج', align: 'right'}, {label: 'الكمية', align: 'right'}, {label: 'قيمة المبيعات', align: 'left', isBold: true}], productRows)}
+                        ${createTable('المنتجات الأكثر مبيعًا', 
+                            [
+                                {label: 'المنتج', align: 'right'}, 
+                                {label: 'الكمية', align: 'right'}, 
+                                {label: 'سعر الشراء', align: 'right'},
+                                {label: 'هامش الربح', align: 'right'},
+                                {label: 'سعر البيع', align: 'right'},
+                                {label: 'الخصم', align: 'right'},
+                                {label: 'قيمة الشراء', align: 'right'},
+                                {label: 'قيمة المبيعات', align: 'right'},
+                                {label: 'صافي الربح', align: 'left', isBold: true}
+                            ], 
+                            productRows
+                        )}
+
+                        <div class="mt-8 pt-6 border-t-2 border-slate-300">
+                             <h4 class="text-xl font-bold mb-4 text-slate-700 text-center">ملخص أرباح المنتجات</h4>
+                             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                 <!-- Card 1: Purchase Value -->
+                                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
+                                     <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-red-500 to-orange-500 text-white rounded-xl shadow-md shadow-red-500/30">
+                                         <i data-lucide="arrow-down-circle" class="w-7 h-7"></i>
+                                     </div>
+                                     <div>
+                                         <p class="text-base font-semibold text-slate-500">إجمالي قيمة الشراء</p>
+                                         <p class="text-3xl font-black text-slate-800 tracking-tight">${totalPurchaseValueOfAllProducts.toFixed(2)} ج.م</p>
+                                     </div>
+                                 </div>
+                                 <!-- Card 2: Sales Value -->
+                                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
+                                     <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl shadow-md shadow-blue-500/30">
+                                         <i data-lucide="trending-up" class="w-7 h-7"></i>
+                                     </div>
+                                     <div>
+                                         <p class="text-base font-semibold text-slate-500">إجمالي قيمة المبيعات</p>
+                                         <p class="text-3xl font-black text-slate-800 tracking-tight">${totalSalesValueOfAllProducts.toFixed(2)} ج.م</p>
+                                     </div>
+                                 </div>
+                                 <!-- Card 3: Net Profit -->
+                                 <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
+                                     <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl shadow-md shadow-green-500/30">
+                                         <i data-lucide="bar-chart-2" class="w-7 h-7"></i>
+                                     </div>
+                                     <div>
+                                         <p class="text-base font-semibold text-slate-500">صافي الربح</p>
+                                         <p class="text-3xl font-black text-slate-800 tracking-tight">${totalNetProfitOfAllProducts.toFixed(2)} ج.م</p>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
                     </div>
                 `;
 
@@ -5371,14 +5475,29 @@
                 
                 const codeElements = productCodesList.querySelectorAll('.product-code-entry');
                 const codes = Array.from(codeElements).map(div => {
-                    return {
-                        code: div.dataset.code,
-                        purchasePrice: parseFloat(div.dataset.purchasePrice) || 0,
-                        profitMargin: parseFloat(div.dataset.profitMargin) || 0,
-                        price: parseFloat(div.dataset.price) || 0,
-                        quantity: parseInt(div.dataset.quantity, 10) || 0,
-                        discount: parseInt(div.dataset.discount, 10) || 0
-                    };
+                    const hasInputs = div.querySelector('input.product-code-quantity-input');
+
+                    if (hasInputs) {
+                        // This is a newly added variation with input fields
+                        return {
+                            code: div.querySelector('.code-name').textContent.trim(),
+                            purchasePrice: parseFloat(div.querySelector('.product-code-purchase-price-input').value) || 0,
+                            profitMargin: parseFloat(div.querySelector('.product-code-profit-margin-input').value) || 0,
+                            price: parseFloat(div.querySelector('.product-code-price-input').value) || 0,
+                            quantity: parseInt(div.querySelector('.product-code-quantity-input').value, 10) || 0,
+                            discount: parseInt(div.querySelector('.product-code-discount-input').value, 10) || 0,
+                        };
+                    } else {
+                        // This is an existing variation, read from dataset
+                        return {
+                            code: div.dataset.code,
+                            purchasePrice: parseFloat(div.dataset.purchasePrice) || 0,
+                            profitMargin: parseFloat(div.dataset.profitMargin) || 0,
+                            price: parseFloat(div.dataset.price) || 0,
+                            quantity: parseInt(div.dataset.quantity, 10) || 0,
+                            discount: parseInt(div.dataset.discount, 10) || 0
+                        };
+                    }
                 });
 
                 const totalQuantityFromCodes = codes.reduce((sum, item) => sum + item.quantity, 0);
@@ -5388,9 +5507,9 @@
                     name: editProductNameInput.value,
                     purchasePrice: parseFloat(document.getElementById('edit-product-purchase-price').value) || 0,
                     profitMargin: parseFloat(document.getElementById('edit-product-profit-margin').value) || 0,
-                    price: parseFloat(editProductPriceInput.value),
+                    price: parseFloat(editProductPriceInput.value) || 0,
                     discount: parseInt(document.getElementById('edit-product-discount').value, 10) || 0,
-                    quantity: isUnlimited ? Infinity : (hasCodes ? totalQuantityFromCodes : parseInt(editProductQuantityInput.value, 10)),
+                    quantity: isUnlimited ? Infinity : (hasCodes ? totalQuantityFromCodes : (parseInt(editProductQuantityInput.value, 10) || 0)),
                     codes: codes
                 };
                 
@@ -6043,6 +6162,20 @@
             ownerDeleteAllReturnsBtn.addEventListener('click', deleteAllReturns);
             ownerDeleteArchiveBtn.addEventListener('click', deleteAllArchiveData);
 
+            loginHelpBtn.addEventListener('click', () => {
+                complaintEmailInput.value = ''; 
+                complaintMessageTextarea.value = '';
+                helpModal.classList.remove('hidden');
+                lucide.createIcons();
+            });
+
+            maintenanceHelpBtn.addEventListener('click', () => {
+                complaintEmailInput.value = ''; 
+                complaintMessageTextarea.value = '';
+                helpModal.classList.remove('hidden');
+                lucide.createIcons();
+            });
+
             openDangerZoneBtn.addEventListener('click', () => {
                 dangerZoneModal.classList.remove('hidden');
                 lucide.createIcons();
@@ -6399,5 +6532,4 @@
 
 </body>
 </html>
-
 
