@@ -325,30 +325,30 @@
                             <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
                         </div>
                         <div id="add-new-product-section" class="hidden mt-4 pt-4 border-t border-[var(--panel-border)]">
-                            <h3 class="text-lg font-bold text-slate-700 mb-3 flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-green-500"></i>إضافة منتج سريع</h3>
+                            <h3 class="text-lg font-bold text-slate-700 mb-3 flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-green-500"></i>Quick Add Product</h3>
                             <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
                                 <div class="grid grid-cols-12 gap-2 items-end">
                                     <!-- Name -->
                                     <div class="col-span-12 md:col-span-4">
-                                        <input type="text" id="new-product-name" placeholder="اسم المنتج" class="w-full p-2 input-field text-sm">
+                                        <input type="text" id="new-product-name" placeholder="Product Name" class="w-full p-2 input-field text-sm">
                                     </div>
                                     <!-- Pricing -->
                                     <div class="col-span-6 md:col-span-2">
-                                        <input type="number" id="new-product-purchase-price" placeholder="شراء" class="w-full p-2 input-field text-sm">
+                                        <input type="number" id="new-product-purchase-price" placeholder="Purchase" class="w-full p-2 input-field text-sm">
                                     </div>
                                      <div class="col-span-6 md:col-span-1">
-                                        <input type="number" id="new-product-profit-margin" placeholder="ربح %" class="w-full p-2 input-field text-sm">
+                                        <input type="number" id="new-product-profit-margin" placeholder="Profit %" class="w-full p-2 input-field text-sm">
                                     </div>
                                     <div class="col-span-6 md:col-span-2">
-                                        <input type="number" id="new-product-price" placeholder="بيع" class="w-full p-2 input-field font-bold bg-slate-200/60 text-sm">
+                                        <input type="number" id="new-product-price" placeholder="Sell" class="w-full p-2 input-field font-bold bg-slate-200/60 text-sm">
                                     </div>
                                     <!-- Stock -->
                                     <div class="col-span-6 md:col-span-2">
-                                        <input type="number" id="new-product-quantity" placeholder="كمية" class="w-full p-2 input-field text-sm">
+                                        <input type="number" id="new-product-quantity" placeholder="Quantity" class="w-full p-2 input-field text-sm">
                                     </div>
                                     <!-- Add Button -->
                                     <div class="col-span-12 md:col-span-1">
-                                        <button id="add-new-product-btn" class="w-full h-full p-2 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition-all transform hover:scale-105" title="إضافة منتج">
+                                        <button id="add-new-product-btn" class="w-full h-full p-2 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition-all transform hover:scale-105" title="Add Product">
                                             <i data-lucide="plus" class="h-5 w-5"></i>
                                         </button>
                                     </div>
@@ -546,8 +546,8 @@
 
             <div id="invoice-details-view" class="hidden-view h-[calc(100vh-2rem)] p-6 flex-col panel" dir="rtl">
                  <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-3xl font-bold text-[var(--text-primary)]">تفاصيل الفاتورة</h2>
-                    <button id="back-to-invoices-btn" class="flex items-center justify-center gap-2 btn-secondary py-2 px-4 rounded-lg"><i data-lucide="arrow-right"></i><span>العودة للقائمة</span></button>
+                    <h2 class="text-3xl font-bold text-[var(--text-primary)]">Invoice Details</h2>
+                    <button id="back-to-invoices-btn" class="flex items-center justify-center gap-2 btn-secondary py-2 px-4 rounded-lg"><i data-lucide="arrow-right"></i><span>Back to List</span></button>
                 </div>
                 <div id="invoice-details-content" class="flex-grow bg-gray-50 rounded-lg p-8 overflow-y-auto"></div>
                  <div id="invoice-details-actions" class="mt-4 flex justify-start gap-3 flex-wrap">
@@ -620,8 +620,8 @@
                             <i data-lucide="archive" class="w-7 h-7"></i>
                         </div>
                         <div>
-                            <h2 class="text-3xl font-bold text-slate-800">إدارة المخزون</h2>
-                            <p class="text-sm text-slate-500">تتبع وإدارة وتحليل مخزون المنتجات الخاصة بك.</p>
+                            <h2 class="text-3xl font-bold text-slate-800">Inventory Management</h2>
+                            <p class="text-sm text-slate-500">Track, manage, and analyze your product inventory.</p>
                         </div>
                     </div>
                     <button id="back-to-pos-from-inventory-btn" class="flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg shadow-lg"><i data-lucide="arrow-left"></i><span>Back</span></button>
@@ -636,16 +636,16 @@
                     <!-- Search and Filter -->
                     <div class="relative">
                         <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
-                        <input type="text" id="inventory-search-input" placeholder="البحث عن طريق اسم المنتج أو الرمز..." class="w-full p-3 pl-12 input-field rounded-lg"/>
+                        <input type="text" id="inventory-search-input" placeholder="Search by product name or code..." class="w-full p-3 pl-12 input-field rounded-lg"/>
                     </div>
                 </div>
 
                 <!-- Inventory Grid Header -->
                 <div class="flex-shrink-0 hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    <div class="col-span-5">المنتج</div>
-                    <div class="col-span-3">حالة المخزون</div>
-                    <div class="col-span-2 text-right">السعر</div>
-                    <div class="col-span-2 text-center">الإجراءات</div>
+                    <div class="col-span-5">Product</div>
+                    <div class="col-span-3">Stock Status</div>
+                    <div class="col-span-2 text-right">Price</div>
+                    <div class="col-span-2 text-center">Actions</div>
                 </div>
 
                 <!-- Inventory Grid -->
@@ -1242,8 +1242,8 @@
                         <i data-lucide="users-2" class="w-10 h-10"></i>
                     </div>
                     <div>
-                        <h3 class="text-3xl font-bold text-slate-800">قاعدة بيانات العملاء</h3>
-                        <p class="text-base text-slate-500">ابحث عن معلومات العملاء وقم بإدارتها وتتبع سجل الشراء.</p>
+                        <h3 class="text-3xl font-bold text-slate-800">Customer Database</h3>
+                        <p class="text-base text-slate-500">Find, manage, and track customer information and purchase history.</p>
                     </div>
                 </div>
                 
@@ -1253,7 +1253,7 @@
                         <div class="p-4 flex-shrink-0">
                             <div class="relative">
                                 <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"></i>
-                                <input type="text" id="customer-search-input" placeholder="ابحث بالاسم أو الهاتف..." class="w-full p-3 pl-12 input-field rounded-lg border-slate-200"/>
+                                <input type="text" id="customer-search-input" placeholder="Search by name or phone..." class="w-full p-3 pl-12 input-field rounded-lg border-slate-200"/>
                             </div>
                         </div>
                         <div id="customers-list" class="flex-grow overflow-y-auto p-2 space-y-1">
@@ -1261,7 +1261,7 @@
                         </div>
                         <div class="p-4 mt-auto flex-shrink-0 border-t border-slate-200/80">
                             <button id="download-customers-btn" class="w-full flex items-center justify-center gap-2 btn-secondary py-3 rounded-lg font-semibold transition-transform hover:scale-105">
-                                <i data-lucide="download"></i><span>تنزيل كملف Excel</span>
+                                <i data-lucide="download"></i><span>Download as Excel</span>
                             </button>
                         </div>
                     </div>
@@ -1534,14 +1534,14 @@
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
                 <div class="text-center mb-4">
-                    <h3 id="product-code-modal-title" class="text-2xl font-bold text-slate-800">اختر الصنف</h3>
-                    <p class="text-sm text-slate-500 mt-1">اختر أحد الخيارات المتاحة لهذا المنتج.</p>
+                    <h3 id="product-code-modal-title" class="text-2xl font-bold text-slate-800">Select Variation</h3>
+                    <p class="text-sm text-slate-500 mt-1">Select one of the available options for this product.</p>
                 </div>
                 <div id="product-codes-selection-list" class="space-y-3 max-h-[50vh] overflow-y-auto p-1 pr-2 -mr-2">
                     <!-- Codes will be populated here -->
                 </div>
                 <div class="mt-6 pt-4 border-t border-slate-200/80">
-                     <button id="product-code-skip-btn" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors">إضافة المنتج الأساسي (بدون كود)</button>
+                     <button id="product-code-skip-btn" class="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition-colors">Add Base Product (No Code)</button>
                 </div>
             </div>
         </div>
@@ -3287,22 +3287,22 @@
                 statsContainer.innerHTML = `
                     <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-4 flex items-center gap-4">
                         <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
-                        <div><p class="text-sm text-slate-500 font-semibold">إجمالي المنتجات</p><p class="text-2xl font-bold text-slate-800">${totalProducts}</p></div>
+                        <div><p class="text-sm text-slate-500 font-semibold">Total Products</p><p class="text-2xl font-bold text-slate-800">${totalProducts}</p></div>
                     </div>
                     <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-4 flex items-center gap-4">
                         <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-amber-100 text-amber-600 rounded-lg"><i data-lucide="alert-triangle" class="w-5 h-5"></i></div>
-                        <div><p class="text-sm text-slate-500 font-semibold">مخزون منخفض</p><p class="text-2xl font-bold text-slate-800">${lowStockCount}</p></div>
+                        <div><p class="text-sm text-slate-500 font-semibold">Low Stock</p><p class="text-2xl font-bold text-slate-800">${lowStockCount}</p></div>
                     </div>
                     <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-4 flex items-center gap-4">
                         <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-red-100 text-red-600 rounded-lg"><i data-lucide="package-x" class="w-5 h-5"></i></div>
-                        <div><p class="text-sm text-slate-500 font-semibold">نفد المخزون</p><p class="text-2xl font-bold text-slate-800">${outOfStockCount}</p></div>
+                        <div><p class="text-sm text-slate-500 font-semibold">Out of Stock</p><p class="text-2xl font-bold text-slate-800">${outOfStockCount}</p></div>
                     </div>
                 `;
 
                 // --- Render Product List ---
                 inventoryGrid.innerHTML = '';
                 if (productsToRender.length === 0) {
-                    inventoryGrid.innerHTML = '<div class="text-center text-[var(--text-secondary)] py-16"><i data-lucide="search-x" class="mx-auto h-12 w-12"></i><p class="mt-2">لم يتم العثور على منتجات.</p></div>';
+                    inventoryGrid.innerHTML = '<div class="text-center text-[var(--text-secondary)] py-16"><i data-lucide="search-x" class="mx-auto h-12 w-12"></i><p class="mt-2">No products found.</p></div>';
                     lucide.createIcons();
                     return;
                 }
@@ -3319,16 +3319,16 @@
                     let stockStatusText = '';
                     let stockStatusColor = 'text-slate-600';
                     if (isUnlimited) {
-                        stockStatusText = 'غير محدود';
+                        stockStatusText = 'Unlimited';
                         stockStatusColor = 'text-green-600';
                     } else if (isOutOfStock) {
-                        stockStatusText = 'نفد المخزون';
+                        stockStatusText = 'Out of Stock';
                         stockStatusColor = 'text-red-600';
                     } else if (isLowStock) {
-                        stockStatusText = 'مخزون منخفض';
+                        stockStatusText = 'Low Stock';
                         stockStatusColor = 'text-amber-600';
                     } else {
-                        stockStatusText = 'في المخزن';
+                        stockStatusText = 'In Stock';
                     }
 
                     const maxStockForProgressBar = hasCodes ? product.codes.reduce((sum, c) => sum + (c.quantity > 50 ? c.quantity : 50) , 0) : Math.max(100, product.quantity);
@@ -3356,7 +3356,7 @@
 
                         detailsHTML = `
                             <div class="inventory-card-details bg-slate-50/70 border-t border-slate-200/80">
-                                <h5 class="text-xs font-bold text-slate-500 pt-2 px-4">الاختلافات</h5>
+                                <h5 class="text-xs font-bold text-slate-500 pt-2 px-4">Variations</h5>
                                 <div class="space-y-0">${codesList}</div>
                             </div>`;
                     }
@@ -3925,31 +3925,31 @@
                                     <i data-lucide="${isReturn ? 'receipt' : (isComparison ? 'copy' : 'file-text')}" class="w-6 h-6"></i>
                                     <span>${title}</span>
                                 </h4>
-                                ${invoiceData.editedTimestamp ? `<p class="text-xs text-slate-500 font-mono mt-1 pl-9">Edited: ${new Date(invoiceData.editedTimestamp).toLocaleString('ar-EG-u-nu-latn')}</p>` : ''}
+                                ${invoiceData.editedTimestamp ? `<p class="text-xs text-slate-500 font-mono mt-1 pl-9">Edited: ${new Date(invoiceData.editedTimestamp).toLocaleString('en-US')}</p>` : ''}
                             </div>
 
                             <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4 text-sm">
-                                <div class="flex items-start gap-3"><i data-lucide="hash" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">رقم الفاتورة</p><p class="font-bold text-slate-700 font-mono">${invoiceData.id}</p></div></div>
-                                <div class="flex items-start gap-3"><i data-lucide="calendar" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">التاريخ</p><p class="font-bold text-slate-700">${new Date(invoiceData.timestamp).toLocaleDateString('ar-EG-u-nu-latn', { year: 'numeric', month: 'long', day: 'numeric', hour:'2-digit', minute:'2-digit' })}</p></div></div>
-                                <div class="flex items-start gap-3"><i data-lucide="user" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">العميل</p><p class="font-bold text-slate-700">${invoiceData.customerName || 'N/A'}</p></div></div>
-                                <div class="flex items-start gap-3"><i data-lucide="phone" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">الهاتف</p><p class="font-bold text-slate-700">${invoiceData.customerPhone || 'N/A'}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="hash" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">Invoice #</p><p class="font-bold text-slate-700 font-mono">${invoiceData.id}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="calendar" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">Date</p><p class="font-bold text-slate-700">${new Date(invoiceData.timestamp).toLocaleString('en-US', { year: 'numeric', month: 'long', day: 'numeric', hour:'2-digit', minute:'2-digit' })}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="user" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">Customer</p><p class="font-bold text-slate-700">${invoiceData.customerName || 'N/A'}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="phone" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">Phone</p><p class="font-bold text-slate-700">${invoiceData.customerPhone || 'N/A'}</p></div></div>
                                 ${!isReturn ? `
-                                <div class="flex items-start gap-3"><i data-lucide="credit-card" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">وسيلة الدفع</p><p class="font-bold text-slate-700">${invoiceData.paymentMethod}</p></div></div>
-                                <div class="flex items-start gap-3"><i data-lucide="user-check" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">البائع</p><p class="font-bold text-slate-700">${invoiceData.sellerName || 'N/A'} (${invoiceData.cashierCode || 'N/A'})</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="credit-card" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">Payment Method</p><p class="font-bold text-slate-700">${invoiceData.paymentMethod}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="user-check" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">Seller</p><p class="font-bold text-slate-700">${invoiceData.sellerName || 'N/A'} (${invoiceData.cashierCode || 'N/A'})</p></div></div>
                                 ` : `
-                                <div class="flex items-start gap-3"><i data-lucide="file-input" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">الفاتورة الأصلية</p><p class="font-bold text-slate-700 font-mono">${invoiceData.originalInvoiceId}</p></div></div>
+                                <div class="flex items-start gap-3"><i data-lucide="file-input" class="w-5 h-5 text-slate-400 mt-1 flex-shrink-0"></i><div><p class="text-slate-500">Original Invoice</p><p class="font-bold text-slate-700 font-mono">${invoiceData.originalInvoiceId}</p></div></div>
                                 `}
                             </div>
 
                             <div class="px-5 pb-5 flex-grow">
-                                <h5 class="font-bold text-slate-600 mb-2">الأصناف</h5>
+                                <h5 class="font-bold text-slate-600 mb-2">Items</h5>
                                 <div class="border rounded-lg overflow-hidden">
                                     <table class="w-full text-sm">
                                         <thead class="bg-slate-50">
                                             <tr>
-                                                <th class="p-3 text-right font-semibold text-slate-500">الصنف</th>
-                                                <th class="p-3 text-center font-semibold text-slate-500">الخصم</th>
-                                                <th class="p-3 text-left font-semibold text-slate-500">الإجمالي</th>
+                                                <th class="p-3 text-right font-semibold text-slate-500">Item</th>
+                                                <th class="p-3 text-center font-semibold text-slate-500">Discount</th>
+                                                <th class="p-3 text-left font-semibold text-slate-500">Total</th>
                                             </tr>
                                         </thead>
                                         <tbody>${itemsHTML}</tbody>
@@ -3959,13 +3959,13 @@
 
                             <div class="p-5 bg-slate-50 border-t border-slate-200 mt-auto">
                                 <div class="max-w-sm ml-auto space-y-2 text-right text-sm">
-                                    <div class="flex justify-between items-center text-slate-600"><span>الإجمالي الفرعي:</span><span class="font-mono font-semibold">${subtotalForSummary.toFixed(2)}</span></div>
-                                    ${!isReturn ? `<div class="flex justify-between items-center text-slate-600"><span>إجمالي الخصم:</span><span class="font-mono font-semibold text-red-600">${totalDiscount.toFixed(2)}</span></div>` : ''}
+                                    <div class="flex justify-between items-center text-slate-600"><span>Subtotal:</span><span class="font-mono font-semibold">${subtotalForSummary.toFixed(2)}</span></div>
+                                    ${!isReturn ? `<div class="flex justify-between items-center text-slate-600"><span>Total Discount:</span><span class="font-mono font-semibold text-red-600">${totalDiscount.toFixed(2)}</span></div>` : ''}
                                     <hr class="border-slate-200">
-                                    <div class="flex justify-between items-center font-bold text-xl ${isReturn ? 'text-red-700' : 'text-slate-800'}"><span>الإجمالي:</span><span class="font-mono">${invoiceData.total.toFixed(2)}</span></div>
+                                    <div class="flex justify-between items-center font-bold text-xl ${isReturn ? 'text-red-700' : 'text-slate-800'}"><span>Total:</span><span class="font-mono">${invoiceData.total.toFixed(2)}</span></div>
                                     ${!isReturn ? `
-                                    <div class="flex justify-between items-center text-slate-600"><span>المدفوع:</span><span class="font-mono font-semibold">${invoiceData.tendered.toFixed(2)}</span></div>
-                                    <div class="flex justify-between items-center font-bold text-lg ${change >= 0 ? 'text-green-600' : 'text-red-600'}"><span>المتبقي:</span><span class="font-mono">${change.toFixed(2)}</span></div>
+                                    <div class="flex justify-between items-center text-slate-600"><span>Tendered:</span><span class="font-mono font-semibold">${invoiceData.tendered.toFixed(2)}</span></div>
+                                    <div class="flex justify-between items-center font-bold text-lg ${change >= 0 ? 'text-green-600' : 'text-red-600'}"><span>Change:</span><span class="font-mono">${change.toFixed(2)}</span></div>
                                     ` : ''}
                                 </div>
                             </div>
@@ -3979,21 +3979,21 @@
                     detailsHTML = `
                         <div class="text-center mb-6">
                             <h4 class="text-2xl font-extrabold text-slate-800">${invoice.id}</h4>
-                            <p class="text-slate-500 mt-1">مقارنة بين الفاتورة الأصلية والمعدلة</p>
+                            <p class="text-slate-500 mt-1">Comparison between original and modified invoice</p>
                         </div>
                         <div class="grid grid-cols-1 xl:grid-cols-2 gap-8">
-                            ${createDetailsBlock(invoice.originalInvoiceData, 'الفاتورة الأصلية', false, true)}
-                            ${createDetailsBlock(invoice, 'الفاتورة المعدلة')}
+                            ${createDetailsBlock(invoice.originalInvoiceData, 'Original Invoice', false, true)}
+                            ${createDetailsBlock(invoice, 'Modified Invoice')}
                         </div>
                     `;
                 } else {
-                     detailsHTML = `<div class="max-w-3xl mx-auto">${createDetailsBlock(invoice, `تفاصيل الفاتورة`)}</div>`;
+                     detailsHTML = `<div class="max-w-3xl mx-auto">${createDetailsBlock(invoice, `Invoice Details`)}</div>`;
                 }
                 
                 if(returnsForThisInvoice.length > 0) {
                     detailsHTML += `<div class="max-w-3xl mx-auto mt-8 space-y-8">`;
                     returnsForThisInvoice.forEach(ret => {
-                         detailsHTML += createDetailsBlock(ret, `تفاصيل المرتجع: ${ret.id}`, true);
+                         detailsHTML += createDetailsBlock(ret, `Return Details: ${ret.id}`, true);
                     });
                     detailsHTML += `</div>`;
                 }
@@ -4004,21 +4004,21 @@
                 if (invoice.originalInvoiceData) {
                     const originalBtn = document.createElement('button');
                     originalBtn.className = 'flex items-center justify-center gap-2 btn-secondary py-2 px-4 rounded-lg';
-                    originalBtn.innerHTML = `<i data-lucide="printer"></i><span>طباعة الأصلية (نسخة)</span>`;
+                    originalBtn.innerHTML = `<i data-lucide="printer"></i><span>Print Original (Copy)</span>`;
                     originalBtn.dataset.id = invoice.originalInvoiceData.id;
                     originalBtn.dataset.printType = 'copy';
                     invoiceDetailsActions.appendChild(originalBtn);
 
                     const modifiedBtn = document.createElement('button');
                     modifiedBtn.className = 'flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg';
-                    modifiedBtn.innerHTML = `<i data-lucide="printer"></i><span>طباعة المعدلة (نسخة)</span>`;
+                    modifiedBtn.innerHTML = `<i data-lucide="printer"></i><span>Print Modified (Copy)</span>`;
                     modifiedBtn.dataset.id = invoice.id;
                     modifiedBtn.dataset.printType = 'copy';
                     invoiceDetailsActions.appendChild(modifiedBtn);
                 } else {
                     const originalBtn = document.createElement('button');
                     originalBtn.className = 'flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg';
-                    originalBtn.innerHTML = `<i data-lucide="printer"></i><span>طباعة الفاتورة (نسخة)</span>`;
+                    originalBtn.innerHTML = `<i data-lucide="printer"></i><span>Print Invoice (Copy)</span>`;
                     originalBtn.dataset.id = invoice.id;
                     originalBtn.dataset.printType = 'copy';
                     invoiceDetailsActions.appendChild(originalBtn);
@@ -4027,7 +4027,7 @@
                 returnsForThisInvoice.forEach(ret => {
                     const returnBtn = document.createElement('button');
                     returnBtn.className = 'flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg';
-                    returnBtn.innerHTML = `<i data-lucide="printer"></i><span>طباعة المرتجع ${ret.id.split('-')[2]}</span>`;
+                    returnBtn.innerHTML = `<i data-lucide="printer"></i><span>Print Return ${ret.id.split('-')[2]}</span>`;
                     returnBtn.dataset.id = ret.id;
                     returnBtn.dataset.printType = 'return';
                     invoiceDetailsActions.appendChild(returnBtn);
@@ -4068,25 +4068,25 @@
                         <div class="p-2">
                             <a href="#" id="view-expenses-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
                                 <i data-lucide="trending-down" class="w-5 h-5 text-slate-500"></i>
-                                <span class="font-semibold text-sm">المصروفات</span>
+                                <span class="font-semibold text-sm">Expenses</span>
                             </a>
                         </div>`;
 
                     if (isDeveloperMode) {
                         dropdownHTML += `
                         <div class="p-2 pt-0">
-                            <p class="px-3 py-1 text-xs font-semibold text-slate-400 uppercase">أدوات المدير</p>
+                            <p class="px-3 py-1 text-xs font-semibold text-slate-400 uppercase">Manager Tools</p>
                             <a href="#" id="inventory-management-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
-                                <i data-lucide="boxes" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">إدارة المخزون</span>
+                                <i data-lucide="boxes" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">Inventory Management</span>
                             </a>
                             <a href="#" id="worker-permissions-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
-                                <i data-lucide="users-2" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">إعدادات المديرين</span>
+                                <i data-lucide="users-2" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">Manager Settings</span>
                             </a>
                             <a href="#" id="invoice-customization-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
-                                <i data-lucide="file-cog" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">إعدادات الفاتورة</span>
+                                <i data-lucide="file-cog" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">Invoice Settings</span>
                             </a>
                             <a href="#" id="shift-report-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
-                                <i data-lucide="bar-chart-3" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">تقارير المبيعات</span>
+                                <i data-lucide="bar-chart-3" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">Sales Reports</span>
                             </a>
                         </div>`;
                     }
@@ -4095,11 +4095,11 @@
                         <div class="border-t border-slate-200/60 p-2">
                             <a href="#" id="developer-mode-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
                                 <i data-lucide="shield-check" class="w-5 h-5 ${isDeveloperMode ? 'text-green-500' : 'text-slate-500'}"></i>
-                                <span class="font-semibold text-sm">${isDeveloperMode ? 'تعطيل وضع المدير' : 'تفعيل وضع المدير'}</span>
+                                <span class="font-semibold text-sm">${isDeveloperMode ? 'Disable Manager Mode' : 'Enable Manager Mode'}</span>
                             </a>
                             <a href="#" id="developer-info-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
                                 <i data-lucide="code-xml" class="w-5 h-5 text-slate-500"></i>
-                                <span class="font-semibold text-sm">معلومات المطور</span>
+                                <span class="font-semibold text-sm">Developer Info</span>
                             </a>
                         </div>`;
 
@@ -4108,7 +4108,7 @@
                         <div class="border-t border-slate-200/60 p-2">
                              <a href="#" id="logout-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-red-100 text-red-600 transition-colors">
                                 <i data-lucide="log-out" class="w-5 h-5"></i>
-                                <span class="font-semibold text-sm">تسجيل الخروج</span>
+                                <span class="font-semibold text-sm">Logout</span>
                             </a>
                         </div>`;
                     }
@@ -5054,7 +5054,7 @@
                 const customersListContainer = document.getElementById('customers-list');
                 customersListContainer.innerHTML = '';
                 if (sortedCustomers.length === 0) {
-                    customersListContainer.innerHTML = '<p class="text-center text-[var(--text-secondary)] p-10">لم يتم العثور على عملاء.</p>';
+                    customersListContainer.innerHTML = '<p class="text-center text-[var(--text-secondary)] p-10">No customers found.</p>';
                 } else {
                     sortedCustomers.forEach(customer => {
                         const customerDiv = document.createElement('div');
@@ -5090,21 +5090,21 @@
                 const detailsView = document.getElementById('customer-details-view');
 
                 if (customerInvoices.length === 0) {
-                    detailsView.innerHTML = '<div class="flex items-center justify-center h-full text-slate-500"><p>لا توجد تفاصيل متاحة لهذا العميل.</p></div>';
+                    detailsView.innerHTML = '<div class="flex items-center justify-center h-full text-slate-500"><p>No details available for this customer.</p></div>';
                     return;
                 }
 
                 const customerName = customerInvoices[0].customerName;
                 const totalSpent = customerInvoices.reduce((sum, inv) => sum + inv.total, 0);
-                const firstPurchase = new Date(customerInvoices[customerInvoices.length - 1].timestamp).toLocaleDateString('ar-EG');
-                const lastPurchase = new Date(customerInvoices[0].timestamp).toLocaleDateString('ar-EG');
+                const firstPurchase = new Date(customerInvoices[customerInvoices.length - 1].timestamp).toLocaleDateString('en-US');
+                const lastPurchase = new Date(customerInvoices[0].timestamp).toLocaleDateString('en-US');
                 
                 const invoiceRows = customerInvoices.map(inv => `
                     <tr class="border-b border-slate-200 last:border-b-0 hover:bg-slate-50">
                         <td class="p-3 font-mono text-slate-700">${inv.id}</td>
-                        <td class="p-3 text-slate-600">${new Date(inv.timestamp).toLocaleDateString('ar-EG')}</td>
+                        <td class="p-3 text-slate-600">${new Date(inv.timestamp).toLocaleDateString('en-US')}</td>
                         <td class="p-3 text-slate-600">${inv.items.length}</td>
-                        <td class="p-3 font-bold text-blue-600 font-mono text-left">${inv.total.toFixed(2)} ج.م</td>
+                        <td class="p-3 font-bold text-blue-600 font-mono text-left">${inv.total.toFixed(2)} EGP</td>
                         <td class="p-3 text-center">
                              <button data-id="${inv.id}" class="view-invoice-details-btn-from-customer flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-500 hover:text-blue-600 transition-colors" title="View Details">
                                 <i data-lucide="eye" class="h-4 w-4"></i>
@@ -5122,35 +5122,35 @@
                             </div>
                             <button class="add-customer-to-invoice-btn-detailed flex items-center gap-2 py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold" data-name="${customerName}" data-phone="${phone}">
                                 <i data-lucide="plus-circle" class="w-5 h-5"></i>
-                                <span>إضافة إلى الفاتورة الحالية</span>
+                                <span>Add to Current Invoice</span>
                             </button>
                         </div>
                        
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                             <div class="bg-white p-4 rounded-xl border border-slate-200">
-                                <p class="text-sm font-semibold text-slate-500">إجمالي الإنفاق</p>
-                                <p class="text-2xl font-bold text-green-600">${totalSpent.toFixed(2)} ج.م</p>
+                                <p class="text-sm font-semibold text-slate-500">Total Spent</p>
+                                <p class="text-2xl font-bold text-green-600">${totalSpent.toFixed(2)} EGP</p>
                             </div>
                             <div class="bg-white p-4 rounded-xl border border-slate-200">
-                                <p class="text-sm font-semibold text-slate-500">عدد الفواتير</p>
+                                <p class="text-sm font-semibold text-slate-500">Number of Invoices</p>
                                 <p class="text-2xl font-bold text-slate-700">${customerInvoices.length}</p>
                             </div>
                              <div class="bg-white p-4 rounded-xl border border-slate-200">
-                                <p class="text-sm font-semibold text-slate-500">آخر عملية شراء</p>
+                                <p class="text-sm font-semibold text-slate-500">Last Purchase</p>
                                 <p class="text-xl font-bold text-slate-700">${lastPurchase}</p>
                             </div>
                         </div>
                     </div>
                     <div class="mt-6 flex-grow overflow-y-auto">
-                         <h4 class="font-bold text-slate-700 mb-2">سجل الفواتير</h4>
+                         <h4 class="font-bold text-slate-700 mb-2">Invoice History</h4>
                          <div class="border rounded-lg overflow-hidden bg-white">
                              <table class="w-full text-sm text-right">
                                 <thead class="bg-slate-50">
                                     <tr>
-                                        <th class="p-3 font-semibold text-slate-500">رقم الفاتورة</th>
-                                        <th class="p-3 font-semibold text-slate-500">التاريخ</th>
-                                        <th class="p-3 font-semibold text-slate-500">الأصناف</th>
-                                        <th class="p-3 font-semibold text-slate-500 text-left">الإجمالي</th>
+                                        <th class="p-3 font-semibold text-slate-500">Invoice #</th>
+                                        <th class="p-3 font-semibold text-slate-500">Date</th>
+                                        <th class="p-3 font-semibold text-slate-500">Items</th>
+                                        <th class="p-3 font-semibold text-slate-500 text-left">Total</th>
                                         <th class="p-3"></th>
                                     </tr>
                                 </thead>
@@ -5170,8 +5170,8 @@
                 document.getElementById('customer-details-view').innerHTML = `
                     <div class="flex flex-col items-center justify-center h-full text-slate-400 text-center">
                         <i data-lucide="users-2" class="w-24 h-24 text-slate-300 mb-4"></i>
-                        <h4 class="text-lg font-bold">حدد عميلاً من القائمة</h4>
-                        <p>لعرض تفاصيل كاملة عن سجل الشراء الخاص بهم.</p>
+                        <h4 class="text-lg font-bold">Select a customer from the list</h4>
+                        <p>To view their complete purchase history.</p>
                     </div>
                 `;
                 customersModal.classList.remove('hidden');
@@ -5208,13 +5208,13 @@
                 }
 
                 const dataForExcel = [
-                    ['اسم العميل', 'رقم الهاتف', 'عدد الفواتير', 'إجمالي الإنفاق', 'آخر عملية شراء']
+                    ['Customer Name', 'Phone Number', 'Invoice Count', 'Total Spent', 'Last Purchase']
                 ];
                 
                 const sortedCustomers = [...customerMap.values()].sort((a, b) => a.name.localeCompare(b.name));
                 
                 sortedCustomers.forEach(customer => {
-                    const lastPurchaseDate = new Date(customer.lastPurchase).toLocaleDateString('ar-EG');
+                    const lastPurchaseDate = new Date(customer.lastPurchase).toLocaleDateString('en-US');
                     dataForExcel.push([
                         customer.name,
                         customer.phone,
@@ -5908,10 +5908,10 @@
                         const detailsView = document.getElementById('customer-details-view');
                         detailsView.innerHTML = `
                             <div class="flex-shrink-0 flex items-center justify-between mb-4">
-                                <h3 class="text-2xl font-bold text-slate-800">تفاصيل الفاتورة</h3>
+                                <h3 class="text-2xl font-bold text-slate-800">Invoice Details</h3>
                                 <button class="back-to-customer-details-btn flex items-center gap-2 py-2 px-4 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg font-semibold" data-phone="${invoice.customerPhone}">
                                     <i data-lucide="arrow-right"></i>
-                                    <span>العودة إلى العميل</span>
+                                    <span>Back to Customer</span>
                                 </button>
                             </div>
                             <div class="flex-grow overflow-y-auto bg-white rounded-lg border border-slate-200">
@@ -5919,7 +5919,7 @@
                             </div>
                             <div class="flex-shrink-0 p-4 mt-4 border-t border-slate-200 flex justify-end gap-3">
                                 <button data-id="${invoice.id}" class="print-customer-invoice-detail-btn flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg">
-                                    <i data-lucide="printer"></i><span>طباعة الفاتورة</span>
+                                    <i data-lucide="printer"></i><span>Print Invoice</span>
                                 </button>
                             </div>
                         `;
@@ -6868,6 +6868,10 @@
 
 </body>
 </html>
+
+
+
+
 
 
 
