@@ -248,6 +248,21 @@
             height: 100%;
             transition: width 0.5s ease-in-out;
         }
+
+        .campaign-timer {
+            background-color: #e2e8f0; /* slate-200 */
+            border-radius: 9999px;
+            height: 6px;
+            width: 100%;
+            overflow: hidden;
+            margin-top: 4px;
+        }
+        .campaign-timer-progress {
+            background-color: #3b82f6; /* blue-500 */
+            height: 100%;
+            border-radius: 9999px;
+            transition: width 0.5s ease-in-out;
+        }
     </style>
 </head>
 <body>
@@ -952,14 +967,13 @@
                 <div class="space-y-6 text-left max-h-[60vh] overflow-y-auto p-1 pr-3">
                     <!-- Session Management -->
                     <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200/80">
-                        <h4 class="font-bold text-slate-700 flex items-center gap-3 mb-2"><i data-lucide="users" class="w-5 h-5 text-green-500"></i>Account Session Control</h4>
-                        <p class="text-sm text-slate-500 mb-4">Manage login duration for authorized users.</p>
+                        <h4 class="font-bold text-slate-700 flex items-center gap-3 mb-3"><i data-lucide="users" class="w-5 h-5 text-green-500"></i>Account Session Control</h4>
                         
-                        <label for="authorized-accounts-select" class="block text-sm font-medium text-slate-600 mb-1">Authorized Account:</label>
+                        <label for="authorized-accounts-select" class="flex items-center gap-2 text-sm font-medium text-slate-600 mb-1"><i data-lucide="user-check" class="w-4 h-4 text-slate-400"></i><span>Authorized Account:</span></label>
                         <select id="authorized-accounts-select" class="input-field p-3 rounded-lg w-full border-slate-200"></select>
 
                         <div id="session-controls" class="hidden mt-4 space-y-3"> 
-                            <label class="block text-sm font-medium text-slate-600">Set Session Expiration:</label>
+                            <label class="flex items-center gap-2 text-sm font-medium text-slate-600"><i data-lucide="timer" class="w-4 h-4 text-slate-400"></i><span>Set Session Expiration:</span></label>
                             <div class="flex items-center gap-2">
                                 <input type="number" id="account-logout-duration-value" class="input-field w-full p-3 rounded-lg text-center border-slate-200" placeholder="e.g., 30">
                                 <select id="account-logout-duration-unit" class="input-field p-3 rounded-lg border-slate-200">
@@ -982,16 +996,16 @@
                         <h4 class="font-bold text-slate-700 flex items-center gap-3 mb-2"><i data-lucide="server-off" class="w-5 h-5 text-amber-500"></i>Maintenance Mode</h4>
                         <p class="text-sm text-slate-500 mb-4">Temporarily disable access to the app for all users.</p>
                         <div class="flex items-center justify-between mb-4">
-                            <label for="maintenance-mode-toggle" class="font-medium text-slate-600">Enable Maintenance Mode</label>
+                            <label for="maintenance-mode-toggle" class="flex items-center gap-2 font-medium text-slate-600"><i data-lucide="toggle-right" class="w-4 h-4 text-slate-400"></i><span>Enable Maintenance Mode</span></label>
                             <label class="relative inline-flex items-center cursor-pointer">
                                 <input type="checkbox" id="maintenance-mode-toggle" class="sr-only peer">
                                 <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-amber-500"></div>
                             </label>
                         </div>
                         <div id="maintenance-message-controls" class="hidden">
-                            <label for="maintenance-message-input" class="block text-sm font-medium text-slate-600 mb-1">Custom Message</label>
+                            <label for="maintenance-message-input" class="flex items-center gap-2 text-sm font-medium text-slate-600 mb-1"><i data-lucide="message-square" class="w-4 h-4 text-slate-400"></i><span>Custom Message</span></label>
                             <textarea id="maintenance-message-input" class="input-field w-full p-3 rounded-lg border-slate-200" rows="3"></textarea>
-                            <button id="save-maintenance-settings-btn" class="w-full mt-3 px-5 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-all transform hover:scale-105 font-semibold">Save Settings</button>
+                            <button id="save-maintenance-settings-btn" class="w-full mt-3 px-5 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-all transform hover:scale-105 font-semibold flex items-center justify-center gap-2"><i data-lucide="save" class="w-4 h-4"></i><span>Save Settings</span></button>
                         </div>
                     </div>
 
@@ -1000,8 +1014,34 @@
                         <h4 class="font-bold text-slate-700 flex items-center gap-3 mb-2"><i data-lucide="key-round" class="w-5 h-5 text-orange-500"></i>Manager Password</h4>
                         <p class="text-sm text-slate-500 mb-4">Set the password used to enable manager mode.</p>
                         <div class="flex items-center gap-3">
-                            <input type="text" id="worker-password-input" placeholder="Enter New Password" class="input-field w-full p-3 rounded-lg border-slate-200">
-                            <button id="save-worker-password-btn" class="px-5 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-all transform hover:scale-105 font-semibold">Save</button>
+                            <div class="relative w-full">
+                                <i data-lucide="lock" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                <input type="text" id="worker-password-input" placeholder="Enter New Password" class="input-field w-full p-3 pl-10 rounded-lg border-slate-200">
+                            </div>
+                            <button id="save-worker-password-btn" class="px-5 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-all transform hover:scale-105 font-semibold flex-shrink-0">Save</button>
+                        </div>
+                    </div>
+
+                    <!-- Version Info Management -->
+                    <div class="bg-slate-50/70 p-4 rounded-xl border border-slate-200/80">
+                        <h4 class="font-bold text-slate-700 flex items-center gap-3 mb-2"><i data-lucide="info" class="w-5 h-5 text-sky-500"></i>Version Log Management</h4>
+                        <p class="text-sm text-slate-500 mb-4">Add a new version to the update log.</p>
+                        <div class="space-y-3 p-3 bg-white/50 rounded-lg border">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label for="version-number-input" class="flex items-center gap-2 text-sm font-medium text-slate-600 mb-1"><i data-lucide="hash" class="w-4 h-4 text-slate-400"></i><span>Version Number</span></label>
+                                    <input type="text" id="version-number-input" placeholder="e.g., 1.0.1" class="input-field w-full p-2 rounded-lg border-slate-200">
+                                </div>
+                                <div>
+                                    <label for="version-date-input" class="flex items-center gap-2 text-sm font-medium text-slate-600 mb-1"><i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i><span>Release Date</span></label>
+                                    <input type="text" id="version-date-input" placeholder="e.g., 2024-07-26" class="input-field w-full p-2 rounded-lg border-slate-200">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="version-notes-input" class="flex items-center gap-2 text-sm font-medium text-slate-600 mb-1"><i data-lucide="list" class="w-4 h-4 text-slate-400"></i><span>Release Notes (one per line)</span></label>
+                                <textarea id="version-notes-input" class="input-field w-full p-2 rounded-lg border-slate-200" rows="4"></textarea>
+                            </div>
+                            <button id="add-new-version-btn" class="w-full mt-2 px-5 py-3 bg-slate-700 text-white rounded-lg hover:bg-slate-800 transition-all transform hover:scale-105 font-semibold flex items-center justify-center gap-2"><i data-lucide="plus-circle" class="w-4 h-4"></i><span>Add New Version</span></button>
                         </div>
                     </div>
                 </div>
@@ -1041,7 +1081,7 @@
                         <h4 class="text-lg font-semibold flex items-center gap-3 mb-4 text-slate-700"><i data-lucide="clock" class="w-5 h-5 text-indigo-500"></i>System Lock Schedule</h4>
                         <div class="space-y-4">
                             <div class="flex items-center justify-between">
-                                <label for="system-lock-enabled-toggle" class="font-medium text-slate-600">Enable Automatic Lock</label>
+                                <label for="system-lock-enabled-toggle" class="font-medium text-slate-600 flex items-center gap-2"><i data-lucide="toggle-right" class="w-4 h-4 text-slate-400"></i><span>Enable Automatic Lock</span></label>
                                 <label class="relative inline-flex items-center cursor-pointer">
                                     <input type="checkbox" id="system-lock-enabled-toggle" class="sr-only peer">
                                     <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-blue-300 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -1049,11 +1089,11 @@
                             </div>
                             <div id="system-lock-times-container" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label for="system-lock-time-input" class="block text-sm font-medium text-gray-700 mb-1">Lock Time</label>
+                                    <label for="system-lock-time-input" class="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1"><i data-lucide="lock" class="w-4 h-4 text-slate-400"></i><span>Lock Time</span></label>
                                     <input type="time" id="system-lock-time-input" class="w-full p-3 input-field">
                                 </div>
                                 <div>
-                                    <label for="system-unlock-time-input" class="block text-sm font-medium text-gray-700 mb-1">Unlock Time</label>
+                                    <label for="system-unlock-time-input" class="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1"><i data-lucide="unlock" class="w-4 h-4 text-slate-400"></i><span>Unlock Time</span></label>
                                     <input type="time" id="system-unlock-time-input" class="w-full p-3 input-field">
                                 </div>
                             </div>
@@ -1155,36 +1195,36 @@
                 <p class="text-slate-500 mb-6 text-center">Adjust the details that appear on printed invoices.</p>
                 <div class="space-y-4 text-left max-h-[60vh] overflow-y-auto p-1 pr-3">
                     <div>
-                        <label for="invoice-shop-name-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="store" class="w-4 h-4"></i>Shop Name</label>
+                        <label for="invoice-shop-name-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="store" class="w-4 h-4 text-slate-400"></i><span>Shop Name</span></label>
                         <input type="text" id="invoice-shop-name-input" class="w-full p-3 input-field rounded-lg border-slate-200" placeholder="e.g., Badrly">
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="invoice-branch-info-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="map" class="w-4 h-4"></i>Branch Info</label>
+                            <label for="invoice-branch-info-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="map" class="w-4 h-4 text-slate-400"></i><span>Branch Info</span></label>
                             <input type="text" id="invoice-branch-info-input" class="w-full p-3 input-field rounded-lg border-slate-200" placeholder="e.g., 63511 Saad Zaghloul">
                         </div>
                         <div>
-                            <label for="invoice-machine-number-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="printer" class="w-4 h-4"></i>Machine Number</label>
+                            <label for="invoice-machine-number-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="printer" class="w-4 h-4 text-slate-400"></i><span>Machine Number</span></label>
                         <input type="text" id="invoice-machine-number-input" class="w-full p-3 input-field rounded-lg border-slate-200" placeholder="e.g., LPQ80-ESC">
                     </div>
                 </div>
                 <div>
-                    <label for="invoice-address-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4"></i>Invoice Address</label>
+                    <label for="invoice-address-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="map-pin" class="w-4 h-4 text-slate-400"></i><span>Invoice Address</span></label>
                     <textarea id="invoice-address-input" rows="3" class="w-full p-3 input-field rounded-lg border-slate-200" placeholder="Enter the address that will appear on the invoice..."></textarea>
                 </div>
                 <div>
-                    <label for="invoice-contact-number-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4"></i>Contact Number</label>
+                    <label for="invoice-contact-number-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="phone" class="w-4 h-4 text-slate-400"></i><span>Contact Number</span></label>
                     <input type="text" id="invoice-contact-number-input" class="w-full p-3 input-field rounded-lg border-slate-200" placeholder="e.g., 01012345678">
                 </div>
                 <div>
-                    <label for="return-policy-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4"></i>Invoice Return Policy</label>
+                    <label for="return-policy-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="file-text" class="w-4 h-4 text-slate-400"></i><span>Invoice Return Policy</span></label>
                     <textarea id="return-policy-input" rows="3" class="w-full p-3 input-field rounded-lg border-slate-200" placeholder="Enter the return and exchange policy that will appear on the invoice..."></textarea>
                 </div>
                      <div class="pt-4 border-t mt-4">
-                        <label class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="barcode" class="w-4 h-4"></i>Barcode Settings</label>
+                        <label class="block text-sm font-medium text-slate-600 mb-2 flex items-center gap-2"><i data-lucide="barcode" class="w-4 h-4 text-slate-400"></i><span>Barcode Settings</span></label>
                         <div class="grid grid-cols-1 gap-4">
                             <div>
-                                 <label for="invoice-facebook-link-input" class="block text-xs font-medium text-slate-500 mb-1">Facebook Page Link</label>
+                                 <label for="invoice-facebook-link-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="facebook" class="w-4 h-4 text-slate-400"></i><span>Facebook Page Link</span></label>
                                 <input type="text" id="invoice-facebook-link-input" class="w-full p-3 input-field rounded-lg border-slate-200" placeholder="https://facebook.com/page">
                             </div>
                         </div>
@@ -1296,8 +1336,13 @@
                             <option value="daily">Daily Summary</option>
                             <option value="weekly">Weekly Summary</option>
                             <option value="monthly">Monthly Summary</option>
+                            <option value="monthly_comparison">Monthly Comparison</option>
                             <option value="custom">Custom Date Range</option>
                         </select>
+                    </div>
+                    <div id="report-month-picker" class="md:col-span-3 hidden">
+                        <label for="report-month-input" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>Select Month</label>
+                        <input type="month" id="report-month-input" class="w-full p-2.5 input-field rounded-lg border-slate-200">
                     </div>
                     <div id="report-start-date-picker" class="md:col-span-3">
                         <label for="report-date-input" id="report-start-date-label" class="block text-sm font-medium text-slate-600 mb-1 flex items-center gap-2"><i data-lucide="calendar" class="w-4 h-4 text-slate-400"></i>Select Date</label>
@@ -1320,9 +1365,15 @@
                         <p>Select a report type and date range to begin.</p>
                     </div>
                 </div>
-                <div class="mt-6 flex-shrink-0">
+                <div class="mt-6 flex-shrink-0 flex items-center gap-3">
                     <button id="print-report-btn" class="w-full flex items-center justify-center gap-2 btn-primary py-3 rounded-xl shadow-lg btn-glow transform transition-transform hover:scale-105" disabled>
                         <i data-lucide="printer"></i><span>Print Report</span>
+                    </button>
+                     <button id="export-pdf-btn" class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl shadow-lg" disabled>
+                        <i data-lucide="file-text"></i><span>Export PDF</span>
+                    </button>
+                    <button id="export-excel-btn" class="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl shadow-lg" disabled>
+                        <i data-lucide="file-spreadsheet"></i><span>Export Excel</span>
                     </button>
                 </div>
             </div>
@@ -1564,6 +1615,194 @@
         </div>
     </div>
 
+    <div id="version-info-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="login-panel-enter w-full max-w-lg">
+            <div class="relative panel bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-slate-300/20">
+                <button id="version-info-close-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <div class="w-16 h-16 bg-gradient-to-br from-sky-500 to-blue-600 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-sky-500/30">
+                    <i data-lucide="info" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-slate-800 mb-2 text-center">Version Information</h3>
+                <p class="text-slate-500 mb-6 text-center">Details about the current system version.</p>
+                <div id="version-info-content" class="space-y-4 text-left max-h-[60vh] overflow-y-auto p-1 pr-3 text-slate-700">
+                    <!-- Version info will be loaded here dynamically -->
+                    <div class="text-center text-slate-500">
+                        <i data-lucide="loader-2" class="animate-spin inline-block w-8 h-8"></i>
+                        <p>Loading version information...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="new-tool-modal" class="hidden fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div class="login-panel-enter w-full max-w-7xl">
+            <div class="relative bg-white backdrop-blur-xl rounded-2xl shadow-2xl h-[90vh] flex flex-col overflow-hidden border border-slate-200/60">
+                <button id="new-tool-close-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-500 bg-white/50 hover:bg-slate-200/80 transition-colors z-20">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+
+                <div class="flex-shrink-0 flex items-center gap-4 p-6 border-b border-slate-200/80 bg-slate-50/50">
+                    <div class="w-16 h-16 bg-gradient-to-br from-purple-500 to-indigo-500 text-white rounded-3xl flex items-center justify-center shadow-lg shadow-purple-500/30">
+                        <i data-lucide="percent-circle" class="w-10 h-10"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-3xl font-bold text-slate-800">Bulk Discount Tool</h3>
+                        <p class="text-base text-slate-500">Create, manage, and apply timed discounts to multiple products.</p>
+                    </div>
+                </div>
+
+                <div class="flex-shrink-0 p-6 border-b border-slate-200/80 bg-slate-50/50">
+                    <div id="discount-stats-dashboard" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Stat Card 1: Active Campaigns -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/60 flex items-center gap-4">
+                            <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-green-100 text-green-600 rounded-lg">
+                                <i data-lucide="zap" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500 font-semibold">Active Campaigns</p>
+                                <p id="active-campaigns-stat" class="text-2xl font-bold text-slate-800">0</p>
+                            </div>
+                        </div>
+                        <!-- Stat Card 2: Discounted Products -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/60 flex items-center gap-4">
+                            <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-purple-100 text-purple-600 rounded-lg">
+                                <i data-lucide="package" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500 font-semibold">Discounted Products</p>
+                                <p id="discounted-products-stat" class="text-2xl font-bold text-slate-800">0</p>
+                            </div>
+                        </div>
+                        <!-- Stat Card 3: Average Discount -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/60 flex items-center gap-4">
+                            <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-orange-100 text-orange-600 rounded-lg">
+                                <i data-lucide="percent" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500 font-semibold">Average Discount</p>
+                                <p id="avg-discount-stat" class="text-2xl font-bold text-slate-800">0%</p>
+                            </div>
+                        </div>
+                        <!-- Stat Card 4: Scheduled Campaigns -->
+                        <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/60 flex items-center gap-4">
+                            <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg">
+                                <i data-lucide="calendar-clock" class="w-5 h-5"></i>
+                            </div>
+                            <div>
+                                <p class="text-sm text-slate-500 font-semibold">Scheduled Campaigns</p>
+                                <p id="scheduled-campaigns-stat" class="text-2xl font-bold text-slate-800">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex-grow grid grid-cols-1 md:grid-cols-12 overflow-hidden">
+                    <!-- Left Panel: Campaigns -->
+                    <div class="md:col-span-4 flex flex-col overflow-hidden p-6 bg-slate-100 border-r border-slate-300">
+                        <div class="flex-shrink-0 flex items-center justify-between mb-4 pb-2 border-b border-slate-300">
+                            <h4 class="text-lg font-bold text-slate-700">Campaigns</h4>
+                            <button id="new-campaign-btn" class="flex items-center gap-2 py-1 px-3 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold">
+                                <i data-lucide="plus" class="w-4 h-4"></i>
+                                <span>New</span>
+                            </button>
+                        </div>
+                        <div id="existing-offers-list" class="flex-grow overflow-y-auto space-y-3 pr-2 -mr-4">
+                            <!-- Offer categories will be injected here -->
+                        </div>
+                    </div>
+
+                    <!-- Middle Panel: Product List -->
+                    <div class="md:col-span-4 flex flex-col overflow-hidden p-6 bg-white">
+                         <div class="flex-shrink-0 mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="relative flex-grow">
+                                    <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                                    <input type="text" id="discount-tool-search-input" placeholder="Search products..." class="w-full p-3 pl-12 input-field rounded-lg">
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="discount-tool-select-all-checkbox" class="h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-gray-300">
+                                    <label for="discount-tool-select-all-checkbox" class="text-sm font-medium text-slate-700">Select All</label>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 gap-4 mt-3 pt-3 border-t border-slate-200">
+                                <div>
+                                    <label for="discount-filter-select" class="block text-xs font-medium text-slate-500 mb-1">Filter by Discount</label>
+                                    <select id="discount-filter-select" class="w-full p-2 input-field text-sm rounded-md">
+                                        <option value="all">All</option>
+                                        <option value="on_sale">On Sale</option>
+                                        <option value="not_on_sale">Not on Sale</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label for="stock-filter-select" class="block text-xs font-medium text-slate-500 mb-1">Filter by Stock</label>
+                                    <select id="stock-filter-select" class="w-full p-2 input-field text-sm rounded-md">
+                                        <option value="all">All</option>
+                                        <option value="in_stock">In Stock</option>
+                                        <option value="low_stock">Low Stock</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="discount-tool-products-list" class="flex-grow space-y-2 overflow-y-auto p-2 border rounded-lg bg-slate-50/60 border-slate-200/80">
+                            <!-- Product list will be populated by JS -->
+                        </div>
+                    </div>
+                    
+                    <!-- Right Panel: Discount Settings -->
+                    <div class="md:col-span-4 bg-slate-100 border-l border-slate-300 p-6 flex flex-col justify-between overflow-y-auto">
+                        <div class="space-y-6">
+                             <div>
+                                <h4 class="text-xl font-bold text-slate-800 mb-1">Campaign Settings</h4>
+                                <p class="text-sm text-slate-500">Enter the offer details and duration.</p>
+                            </div>
+                            <div id="editing-campaign-indicator" class="hidden p-3 -mt-2 bg-blue-100 border-l-4 border-blue-500 rounded-r-lg text-blue-800 text-sm font-semibold text-center"></div>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="discount-tool-name-input" class="block text-sm font-medium text-slate-600 mb-1">Campaign Name</label>
+                                    <input type="text" id="discount-tool-name-input" placeholder="e.g., White Friday Sale" class="input-field p-3 w-full rounded-lg">
+                                </div>
+                                <div>
+                                    <label for="discount-tool-percentage-input" class="block text-sm font-medium text-slate-600 mb-1">Discount Percentage (%)</label>
+                                    <input type="number" id="discount-tool-percentage-input" placeholder="15" class="input-field p-3 w-full rounded-lg text-center font-bold text-2xl">
+                                </div>
+                                 <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="discount-start-date" class="block text-sm font-medium text-slate-600 mb-1">Start Date & Time</label>
+                                        <input type="datetime-local" id="discount-start-date" class="input-field p-2 w-full rounded-lg">
+                                    </div>
+                                    <div>
+                                        <label for="discount-end-date" class="block text-sm font-medium text-slate-600 mb-1">End Date & Time</label>
+                                        <input type="datetime-local" id="discount-end-date" class="input-field p-2 w-full rounded-lg">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-6 border-t border-slate-300">
+                            <div id="selection-summary" class="bg-white p-3 rounded-lg text-center mb-4 border border-slate-200 shadow-sm">
+                                <p class="font-semibold text-slate-700">Select products to apply the discount</p>
+                            </div>
+                            <div class="space-y-3">
+                                <button id="discount-tool-apply-btn" class="w-full btn-primary py-4 px-6 rounded-xl font-bold btn-glow transform transition-transform hover:scale-105 text-lg flex items-center justify-center gap-3">
+                                    <i data-lucide="check-circle" class="w-6 h-6"></i>
+                                    <span>Apply Discount</span>
+                                </button>
+                                <button id="discount-tool-remove-btn" class="w-full bg-red-100 hover:bg-red-200 text-red-700 py-3 px-6 rounded-xl font-bold transform transition-transform hover:scale-105 text-base flex items-center justify-center gap-3">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                    <span>Remove From Selected</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
         <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, reauthenticateWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -1605,6 +1844,7 @@
             let unsubscribeFromProducts = null;
             let unsubscribeFromExpenses = null;
             let unsubscribeFromArchive = null;
+            let unsubscribeFromVersionInfo = null;
             let isOnlineMode = false;
             let editingInvoiceId = null; 
             let editingInvoiceInternalId = null; 
@@ -1630,9 +1870,12 @@
             let systemLockInterval = null;
             let isLockOverridden = false;
             let currentlyViewingUnconfirmedId = null;
+            let currentReportData = null;
             
             let db, auth, userId, app;
 
+            const versionInfoModal = document.getElementById('version-info-modal');
+            const versionInfoCloseBtn = document.getElementById('version-info-close-btn');
             const loginView = document.getElementById('login-view');
             const loginBtn = document.getElementById('login-btn');
             const ownerSettingsBtn = document.getElementById('owner-settings-btn');
@@ -1776,6 +2019,8 @@
             const reportEndDatePicker = document.getElementById('report-end-date-picker');
             const reportStartDateLabel = document.getElementById('report-start-date-label');
             const generateReportBtn = document.getElementById('generate-report-btn');
+            const reportMonthPicker = document.getElementById('report-month-picker');
+            const reportMonthInput = document.getElementById('report-month-input');
 
 
             // Expense View Elements
@@ -1855,6 +2100,28 @@
             const systemUnlockTimeInput = document.getElementById('system-unlock-time-input');
             const lockOverridePromptBtn = document.getElementById('lock-override-prompt-btn');
 
+            // Version Info editing elements
+            const versionNumberInput = document.getElementById('version-number-input');
+            const versionDateInput = document.getElementById('version-date-input');
+            const versionNotesTextarea = document.getElementById('version-notes-input');
+            const addNewVersionBtn = document.getElementById('add-new-version-btn');
+
+            // New Tool Modal
+            const newToolModal = document.getElementById('new-tool-modal');
+            const newToolCloseBtn = document.getElementById('new-tool-close-btn');
+            const newCampaignBtn = document.getElementById('new-campaign-btn');
+            const existingOffersList = document.getElementById('existing-offers-list');
+            const discountToolNameInput = document.getElementById('discount-tool-name-input');
+            const discountToolSearchInput = document.getElementById('discount-tool-search-input');
+            const discountToolSelectAllCheckbox = document.getElementById('discount-tool-select-all-checkbox');
+            const discountToolProductsList = document.getElementById('discount-tool-products-list');
+            const discountToolPercentageInput = document.getElementById('discount-tool-percentage-input');
+            const discountToolApplyBtn = document.getElementById('discount-tool-apply-btn');
+            const discountStartDateInput = document.getElementById('discount-start-date');
+            const discountEndDateInput = document.getElementById('discount-end-date');
+            const discountToolRemoveBtn = document.getElementById('discount-tool-remove-btn');
+            let collectedOffers = new Map();
+
             const showAlert = (message) => {
                 alertMessage.textContent = message;
                 alertModal.classList.remove('hidden');
@@ -1864,6 +2131,23 @@
                         resolve();
                     };
                 });
+            };
+
+            const clearCampaignForm = () => {
+                const indicator = document.getElementById('editing-campaign-indicator');
+                indicator.innerHTML = '';
+                indicator.classList.add('hidden');
+
+                discountToolNameInput.value = '';
+                discountToolPercentageInput.value = '';
+                discountStartDateInput.value = '';
+                discountEndDateInput.value = '';
+                
+                const allCheckboxes = discountToolProductsList.querySelectorAll('.discount-product-checkbox');
+                allCheckboxes.forEach(cb => cb.checked = false);
+
+                discountToolSelectAllCheckbox.checked = false;
+                discountToolNameInput.focus();
             };
 
             const showPasswordModal = (title, message) => {
@@ -2045,6 +2329,10 @@
                     products.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
                     localStorage.setItem('localProductsCache', JSON.stringify(products));
                     renderProducts(products);
+                    // Update the campaign list if the modal is open
+                    if (!newToolModal.classList.contains('hidden')) {
+                        updateAndRenderOffersList();
+                    }
                 }, (error) => {
                     console.error("Error listening to Products in Firestore:", error);
                     showAlert('An error occurred while loading the product list.');
@@ -2213,6 +2501,7 @@
                     const productCardDiv = document.createElement('div');
                     const isOutOfStock = product.quantity <= 0;
                     const isLowStock = product.quantity > 0 && product.quantity <= 5;
+                    const now = Date.now();
 
                     let cardClasses = 'product-card product-card-enter relative';
                     if (isOutOfStock) cardClasses += ' out-of-stock';
@@ -2227,14 +2516,49 @@
                     }
 
                     const hasCodes = product.codes && product.codes.length > 0;
-                    const discount = product.discount || 0;
+
+                    // --- Smart Discount Calculation ---
+                    let bestDiscountInfo = {
+                        percentage: 0,
+                        name: null,
+                        finalPrice: product.price,
+                    };
+
+                    const findBestActiveDiscount = (item, basePrice) => {
+                        // Check legacy single discount properties for backward compatibility
+                        const legacyIsActive = item.discount > 0 && (!item.discountEndDate || item.discountEndDate > now) && (!item.discountStartDate || item.discountStartDate <= now);
+                        if (legacyIsActive && item.discount > bestDiscountInfo.percentage) {
+                            bestDiscountInfo.percentage = item.discount;
+                            bestDiscountInfo.name = item.discountName;
+                            bestDiscountInfo.finalPrice = basePrice * (1 - item.discount / 100);
+                        }
+
+                        // Check new discounts array and override if a better discount is found
+                        if (item.discounts && Array.isArray(item.discounts)) {
+                            item.discounts.forEach(discount => {
+                                const isActive = discount.percentage > 0 && (!discount.endDate || discount.endDate > now) && (!discount.startDate || discount.startDate <= now);
+                                if (isActive && discount.percentage > bestDiscountInfo.percentage) {
+                                    bestDiscountInfo.percentage = discount.percentage;
+                                    bestDiscountInfo.name = discount.name;
+                                    bestDiscountInfo.finalPrice = basePrice * (1 - discount.percentage / 100);
+                                }
+                            });
+                        }
+                    };
+
+                    findBestActiveDiscount(product, product.price);
+                    if (hasCodes) {
+                        product.codes.forEach(code => findBestActiveDiscount(code, code.price || product.price));
+                    }
+                    // --- End Smart Discount Calculation ---
+
+                    const discount = bestDiscountInfo.percentage;
                     let priceHTML = '';
 
                     if (discount > 0) {
-                        const discountedPrice = product.price * (1 - discount / 100);
                         priceHTML = `
                             <div class="flex items-baseline gap-2">
-                                <p class="text-xl font-black text-red-600">${discountedPrice.toFixed(2)}</p>
+                                <p class="text-xl font-black text-red-600">${bestDiscountInfo.finalPrice.toFixed(2)}</p>
                                 <p class="text-sm font-bold text-slate-400 line-through">${product.price.toFixed(2)}</p>
                             </div>
                         `;
@@ -2242,6 +2566,7 @@
                         priceHTML = `<p class="text-xl font-black text-[var(--accent-color)]">${product.price > 0 ? `${product.price.toFixed(2)}` : '-'}</p>`;
                     }
 
+                    const discountText = bestDiscountInfo.name || (discount > 0 ? `-${discount}%` : '');
 
                     productCardDiv.innerHTML = `
                         ${isOnlineMode && canEdit ? `
@@ -2250,7 +2575,7 @@
                         </button>
                         ` : ''}
                         ${hasCodes ? `<div class="absolute top-2 left-2 p-1 bg-purple-100/80 backdrop-blur-sm rounded-full" title="This product has multiple variations/codes"><i data-lucide="git-branch-plus" class="w-4 h-4 text-purple-600"></i></div>` : ''}
-                        ${discount > 0 ? `<div class="absolute top-2 ${hasCodes ? 'left-10' : 'left-2'} px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full z-10">-${discount}%</div>` : ''}
+                        ${discountText ? `<div class="absolute top-2 ${hasCodes ? 'left-10' : 'left-2'} px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full z-10">${discountText}</div>` : ''}
 
                         <div class="flex-grow p-4 flex flex-col justify-between">
                             <div>
@@ -2380,11 +2705,15 @@
                     }
 
                     const codePrice = codeObj.price || product.price;
-                    const codeDiscount = codeObj.discount || 0;
+                    const now = Date.now();
+                    const isCodeDiscountActive = codeObj.discount > 0 && (!codeObj.discountEndDate || codeObj.discountEndDate > now) && (!codeObj.discountStartDate || codeObj.discountStartDate <= now);
+                    const codeDiscount = isCodeDiscountActive ? (codeObj.discount || 0) : 0;
                     let finalPrice = codePrice;
                     if (codeDiscount > 0) {
                         finalPrice = codePrice * (1 - codeDiscount / 100);
                     }
+
+                    const codeDiscountText = isCodeDiscountActive ? (codeObj.discountName || `${codeDiscount}% Discount Applied`) : '';
 
                     let stockHTML = '';
                     if (inStock) {
@@ -2396,7 +2725,7 @@
                     optionDiv.innerHTML = `
                         <div class="flex-grow">
                             <p class="font-bold text-slate-800 text-lg">${codeObj.code}</p>
-                            ${codeDiscount > 0 ? `<p class="text-sm text-slate-500 font-medium">${codeDiscount}% Discount Applied</p>`: ''}
+                            ${codeDiscountText ? `<p class="text-sm text-slate-500 font-medium">${codeDiscountText}</p>`: ''}
                         </div>
                         <div class="text-right flex-shrink-0 flex items-center gap-4">
                             ${stockHTML}
@@ -2414,7 +2743,9 @@
 
                 productCodeSkipBtn.onclick = () => {
                     // Also apply main product discount if no code is selected
-                    const discount = product.discount || 0;
+                    const now = Date.now();
+                    const isDiscountActive = product.discount > 0 && (!product.discountEndDate || product.discountEndDate > now) && (!product.discountStartDate || product.discountStartDate <= now);
+                    const discount = isDiscountActive ? (product.discount || 0) : 0;
                     let finalPrice = product.price;
                     if (discount > 0) {
                         finalPrice = product.price * (1 - discount / 100);
@@ -2435,24 +2766,34 @@
 
                 const existingItem = cart.find(item => item.cartId === cartItemId);
                 
-                // Determine original price and discount percentage
-                let originalPrice = product.price;
-                let productDiscountPercentage = product.discount || 0;
-                
-                if (selectedCode) {
-                    const codeObj = product.codes.find(c => c.code === selectedCode);
-                    if (codeObj) {
-                        originalPrice = codeObj.price || product.price;
-                        productDiscountPercentage = codeObj.discount || 0;
-                    }
+                // Determine original price and discount percentage for the specific item being added.
+                const now = Date.now();
+                let originalPrice;
+                let productDiscountPercentage = 0;
+                let discountName = null;
+                let itemPrice;
+
+                const itemData = selectedCode ? product.codes.find(c => c.code === selectedCode) : product;
+                originalPrice = selectedCode ? (itemData.price || product.price) : product.price;
+
+                // Find best active discount from the array, with backward compatibility
+                const legacyIsActive = itemData.discount > 0 && (!itemData.discountEndDate || itemData.discountEndDate > now) && (!itemData.discountStartDate || itemData.discountStartDate <= now);
+                if (legacyIsActive && itemData.discount > productDiscountPercentage) {
+                    productDiscountPercentage = itemData.discount;
+                    discountName = itemData.discountName;
                 }
-                
-                // selectedPrice is the final unit price after discount, passed from the code modal
-                let itemPrice = selectedPrice; 
-                // if selectedPrice is null (e.g., adding a base product without codes), calculate it
-                if (itemPrice === null) {
-                    itemPrice = originalPrice * (1 - (productDiscountPercentage / 100));
+
+                if (itemData.discounts && Array.isArray(itemData.discounts)) {
+                    itemData.discounts.forEach(discount => {
+                        const isActive = discount.percentage > 0 && (!discount.endDate || discount.endDate > now) && (!discount.startDate || discount.startDate <= now);
+                        if (isActive && discount.percentage > productDiscountPercentage) {
+                            productDiscountPercentage = discount.percentage;
+                            discountName = discount.name;
+                        }
+                    });
                 }
+
+                itemPrice = originalPrice * (1 - (productDiscountPercentage / 100));
 
                 let currentStock;
                 if (selectedCode) {
@@ -2477,6 +2818,7 @@
                         price: itemPrice, // This is the discounted unit price
                         originalPrice: originalPrice, // Store the original unit price
                         productDiscountPercentage: productDiscountPercentage, // Store the discount %
+                        discountName: discountName, // Store the campaign name
                         name: cartItemName, 
                         cartId: cartItemId, 
                         quantity: quantityToAdd, 
@@ -4088,6 +4430,9 @@
                             <a href="#" id="shift-report-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
                                 <i data-lucide="bar-chart-3" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">Sales Reports</span>
                             </a>
+                            <a href="#" id="new-tool-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
+                                <i data-lucide="tag" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">Event discounts</span>
+                            </a>
                         </div>`;
                     }
 
@@ -4100,6 +4445,10 @@
                             <a href="#" id="developer-info-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
                                 <i data-lucide="code-xml" class="w-5 h-5 text-slate-500"></i>
                                 <span class="font-semibold text-sm">Developer Info</span>
+                            </a>
+                            <a href="#" id="version-info-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
+                                <i data-lucide="info" class="w-5 h-5 text-slate-500"></i>
+                                <span class="font-semibold text-sm">Version Info</span>
                             </a>
                         </div>`;
 
@@ -4148,6 +4497,12 @@
                         settingsDropdown.classList.add('hidden');
                     });
 
+                    document.getElementById('version-info-btn').addEventListener('click', () => {
+                        versionInfoModal.classList.remove('hidden');
+                        lucide.createIcons();
+                        settingsDropdown.classList.add('hidden');
+                    });
+
                     document.getElementById('view-expenses-btn').addEventListener('click', () => {
                         showExpensesView();
                         settingsDropdown.classList.add('hidden');
@@ -4173,6 +4528,13 @@
                         document.getElementById('shift-report-btn').addEventListener('click', () => {
                             openReportsModal();
                             settingsDropdown.classList.add('hidden');
+                        });
+                        document.getElementById('new-tool-btn').addEventListener('click', () => {
+                            settingsDropdown.classList.add('hidden');
+                            renderDiscountToolProducts();
+                            updateAndRenderOffersList();
+                            newToolModal.classList.remove('hidden');
+                            lucide.createIcons();
                         });
                     }
                     
@@ -4853,6 +5215,7 @@
                 lucide.createIcons();
                 await fetchAndDisplayAuthorizedUsers();
                 await loadMaintenanceSettingsForModal();
+                loadVersionInfoForEditing();
             };
 
             const fetchAndDisplayAuthorizedUsers = async () => {
@@ -4894,6 +5257,48 @@
                 } catch (error) {
                     console.error("Error loading maintenance settings for modal:", error);
                     showAlert('Could not load maintenance settings.');
+                }
+            };
+
+            const loadVersionInfoForEditing = async () => {
+                // This function now just clears the form for a new entry
+                versionNumberInput.value = '';
+                versionDateInput.value = new Date().toISOString().split('T')[0]; // Pre-fill today's date
+                versionNotesTextarea.value = '';
+            };
+
+            const addNewVersion = async () => {
+                const newVersionData = {
+                    version: versionNumberInput.value.trim(),
+                    releaseDate: versionDateInput.value.trim(),
+                    releaseNotes: versionNotesTextarea.value.split('\n').filter(note => note.trim() !== '')
+                };
+
+                if (!newVersionData.version || !newVersionData.releaseDate) {
+                    showAlert('Please provide a version number and a release date.');
+                    return;
+                }
+                
+                const docRef = doc(db, 'configuration', 'version');
+                try {
+                    await runTransaction(db, async (transaction) => {
+                        const docSnap = await transaction.get(docRef);
+                        const currentHistory = docSnap.exists() && Array.isArray(docSnap.data().history) ? docSnap.data().history : [];
+                        
+                        // Check for duplicate version number
+                        if (currentHistory.some(v => v.version === newVersionData.version)) {
+                           throw new Error(`Version ${newVersionData.version} already exists.`);
+                        }
+
+                        const newHistory = [newVersionData, ...currentHistory];
+                        transaction.set(docRef, { history: newHistory });
+                    });
+                    
+                    showAlert('New version information has been added successfully.');
+                    loadVersionInfoForEditing(); // Clear form for next entry
+                } catch (error) {
+                    console.error("Error adding new version:", error);
+                    showAlert(`Failed to add new version: ${error.message}`);
                 }
             };
 
@@ -5232,11 +5637,18 @@
             };
 
             const openReportsModal = () => {
-                const todayStr = new Date().toISOString().split('T')[0];
-                reportDateInput.value = todayStr;
-                reportEndDateInput.value = todayStr;
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = (today.getMonth() + 1).toString().padStart(2, '0');
+
+                reportDateInput.value = today.toISOString().split('T')[0];
+                reportEndDateInput.value = today.toISOString().split('T')[0];
+                reportMonthInput.value = `${year}-${month}`;
+
                 reportContent.innerHTML = `<div class="flex items-center justify-center h-full text-slate-500"><p>Select a report type and date range to generate a report.</p></div>`;
                 printReportBtn.disabled = true;
+                document.getElementById('export-pdf-btn').disabled = true;
+                document.getElementById('export-excel-btn').disabled = true;
                 reportsModal.classList.remove('hidden');
                 reportTypeSelect.dispatchEvent(new Event('change')); // Trigger change to set initial UI
                 lucide.createIcons();
@@ -5296,6 +5708,11 @@
                         }
                         title = `تقرير مخصص: من ${startDate.toLocaleDateString('ar-EG')} إلى ${endDate.toLocaleDateString('ar-EG')}`;
                         break;
+                }
+
+                if (reportType === 'monthly_comparison') {
+                    generateComparisonReport();
+                    return;
                 }
 
                 const filteredInvoices = firestoreInvoices.filter(inv => inv.timestamp >= startDate.getTime() && inv.timestamp <= endDate.getTime());
@@ -5365,9 +5782,35 @@
                 const totalSalesValueOfAllProducts = allProductsSold.reduce((sum, product) => sum + product.totalSalesValue, 0);
                 const totalNetProfitOfAllProducts = totalSalesValueOfAllProducts - totalPurchaseValueOfAllProducts;
 
+                 // Store data for export functions
+                currentReportData = {
+                    reportType: reportType,
+                    title,
+                    netSales,
+                    totalSales,
+                    totalReturnValue,
+                    transactionCount,
+                    paymentRows: Object.entries(paymentMethodTotals).map(([method, total]) => [method, total.toFixed(2)]),
+                    cashierRows: Object.entries(cashierTotals).map(([name, total]) => [name, total.toFixed(2)]),
+                    productRowsForExport: topSellingProducts.map(([name, data]) => {
+                        const netProfit = data.totalSalesValue - data.totalPurchaseValue;
+                        return [
+                            name, 
+                            data.quantity,
+                            data.purchasePrice.toFixed(2),
+                            `${data.profitMargin}%`,
+                            data.sellingPrice.toFixed(2),
+                            data.totalDiscount.toFixed(2),
+                            data.totalPurchaseValue.toFixed(2),
+                            data.totalSalesValue.toFixed(2),
+                            netProfit.toFixed(2)
+                        ];
+                    })
+                };
+
 
                 // --- HTML Generation ---
-                const createStatCard = (label, value, icon, colorClass) => `
+                const createStatCard = (label, value, icon, colorClass, comparisonHTML = '') => `
                     <div class="bg-slate-100 p-4 rounded-lg flex items-center gap-4">
                         <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center ${colorClass} text-white rounded-lg">
                             <i data-lucide="${icon}" class="w-5 h-5"></i>
@@ -5375,6 +5818,7 @@
                         <div>
                             <p class="text-sm text-slate-500 font-medium">${label}</p>
                             <p class="text-xl font-bold text-slate-800">${value}</p>
+                            ${comparisonHTML}
                         </div>
                     </div>
                 `;
@@ -5501,6 +5945,8 @@
 
                 lucide.createIcons();
                 printReportBtn.disabled = false;
+                document.getElementById('export-pdf-btn').disabled = false;
+                document.getElementById('export-excel-btn').disabled = false;
             };
 
 
@@ -5516,6 +5962,13 @@
                 let title = '';
                 const today = new Date();
                 today.setHours(0,0,0,0);
+
+                if (reportType === 'monthly_comparison') {
+                    // Handle printing for the comparison report specifically
+                    const printContent = reportContent.innerHTML;
+                    printHTML(printContent);
+                    return;
+                }
 
                 switch(reportType) {
                     case 'daily':
@@ -5623,6 +6076,131 @@
                 `;
                 
                 printHTML(printLayoutHTML);
+            };
+
+            const exportReportToExcel = () => {
+                if (!currentReportData) {
+                    showAlert('Please generate a report first.');
+                    return;
+                }
+
+                if (currentReportData.reportType === 'monthly_comparison') {
+                    exportComparisonToExcel();
+                    return;
+                }
+
+                const { title, netSales, totalSales, totalReturnValue, transactionCount, paymentRows, cashierRows, productRowsForExport } = currentReportData;
+
+                const wb = XLSX.utils.book_new();
+
+                // Summary Sheet
+                const summaryData = [
+                    ["Report Title", title],
+                    [],
+                    ["Metric", "Value"],
+                    ["Net Sales", netSales.toFixed(2)],
+                    ["Total Sales", totalSales.toFixed(2)],
+                    ["Total Returns", Math.abs(totalReturnValue).toFixed(2)],
+                    ["Transaction Count", transactionCount]
+                ];
+                const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
+                XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
+
+                // Payment Method Sheet
+                const paymentData = [["Payment Method", "Total (EGP)"], ...paymentRows];
+                const wsPayments = XLSX.utils.aoa_to_sheet(paymentData);
+                XLSX.utils.book_append_sheet(wb, wsPayments, "Payments Breakdown");
+
+                // Cashier Sheet
+                const cashierData = [["Cashier", "Total Sales (EGP)"], ...cashierRows];
+                const wsCashiers = XLSX.utils.aoa_to_sheet(cashierData);
+                XLSX.utils.book_append_sheet(wb, wsCashiers, "Cashier Sales");
+
+                // Products Sheet
+                const productHeaders = ['Product', 'Quantity Sold', 'Purchase Price', 'Profit Margin', 'Selling Price', 'Total Discount', 'Total Purchase Value', 'Total Sales Value', 'Net Profit'];
+                const productData = [productHeaders, ...productRowsForExport];
+                const wsProducts = XLSX.utils.aoa_to_sheet(productData);
+                XLSX.utils.book_append_sheet(wb, wsProducts, "Top Product Sales");
+
+                // Download the file
+                const fileName = `Sales_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+            };
+
+            const exportReportToPDF = async () => {
+                const reportElement = document.getElementById('report-content');
+                 if (!currentReportData) {
+                    showAlert('Please generate a report first.');
+                    return;
+                }
+                
+                showAlert('Generating PDF... Please wait.');
+
+                // Create a temporary container specifically for rendering the PDF content
+                const printContainer = document.createElement('div');
+                printContainer.style.position = 'absolute';
+                printContainer.style.left = '-9999px'; // Position off-screen to avoid visual flicker
+                printContainer.style.width = '210mm'; // A4 width for a consistent layout
+                printContainer.style.background = '#fff';
+                printContainer.innerHTML = reportElement.innerHTML;
+                document.body.appendChild(printContainer);
+
+                // Re-create lucide icons in the clone as they might not be carried over
+                lucide.createIcons({ parentElement: printContainer });
+
+                try {
+                    const { jsPDF } = window.jspdf;
+                    const canvas = await html2canvas(printContainer, {
+                        scale: 2, 
+                        useCORS: true,
+                        logging: false,
+                        // Ensure the canvas captures the full height of the cloned content
+                        height: printContainer.scrollHeight,
+                        windowHeight: printContainer.scrollHeight
+                    });
+                    
+                    document.body.removeChild(printContainer); // Clean up immediately after the canvas is created
+
+                    const imgData = canvas.toDataURL('image/png');
+                    const pdf = new jsPDF({
+                        orientation: 'p',
+                        unit: 'mm',
+                        format: 'a4'
+                    });
+
+                    const pdfWidth = pdf.internal.pageSize.getWidth();
+                    const pdfHeight = pdf.internal.pageSize.getHeight();
+                    
+                    const canvasWidth = canvas.width;
+                    const canvasHeight = canvas.height;
+
+                    const margin = 10;
+                    const imgWidth = pdfWidth - margin * 2;
+                    const imgHeight = (canvasHeight * imgWidth) / canvasWidth;
+                    
+                    let heightLeft = imgHeight;
+                    let position = 0;
+
+                    pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
+                    heightLeft -= (pdfHeight - margin * 2);
+
+                    while (heightLeft > 0) {
+                        position -= (pdfHeight - margin); // Adjust position for the next page
+                        pdf.addPage();
+                        pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
+                        heightLeft -= (pdfHeight - margin * 2);
+                    }
+                    
+                    const fileName = `Sales_Report_${new Date().toISOString().split('T')[0]}.pdf`;
+                    pdf.save(fileName);
+
+                } catch (error) {
+                    console.error("Error generating PDF:", error);
+                    showAlert('An error occurred while creating the PDF.');
+                    if (document.body.contains(printContainer)){
+                        document.body.removeChild(printContainer); // Ensure cleanup on error
+                    }
+                }
             };
 
             const printExpenses = () => {
@@ -5952,9 +6530,16 @@
             reportsCloseBtn.addEventListener('click', () => reportsModal.classList.add('hidden'));
             printReportBtn.addEventListener('click', printReport);
             generateReportBtn.addEventListener('click', generateAndDisplayReport);
+            const exportPdfBtn = document.getElementById('export-pdf-btn');
+            const exportExcelBtn = document.getElementById('export-excel-btn');
+            exportPdfBtn.addEventListener('click', exportReportToPDF);
+            exportExcelBtn.addEventListener('click', exportReportToExcel);
+
             reportTypeSelect.addEventListener('change', (e) => {
                 const type = e.target.value;
                 reportEndDatePicker.classList.toggle('hidden', type !== 'custom');
+                reportStartDatePicker.classList.toggle('hidden', type === 'monthly_comparison');
+                reportMonthPicker.classList.toggle('hidden', type !== 'monthly_comparison');
                 
                 switch(type) {
                     case 'daily':
@@ -6008,6 +6593,18 @@
             developerInfoCloseBtn.addEventListener('click', () => {
                 developerInfoModal.classList.add('hidden');
             });
+
+            versionInfoCloseBtn.addEventListener('click', () => {
+                versionInfoModal.classList.add('hidden');
+            });
+
+            newToolCloseBtn.addEventListener('click', () => {
+                newToolModal.classList.add('hidden');
+            });
+
+            if (newCampaignBtn) {
+                newCampaignBtn.addEventListener('click', clearCampaignForm);
+            }
 
             modalSaveExpenseBtn.addEventListener('click', async () => {
                 const expenseId = editExpenseIdInput.value;
@@ -6387,6 +6984,8 @@
 
             saveMaintenanceSettingsBtn.addEventListener('click', saveMaintenanceSettings); // Button now only saves when ON
             
+            addNewVersionBtn.addEventListener('click', addNewVersion);
+            
             document.addEventListener('click', (e) => {
                 const settingsDropdown = document.getElementById('settings-dropdown');
                 const settingsBtn = document.getElementById('settings-btn');
@@ -6625,6 +7224,7 @@
                 if (unsubscribeFromReturns) unsubscribeFromReturns();
                 if (unsubscribeFromExpenses) unsubscribeFromExpenses();
                 if (unsubscribeFromArchive) unsubscribeFromArchive();
+                if (unsubscribeFromVersionInfo) unsubscribeFromVersionInfo();
             }
 
             async function initializeUserSession(user) {
@@ -6711,6 +7311,7 @@
                 setupExpensesListener();
                 setupArchiveListener();
                 setupInAppMaintenanceListener(); // Call the maintenance listener after login
+                setupVersionInfoListener();
 
                 if (systemLockInterval) clearInterval(systemLockInterval);
                 checkSystemLock(); // Initial check on login
@@ -6759,8 +7360,872 @@
                 }
             };
 
+            const renderVersionInfo = (history) => {
+                const contentDiv = document.getElementById('version-info-content');
+                
+                if (!history || !Array.isArray(history) || history.length === 0) {
+                    contentDiv.innerHTML = '<p class="text-center text-slate-500">Version information is not available.</p>';
+                    return;
+                }
+
+                contentDiv.innerHTML = history.map(versionData => {
+                    const notesHTML = versionData.releaseNotes && Array.isArray(versionData.releaseNotes)
+                        ? versionData.releaseNotes.map(note => `<li class="text-slate-600">${note}</li>`).join('')
+                        : '<li>No release notes for this version.</li>';
+
+                    return `
+                        <div class="p-4 bg-slate-50/70 rounded-lg border border-slate-200/80 mb-4">
+                            <h4 class="text-lg font-bold text-slate-800">Version ${versionData.version || 'N/A'}</h4>
+                            <p class="text-xs text-slate-500 font-medium mb-3">Released on: ${versionData.releaseDate || 'N/A'}</p>
+                            <ul class="list-disc list-inside space-y-1">
+                                ${notesHTML}
+                            </ul>
+                        </div>
+                    `;
+                }).join('');
+            };
+
+            function setupVersionInfoListener() {
+                if (!isOnlineMode) return;
+                if (unsubscribeFromVersionInfo) unsubscribeFromVersionInfo();
+                
+                const docRef = doc(db, 'configuration', 'version');
+                unsubscribeFromVersionInfo = onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        renderVersionInfo(docSnap.data().history);
+                    } else {
+                        console.log("No version document found!");
+                        renderVersionInfo(null); // Render with default message
+                    }
+                }, (error) => {
+                    console.error("Error listening to version info:", error);
+                    renderVersionInfo(null);
+                });
+            }
+
+            const isProductOnSale = (product) => {
+                const now = Date.now();
+                const checkItemDiscount = (item) => {
+                    // Check legacy property
+                    if (item.discount > 0 && (!item.discountEndDate || item.discountEndDate > now) && (!item.discountStartDate || item.discountStartDate <= now)) {
+                        return true;
+                    }
+                    // Check new discounts array
+                    if (item.discounts && Array.isArray(item.discounts)) {
+                        return item.discounts.some(d => d.percentage > 0 && (!d.endDate || d.endDate > now) && (!d.startDate || d.startDate <= now));
+                    }
+                    return false;
+                };
+
+                if (checkItemDiscount(product)) return true;
+
+                if (product.codes && Array.isArray(product.codes)) {
+                    if (product.codes.some(code => checkItemDiscount(code))) return true;
+                }
+                
+                return false;
+            };
+
+            const updateSelectionSummary = () => {
+                const summaryEl = document.getElementById('selection-summary');
+                if (!summaryEl) return;
+
+                const selectedCheckboxes = discountToolProductsList.querySelectorAll('.discount-product-checkbox:checked');
+                const selectedProducts = new Set();
+                let selectedVariations = 0;
+
+                selectedCheckboxes.forEach(cb => {
+                    selectedProducts.add(cb.dataset.id);
+                    if (cb.dataset.code) {
+                        selectedVariations++;
+                    }
+                });
+
+                if (selectedCheckboxes.length === 0) {
+                    summaryEl.innerHTML = `<div class="flex items-center justify-center h-full text-slate-500">
+                        <i data-lucide="mouse-pointer-square" class="w-5 h-5 mr-2"></i>
+                        <p class="font-semibold">Select products to apply the discount</p>
+                    </div>`;
+                } else {
+                    summaryEl.innerHTML = `
+                        <div class="flex items-center justify-around text-center">
+                            <div>
+                                <p class="text-2xl font-bold text-blue-600">${selectedProducts.size}</p>
+                                <p class="text-xs font-semibold text-slate-500">Products Selected</p>
+                            </div>
+                            <div class="border-l h-10 border-slate-200"></div>
+                            <div>
+                                <p class="text-2xl font-bold text-purple-600">${selectedVariations}</p>
+                                <p class="text-xs font-semibold text-slate-500">Variations Selected</p>
+                            </div>
+                        </div>
+                    `;
+                }
+                lucide.createIcons();
+            };
+
+            const renderDiscountToolProducts = (searchTerm = '', offerToPreselect = null) => {
+                const lowerCaseSearchTerm = searchTerm.toLowerCase();
+                const discountFilter = document.getElementById('discount-filter-select').value;
+                const stockFilter = document.getElementById('stock-filter-select').value;
+
+                let filtered = products.filter(p => {
+                    // Search term filter
+                    if (lowerCaseSearchTerm && !p.name.toLowerCase().includes(lowerCaseSearchTerm)) {
+                        return false;
+                    }
+
+                    // Discount filter
+                    if (discountFilter !== 'all') {
+                        const isOnSale = isProductOnSale(p);
+                        if (discountFilter === 'on_sale' && !isOnSale) return false;
+                        if (discountFilter === 'not_on_sale' && isOnSale) return false;
+                    }
+
+                    // Stock filter
+                    if (stockFilter !== 'all') {
+                        const isLowStock = p.quantity !== Infinity && p.quantity > 0 && p.quantity <= 10;
+                        const isInStock = p.quantity === Infinity || p.quantity > 0;
+                        if (stockFilter === 'in_stock' && !isInStock) return false;
+                        if (stockFilter === 'low_stock' && !isLowStock) return false;
+                    }
+
+                    return true;
+                });
+
+                if (offerToPreselect) {
+                    const productIdsInOffer = new Set(offerToPreselect.products.keys());
+                    filtered.sort((a, b) => {
+                        const aInOffer = productIdsInOffer.has(a.id);
+                        const bInOffer = productIdsInOffer.has(b.id);
+                        if (aInOffer && !bInOffer) return -1;
+                        if (!aInOffer && bInOffer) return 1;
+                        return a.name.localeCompare(b.name, 'ar');
+                    });
+                } else {
+                    filtered.sort((a, b) => a.name.localeCompare(b.name, 'ar'));
+                }
+
+
+                discountToolProductsList.innerHTML = '';
+                if (filtered.length === 0) {
+                    discountToolProductsList.innerHTML = '<p class="text-center text-slate-500 p-8">No products found.</p>';
+                    return;
+                }
+
+                filtered.forEach(product => {
+                    const productContainer = document.createElement('div');
+                    productContainer.className = 'group bg-white rounded-xl shadow-sm overflow-hidden border border-slate-200/80 transition-all hover:shadow-lg hover:border-blue-300';
+
+                    const hasCodes = product.codes && product.codes.length > 0;
+                    const codesInOffer = offerToPreselect ? offerToPreselect.products.get(product.id) : null;
+
+                    // Main Product Row
+                    const mainRow = document.createElement('div');
+                    mainRow.className = `main-product-row flex items-center p-3 gap-3 ${hasCodes ? 'cursor-pointer' : ''} group-hover:bg-slate-50/70 transition-colors`;
+                    
+                    const mainDiscountText = product.discountName || (product.discount > 0 ? `${product.discount}% OFF` : '');
+                    const mainDiscount = mainDiscountText ? `<span class="text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-full">${mainDiscountText}</span>` : '';
+                    
+                    const isMainChecked = codesInOffer && codesInOffer.has('__main__');
+
+                    mainRow.innerHTML = `
+                        <input type="checkbox" data-id="${product.id}" class="discount-product-checkbox h-5 w-5 rounded text-blue-600 focus:ring-blue-500 border-gray-300 flex-shrink-0">
+                        <div class="w-10 h-10 flex-shrink-0 bg-slate-100 rounded-lg flex items-center justify-center">
+                            <i data-lucide="package" class="w-6 h-6 text-slate-500"></i>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="font-bold text-sm text-slate-800">${product.name}</p>
+                            <p class="text-xs text-slate-500">${product.price.toFixed(2)} EGP ${mainDiscount}</p>
+                        </div>
+                        ${hasCodes ? `<div class="text-xs font-semibold text-purple-600 bg-purple-100 px-2 py-1 rounded-full">${product.codes.length} variations</div>` : ''}
+                        ${hasCodes ? '<i data-lucide="chevron-down" class="chevron-icon transition-transform text-slate-400 ml-2"></i>' : ''}
+                    `;
+                    mainRow.querySelector('.discount-product-checkbox').checked = isMainChecked;
+                    productContainer.appendChild(mainRow);
+
+                    if (hasCodes) {
+                        const codesContainer = document.createElement('div');
+                        codesContainer.className = 'pl-8 pr-4 pb-3 pt-2 bg-slate-50/70 border-t border-slate-200/80 hidden space-y-2';
+
+                        product.codes.forEach(code => {
+                            const codeDiv = document.createElement('div');
+                            codeDiv.className = 'flex items-center justify-between py-1';
+                            const codeDiscountText = code.discountName || (code.discount > 0 ? `${code.discount}% OFF` : '');
+                            const codeDiscount = codeDiscountText ? `<span class="ml-2 text-xs font-bold text-red-600 bg-red-100 px-2 py-0.5 rounded-full">${codeDiscountText}</span>` : '';
+                            const isCodeChecked = codesInOffer && codesInOffer.has(code.code);
+
+                            codeDiv.innerHTML = `
+                                <div class="flex items-center gap-4">
+                                    <input type="checkbox" data-id="${product.id}" data-code="${code.code}" class="discount-product-checkbox discount-code-checkbox h-4 w-4 rounded text-blue-600 focus:ring-blue-500 border-gray-300 flex-shrink-0">
+                                    <div>
+                                        <p class="text-sm font-medium text-slate-700">${code.code} ${codeDiscount}</p>
+                                        <p class="text-xs text-slate-500">${(code.price || product.price).toFixed(2)} EGP</p>
+                                    </div>
+                                </div>
+                            `;
+                            codeDiv.querySelector('.discount-product-checkbox').checked = isCodeChecked;
+                            codesContainer.appendChild(codeDiv);
+                        });
+                        productContainer.appendChild(codesContainer);
+
+                        mainRow.addEventListener('click', (e) => {
+                            if (e.target.type !== 'checkbox') {
+                                codesContainer.classList.toggle('hidden');
+                                mainRow.querySelector('.chevron-icon')?.classList.toggle('rotate-180');
+                            }
+                        });
+
+                        const mainCheckbox = mainRow.querySelector('.discount-product-checkbox');
+                        mainCheckbox.addEventListener('change', () => {
+                            const codeCheckboxes = codesContainer.querySelectorAll('.discount-code-checkbox');
+                            codeCheckboxes.forEach(cb => cb.checked = mainCheckbox.checked);
+                        });
+                    }
+                    discountToolProductsList.appendChild(productContainer);
+                });
+                lucide.createIcons();
+                updateSelectionSummary(); // Update summary after rendering
+            };
+
+            const removeBulkDiscount = async () => {
+                const offerName = discountToolNameInput.value.trim();
+                if (!offerName) {
+                    showAlert('Please select a campaign from the list to remove its discount from products.');
+                    return;
+                }
+
+                const selectedCheckboxes = discountToolProductsList.querySelectorAll('.discount-product-checkbox:checked');
+                if (selectedCheckboxes.length === 0) {
+                    showAlert('Please select at least one product or variation to remove the discount from.');
+                    return;
+                }
+
+                const confirmed = await confirmDangerousAction('Confirm Discount Removal', `Are you sure you want to remove the discount from the campaign "${offerName}" from all selected items?`);
+                if (!confirmed) return;
+
+                const batch = writeBatch(db);
+
+                const updatesByProduct = new Map();
+                selectedCheckboxes.forEach(checkbox => {
+                    const productId = checkbox.dataset.id;
+                    const code = checkbox.dataset.code;
+
+                    if (!updatesByProduct.has(productId)) {
+                        updatesByProduct.set(productId, { codesToRemove: new Set() });
+                    }
+                    
+                    if (code) {
+                        updatesByProduct.get(productId).codesToRemove.add(code);
+                    } else {
+                        updatesByProduct.get(productId).removeMain = true;
+                    }
+                });
+
+                for (const [productId, updateInfo] of updatesByProduct.entries()) {
+                    const productToUpdate = products.find(p => p.id === productId);
+                    if (productToUpdate) {
+                        const productRef = doc(db, `users/${userId}/products`, productId);
+                        const updatedProduct = JSON.parse(JSON.stringify(productToUpdate));
+                        let needsUpdate = false;
+
+                        if (updateInfo.removeMain && updatedProduct.discounts) {
+                             const initialLength = updatedProduct.discounts.length;
+                             updatedProduct.discounts = updatedProduct.discounts.filter(d => d.name !== offerName);
+                             if (updatedProduct.discounts.length !== initialLength) needsUpdate = true;
+                        }
+
+                        if (updateInfo.codesToRemove.size > 0 && updatedProduct.codes) {
+                            updatedProduct.codes.forEach(code => {
+                                if (updateInfo.codesToRemove.has(code.code) && code.discounts) {
+                                    const initialLength = code.discounts.length;
+                                    code.discounts = code.discounts.filter(d => d.name !== offerName);
+                                    if (code.discounts.length !== initialLength) needsUpdate = true;
+                                }
+                            });
+                        }
+                        
+                        if(needsUpdate){
+                             batch.update(productRef, {
+                                discounts: updatedProduct.discounts,
+                                codes: updatedProduct.codes
+                            });
+                        }
+                    }
+                }
+
+                try {
+                    await batch.commit();
+                    showAlert(`Discount from campaign "${offerName}" has been removed from the selected items successfully.`);
+                    // The onSnapshot listener will now handle the UI update automatically.
+                } catch (error) {
+                    console.error("Error removing bulk discount:", error);
+                    showAlert('An error occurred while removing the discount.');
+                }
+            };
+
+
+            const applyBulkDiscount = async () => {
+                const percentage = parseFloat(discountToolPercentageInput.value);
+                const offerName = discountToolNameInput.value.trim();
+                const startDate = discountStartDateInput.value ? new Date(discountStartDateInput.value).getTime() : null;
+                const endDate = discountEndDateInput.value ? new Date(discountEndDateInput.value).getTime() : null;
+
+                if (!offerName) { // An offer name is now mandatory
+                    showAlert('Please enter a campaign name.');
+                    return;
+                }
+
+                if (isNaN(percentage) || percentage < 0 || percentage > 100) {
+                    showAlert('Please enter a valid discount percentage (0-100).');
+                    return;
+                }
+
+                if (startDate && endDate && startDate >= endDate) {
+                    showAlert('Start date must be before the end date.');
+                    return;
+                }
+
+                const selectedCheckboxes = discountToolProductsList.querySelectorAll('.discount-product-checkbox:checked');
+                
+                const isUpdating = collectedOffers.has(offerName);
+                let confirmationMessage = '';
+
+                if (isUpdating) {
+                    confirmationMessage = `Are you sure you want to update the campaign "${offerName}"? This will apply a ${percentage}% discount to the ${selectedCheckboxes.length} selected items. Existing discounts from other campaigns will not be affected.`;
+                } else {
+                     if (selectedCheckboxes.length === 0) {
+                        showAlert('Please select at least one product or variation for the new campaign.');
+                        return;
+                    }
+                    confirmationMessage = `Are you sure you want to create the new campaign "${offerName}" and apply a ${percentage}% discount to the ${selectedCheckboxes.length} selected items?`;
+                }
+                
+                const confirmed = await confirmDangerousAction('Confirm Discount Campaign', confirmationMessage);
+                if (!confirmed) return;
+
+                const batch = writeBatch(db);
+
+                // No longer need to handle removals here. The new logic is additive/updatable.
+
+                const updatesByProduct = new Map();
+                selectedCheckboxes.forEach(checkbox => {
+                    const productId = checkbox.dataset.id;
+                    const code = checkbox.dataset.code;
+
+                    if (!updatesByProduct.has(productId)) {
+                        updatesByProduct.set(productId, { codesToUpdate: new Set() });
+                    }
+                    
+                    if (code) {
+                        updatesByProduct.get(productId).codesToUpdate.add(code);
+                    } else {
+                        updatesByProduct.get(productId).updateMain = true;
+                        const product = products.find(p => p.id === productId);
+                        if (product && product.codes && product.codes.length > 0) {
+                            product.codes.forEach(c => updatesByProduct.get(productId).codesToUpdate.add(c.code));
+                        }
+                    }
+                });
+
+                for (const [productId, updateInfo] of updatesByProduct.entries()) {
+                    const productRef = doc(db, `users/${userId}/products`, productId);
+                    const productData = JSON.parse(JSON.stringify(products.find(p => p.id === productId))); // Deep copy
+                    let needsUpdate = false;
+
+                    const applyDiscountToObject = (obj) => {
+                        if (!obj.discounts || !Array.isArray(obj.discounts)) {
+                            obj.discounts = [];
+                        }
+                        const existingDiscountIndex = obj.discounts.findIndex(d => d.name === offerName);
+                        const newDiscount = {
+                            name: offerName,
+                            percentage: percentage,
+                            startDate: startDate,
+                            endDate: endDate
+                        };
+                        if (existingDiscountIndex > -1) {
+                            obj.discounts[existingDiscountIndex] = newDiscount;
+                        } else {
+                            obj.discounts.push(newDiscount);
+                        }
+                        needsUpdate = true;
+                    };
+
+                    if (updateInfo.updateMain) {
+                        applyDiscountToObject(productData);
+                    }
+                    
+                    if (updateInfo.codesToUpdate.size > 0 && productData.codes) {
+                        productData.codes.forEach(codeObj => {
+                            if (updateInfo.codesToUpdate.has(codeObj.code)) {
+                                applyDiscountToObject(codeObj);
+                            }
+                        });
+                    }
+                    
+                    if (needsUpdate) {
+                        batch.update(productRef, {
+                            discounts: productData.discounts || [],
+                            codes: productData.codes || []
+                        });
+                    }
+                }
+
+                try {
+                    await batch.commit();
+                    showAlert(`Campaign "${offerName}" has been ${isUpdating ? 'updated' : 'created'} successfully.`);
+                    newToolModal.classList.add('hidden');
+                } catch (error) {
+                    console.error("Error applying bulk discount:", error);
+                    showAlert('An error occurred while applying the discount.');
+                }
+            };
+
             const newExpenseTypeInput = document.getElementById('new-expense-type-input');
             const addNewExpenseTypeBtn = document.getElementById('add-new-expense-type-btn');
+
+            const updateAndRenderOffersList = () => {
+                collectedOffers.clear();
+                const now = Date.now();
+
+                products.forEach(product => {
+                    const processDiscountsFromArray = (item, parentProduct, isCode = false) => {
+                        // Process new 'discounts' array
+                        if (item.discounts && Array.isArray(item.discounts)) {
+                            item.discounts.forEach(discount => {
+                                if (discount.percentage > 0 && discount.name) {
+                                    const key = discount.name;
+                                    if (!collectedOffers.has(key)) {
+                                        collectedOffers.set(key, {
+                                            name: discount.name,
+                                            percentage: discount.percentage,
+                                            startDate: discount.startDate,
+                                            endDate: discount.endDate,
+                                            products: new Map()
+                                        });
+                                    }
+                                    const offer = collectedOffers.get(key);
+                                    if (!offer.products.has(parentProduct.id)) {
+                                        offer.products.set(parentProduct.id, new Set());
+                                    }
+                                    offer.products.get(parentProduct.id).add(isCode ? item.code : '__main__');
+                                }
+                            });
+                        }
+                        // Process legacy single discount properties for backward compatibility
+                        if (item.discount > 0 && item.discountName) {
+                            const key = item.discountName;
+                            if (!collectedOffers.has(key)) {
+                                collectedOffers.set(key, {
+                                    name: item.discountName,
+                                    percentage: item.discount,
+                                    startDate: item.discountStartDate,
+                                    endDate: item.discountEndDate,
+                                    products: new Map()
+                                });
+                            }
+                            const offer = collectedOffers.get(key);
+                            if (!offer.products.has(parentProduct.id)) {
+                                offer.products.set(parentProduct.id, new Set());
+                            }
+                            offer.products.get(parentProduct.id).add(isCode ? item.code : '__main__');
+                        }
+                    };
+                    processDiscountsFromArray(product, product, false);
+                    if (product.codes && Array.isArray(product.codes)) {
+                        product.codes.forEach(code => processDiscountsFromArray(code, product, true));
+                    }
+                });
+
+                const categorizedOffers = {
+                    active: [],
+                    scheduled: [],
+                    expired: []
+                };
+
+                collectedOffers.forEach(offer => {
+                    const { startDate, endDate } = offer;
+                    if (startDate && now < startDate) {
+                        categorizedOffers.scheduled.push(offer);
+                    } else if (endDate && now > endDate) {
+                        categorizedOffers.expired.push(offer);
+                    } else {
+                        categorizedOffers.active.push(offer);
+                    }
+                });
+
+                // --- Dashboard Stats Calculation ---
+                const activeCampaigns = categorizedOffers.active.length;
+                const scheduledCampaigns = categorizedOffers.scheduled.length;
+
+                let totalDiscountedProducts = new Set();
+                let totalPercentage = 0;
+                categorizedOffers.active.forEach(offer => {
+                    totalPercentage += offer.percentage;
+                    offer.products.forEach((codes, productId) => {
+                        totalDiscountedProducts.add(productId);
+                    });
+                });
+
+                const avgDiscount = activeCampaigns > 0 ? (totalPercentage / activeCampaigns) : 0;
+
+                // --- Update Dashboard UI ---
+                document.getElementById('active-campaigns-stat').textContent = activeCampaigns;
+                document.getElementById('discounted-products-stat').textContent = totalDiscountedProducts.size;
+                document.getElementById('avg-discount-stat').textContent = `${avgDiscount.toFixed(1)}%`;
+                document.getElementById('scheduled-campaigns-stat').textContent = scheduledCampaigns;
+
+
+                existingOffersList.innerHTML = '';
+
+                const renderCategory = (title, offerList, color, icon) => {
+                    if (offerList.length === 0) return '';
+                    const isExpired = title === 'Expired Campaigns';
+                    const isActive = title === 'Active Campaigns';
+                    let borderColorClass = 'border-slate-400';
+                    if (color === 'green') borderColorClass = 'border-green-500';
+                    if (color === 'blue') borderColorClass = 'border-blue-500';
+                    if (color === 'gray') borderColorClass = 'border-gray-400';
+
+                    return `
+                        <div>
+                            <h5 class="font-bold text-sm uppercase text-slate-500 flex items-center gap-2 mb-2">
+                                <i data-lucide="${icon}" class="w-4 h-4 text-${color}-500"></i>
+                                ${title} (${offerList.length})
+                            </h5>
+                            <div class="space-y-2">
+                                ${offerList.map(offer => {
+                                    const endDateStr = offer.endDate ? new Date(offer.endDate).toLocaleDateString('en-GB') : 'No expiry';
+                                    
+                                    let timerHTML = '';
+                                    if (title === 'Active Campaigns' && offer.startDate && offer.endDate) {
+                                        const totalDuration = offer.endDate - offer.startDate;
+                                        const elapsedDuration = now - offer.startDate;
+                                        let progressPercentage = 0;
+                                        if (totalDuration > 0) {
+                                            progressPercentage = Math.min((elapsedDuration / totalDuration) * 100, 100);
+                                        }
+
+                                        const timeLeftMs = Math.max(0, offer.endDate - now);
+                                        const daysLeft = Math.floor(timeLeftMs / (1000 * 60 * 60 * 24));
+                                        const hoursLeft = Math.floor((timeLeftMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                        const minutesLeft = Math.floor((timeLeftMs % (1000 * 60 * 60)) / (1000 * 60));
+                                        
+                                        let timeLeftString = '';
+                                        if (timeLeftMs === 0) {
+                                            timeLeftString = 'Ended';
+                                        } else if (daysLeft > 0) {
+                                            timeLeftString = `${daysLeft}d ${hoursLeft}h left`;
+                                        } else if (hoursLeft > 0) {
+                                            timeLeftString = `${hoursLeft}h ${minutesLeft}m left`;
+                                        } else {
+                                            timeLeftString = `${minutesLeft}m left`;
+                                        }
+
+                                        timerHTML = `
+                                            <div class="mt-2">
+                                                <div class="flex justify-between items-center">
+                                                    <span class="text-xs font-semibold text-slate-500">${timeLeftString}</span>
+                                                    <span class="text-xs font-semibold text-slate-500">${progressPercentage.toFixed(0)}%</span>
+                                                </div>
+                                                <div class="campaign-timer">
+                                                    <div class="campaign-timer-progress" style="width: ${progressPercentage}%;"></div>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }
+
+                                    return `
+                                    <div class="group bg-white p-3 rounded-lg shadow-sm border-l-4 ${borderColorClass} flex flex-col transition-all duration-200 ease-out hover:shadow-lg hover:-translate-y-1">
+                                        <div class="flex items-start justify-between w-full">
+                                            <div class="flex-grow">
+                                                <p class="font-bold text-slate-800">${offer.name} - ${offer.percentage}%</p>
+                                                <div class="flex items-center gap-4 text-xs text-slate-500 mt-1">
+                                                    <span class="flex items-center gap-1.5">
+                                                        <i data-lucide="package" class="w-3 h-3"></i>
+                                                        <span>${offer.products.size} Products</span>
+                                                    </span>
+                                                    <span class="flex items-center gap-1.5">
+                                                        <i data-lucide="calendar-x" class="w-3 h-3"></i>
+                                                        <span>Expires: ${endDateStr}</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div class="flex items-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pl-2 flex-shrink-0">
+                                                ${isActive ? `
+                                                <button data-offer-name="${offer.name}" class="stop-offer-btn p-2 rounded-full text-slate-400 hover:bg-orange-100 hover:text-orange-600 transition-all duration-200 ease-out hover:scale-110" title="End Campaign Now">
+                                                    <i data-lucide="pause-circle" class="w-4 h-4 pointer-events-none"></i>
+                                                </button>
+                                                ` : ''}
+                                                ${isExpired ? `
+                                                <button data-offer-name="${offer.name}" class="reactivate-offer-btn p-2 rounded-full text-slate-400 hover:bg-green-100 hover:text-green-600 transition-all duration-200 ease-out hover:scale-110" title="Reactivate Offer">
+                                                    <i data-lucide="refresh-cw" class="w-4 h-4 pointer-events-none"></i>
+                                                </button>
+                                                ` : ''}
+                                                <button data-offer-name="${offer.name}" class="duplicate-offer-btn p-2 rounded-full text-slate-400 hover:bg-purple-100 hover:text-purple-600 transition-all duration-200 ease-out hover:scale-110" title="Duplicate Offer">
+                                                    <i data-lucide="copy" class="w-4 h-4 pointer-events-none"></i>
+                                                </button>
+                                                <button data-offer-name="${offer.name}" class="edit-offer-btn p-2 rounded-full text-slate-400 hover:bg-blue-100 hover:text-blue-600 transition-all duration-200 ease-out hover:scale-110" title="Edit Offer">
+                                                    <i data-lucide="pencil" class="w-4 h-4 pointer-events-none"></i>
+                                                </button>
+                                                <button data-offer-name="${offer.name}" class="delete-offer-btn p-2 rounded-full text-slate-400 hover:bg-red-100 hover:text-red-600 transition-all duration-200 ease-out hover:scale-110" title="Delete Offer">
+                                                    <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        ${timerHTML}
+                                    </div>
+                                    `
+                                }).join('')}
+                            </div>
+                        </div>
+                    `;
+                };
+
+                existingOffersList.innerHTML += renderCategory('Active Campaigns', categorizedOffers.active.sort((a,b) => (b.endDate || 0) - (a.endDate || 0)), 'green', 'zap');
+                existingOffersList.innerHTML += renderCategory('Scheduled Campaigns', categorizedOffers.scheduled.sort((a,b) => (a.startDate || 0) - (b.startDate || 0)), 'blue', 'calendar-clock');
+                existingOffersList.innerHTML += renderCategory('Expired Campaigns', categorizedOffers.expired.sort((a,b) => (b.endDate || 0) - (a.endDate || 0)), 'gray', 'calendar-x');
+
+                if(existingOffersList.innerHTML.trim() === '') {
+                    existingOffersList.innerHTML = '<p class="text-center text-slate-500 p-8">No campaigns found.</p>';
+                }
+
+                lucide.createIcons();
+            };
+
+            const handleEditOffer = (offerName) => {
+                if (!offerName) return;
+                
+                const offerToEdit = collectedOffers.get(offerName);
+                if (!offerToEdit) {
+                    showAlert('Could not find the offer to edit.');
+                    return;
+                }
+
+                // 1. Populate the form fields
+                const indicator = document.getElementById('editing-campaign-indicator');
+                indicator.innerHTML = `You are now editing campaign: <span class="font-black">${offerToEdit.name}</span>`;
+                indicator.classList.remove('hidden');
+                
+                discountToolNameInput.value = offerToEdit.name;
+                discountToolPercentageInput.value = offerToEdit.percentage;
+
+                const toDateTimeLocal = (timestamp) => {
+                    if (!timestamp) return '';
+                    const date = new Date(timestamp);
+                    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                    return date.toISOString().slice(0, 16);
+                };
+                discountStartDateInput.value = toDateTimeLocal(offerToEdit.startDate);
+                discountEndDateInput.value = toDateTimeLocal(offerToEdit.endDate);
+                
+                // 2. Re-render the product list, passing the offer to pre-select and sort
+                renderDiscountToolProducts(discountToolSearchInput.value, offerToEdit);
+
+                showAlert(`Editing campaign "${offerName}". Modify details, add or remove products, and click "Apply Discount" to save.`);
+            };
+
+            const handleDuplicateOffer = (offerName) => {
+                if (!offerName) return;
+                
+                const offerToDuplicate = collectedOffers.get(offerName);
+                if (!offerToDuplicate) {
+                    showAlert('Could not find the offer to duplicate.');
+                    return;
+                }
+
+                // 1. Create a new unique name
+                let newOfferName = `${offerToDuplicate.name} (Copy)`;
+                let counter = 1;
+                while (collectedOffers.has(newOfferName)) {
+                    counter++;
+                    newOfferName = `${offerToDuplicate.name} (Copy ${counter})`;
+                }
+
+                const indicator = document.getElementById('editing-campaign-indicator');
+                indicator.innerHTML = `Duplicating campaign: <span class="font-black">${offerToDuplicate.name}</span>. Edit and save as new.`;
+                indicator.classList.remove('hidden');
+
+                // 2. Populate the form fields with the duplicated data
+                discountToolNameInput.value = newOfferName;
+                discountToolPercentageInput.value = offerToDuplicate.percentage;
+
+                const toDateTimeLocal = (timestamp) => {
+                    if (!timestamp) return '';
+                    const date = new Date(timestamp);
+                    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                    return date.toISOString().slice(0, 16);
+                };
+                discountStartDateInput.value = toDateTimeLocal(offerToDuplicate.startDate);
+                discountEndDateInput.value = toDateTimeLocal(offerToDuplicate.endDate);
+                
+                // 3. Re-render the product list, passing the original offer to pre-select checkboxes
+                renderDiscountToolProducts(discountToolSearchInput.value, offerToDuplicate);
+
+                showAlert(`Campaign "${offerName}" has been duplicated. You can now edit the details and save it as a new campaign.`);
+            };
+
+            const handleReactivateOffer = (offerName) => {
+                if (!offerName) return;
+                
+                const offerToReactivate = collectedOffers.get(offerName);
+                if (!offerToReactivate) {
+                    showAlert('Could not find the offer to reactivate.');
+                    return;
+                }
+
+                discountToolNameInput.value = offerToReactivate.name;
+                discountToolPercentageInput.value = offerToReactivate.percentage;
+
+                const toDateTimeLocal = (timestamp) => {
+                    if (!timestamp) return '';
+                    const date = new Date(timestamp);
+                    date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+                    return date.toISOString().slice(0, 16);
+                };
+
+                const now = new Date();
+                const oneWeekFromNow = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+                discountStartDateInput.value = toDateTimeLocal(now.getTime());
+                discountEndDateInput.value = toDateTimeLocal(oneWeekFromNow.getTime());
+                
+                // Uncheck all boxes first
+                renderDiscountToolProducts(discountToolSearchInput.value, offerToReactivate);
+
+                showAlert(`Offer "${offerName}" is ready for reactivation. Review the new dates and click "Apply Discount".`);
+            };
+
+            const handleDeleteOffer = async (offerName) => {
+                if (!offerName) return;
+                
+                const offerToDelete = collectedOffers.get(offerName);
+                if (!offerToDelete) {
+                    showAlert('No products were found with this offer to delete.');
+                    return;
+                }
+
+                const confirmed = await confirmDangerousAction('Confirm Offer Deletion', `Are you sure you want to permanently delete the offer "${offerName}" from all products? This action cannot be undone.`);
+                if (!confirmed) return;
+
+                const batch = writeBatch(db);
+                const productIdsToDeleteFrom = Array.from(offerToDelete.products.keys());
+
+                for (const productId of productIdsToDeleteFrom) {
+                    const productToUpdate = products.find(p => p.id === productId);
+                    if (productToUpdate) {
+                        const productRef = doc(db, `users/${userId}/products`, productToUpdate.id);
+                        
+                        // Create a clean copy of the product data for modification
+                        const updatedProductData = JSON.parse(JSON.stringify(productToUpdate));
+                        
+                        // Remove from the top-level 'discounts' array
+                        if (updatedProductData.discounts && Array.isArray(updatedProductData.discounts)) {
+                            updatedProductData.discounts = updatedProductData.discounts.filter(d => d.name !== offerName);
+                        }
+
+                        // Also handle legacy discount fields at the top level
+                        if (updatedProductData.discountName === offerName) {
+                            updatedProductData.discount = 0;
+                            updatedProductData.discountName = null;
+                            updatedProductData.discountStartDate = null;
+                            updatedProductData.discountEndDate = null;
+                        }
+
+                        // Remove from the 'discounts' array within each code/variation
+                        if (updatedProductData.codes && Array.isArray(updatedProductData.codes)) {
+                            updatedProductData.codes.forEach(code => {
+                                if (code.discounts && Array.isArray(code.discounts)) {
+                                    code.discounts = code.discounts.filter(d => d.name !== offerName);
+                                }
+                                // Handle legacy discount fields within codes
+                                if (code.discountName === offerName) {
+                                    code.discount = 0;
+                                    code.discountName = null;
+                                    code.discountStartDate = null;
+                                    code.discountEndDate = null;
+                                }
+                            });
+                        }
+                        
+                        // Update the entire document with the cleaned data.
+                        batch.update(productRef, updatedProductData);
+                    }
+                }
+                
+                try {
+                    await batch.commit();
+                    showAlert(`Offer "${offerName}" has been removed from all associated products.`);
+                    if (discountToolNameInput.value === offerName) {
+                        clearCampaignForm();
+                    }
+                } catch (error) {
+                    console.error("Error deleting offer:", error);
+                    showAlert('An error occurred while deleting the offer.');
+                }
+            };
+
+            const handleStopOffer = async (offerName) => {
+                if (!offerName) return;
+
+                const offerToEnd = collectedOffers.get(offerName);
+                if (!offerToEnd) {
+                    showAlert('Could not find the campaign to end.');
+                    return;
+                }
+
+                const confirmed = await confirmDangerousAction('Confirm Campaign End', `Are you sure you want to immediately end the campaign "${offerName}"? This will set its end date to now.`);
+                if (!confirmed) return;
+
+                const batch = writeBatch(db);
+                const productIdsToEnd = Array.from(offerToEnd.products.keys());
+                const nowTimestamp = Date.now();
+
+                for (const productId of productIdsToEnd) {
+                    const productToUpdate = products.find(p => p.id === productId);
+                    if (productToUpdate) {
+                        const productRef = doc(db, `users/${userId}/products`, productToUpdate.id);
+                        const updatedProductData = JSON.parse(JSON.stringify(productToUpdate));
+                        let needsUpdate = false;
+
+                        // Function to update discount end date
+                        const expireDiscount = (obj) => {
+                            if (obj.discounts && Array.isArray(obj.discounts)) {
+                                const discountIndex = obj.discounts.findIndex(d => d.name === offerName);
+                                if (discountIndex > -1) {
+                                    obj.discounts[discountIndex].endDate = nowTimestamp;
+                                    needsUpdate = true;
+                                }
+                            }
+                            if (obj.discountName === offerName) {
+                                obj.discountEndDate = nowTimestamp;
+                                needsUpdate = true;
+                            }
+                        };
+
+                        // Expire on main product
+                        expireDiscount(updatedProductData);
+
+                        // Expire on codes
+                        if (updatedProductData.codes && Array.isArray(updatedProductData.codes)) {
+                            updatedProductData.codes.forEach(code => expireDiscount(code));
+                        }
+                        
+                        if (needsUpdate) {
+                            batch.update(productRef, updatedProductData);
+                        }
+                    }
+                }
+
+                try {
+                    await batch.commit();
+                    showAlert(`Campaign "${offerName}" has been ended successfully.`);
+                } catch (error) {
+                    console.error("Error ending offer:", error);
+                    showAlert('An error occurred while ending the campaign.');
+                }
+            };
+
 
             addNewExpenseTypeBtn.addEventListener('click', async () => {
                 const newType = newExpenseTypeInput.value.trim();
@@ -6826,6 +8291,197 @@
 
             modalSaveCodeBtn.addEventListener('click', saveProductCodeChanges);
 
+            discountToolSearchInput.addEventListener('input', (e) => {
+                renderDiscountToolProducts(e.target.value);
+            });
+            document.getElementById('discount-filter-select').addEventListener('change', () => {
+                 renderDiscountToolProducts(discountToolSearchInput.value);
+            });
+            document.getElementById('stock-filter-select').addEventListener('change', () => {
+                 renderDiscountToolProducts(discountToolSearchInput.value);
+            });
+
+            discountToolProductsList.addEventListener('change', (e) => {
+                if (e.target.classList.contains('discount-product-checkbox')) {
+                    updateSelectionSummary();
+                }
+            });
+
+            existingOffersList.addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-offer-btn');
+                const editBtn = e.target.closest('.edit-offer-btn');
+                const reactivateBtn = e.target.closest('.reactivate-offer-btn');
+                const duplicateBtn = e.target.closest('.duplicate-offer-btn');
+                const stopBtn = e.target.closest('.stop-offer-btn');
+                if (deleteBtn) {
+                    handleDeleteOffer(deleteBtn.dataset.offerName);
+                } else if (editBtn) {
+                    handleEditOffer(editBtn.dataset.offerName);
+                } else if (reactivateBtn) {
+                    handleReactivateOffer(reactivateBtn.dataset.offerName);
+                } else if (duplicateBtn) {
+                    handleDuplicateOffer(duplicateBtn.dataset.offerName);
+                } else if (stopBtn) {
+                    handleStopOffer(stopBtn.dataset.offerName);
+                }
+            });
+
+            discountToolSelectAllCheckbox.addEventListener('change', (e) => {
+                const isChecked = e.target.checked;
+                const checkboxes = discountToolProductsList.querySelectorAll('.discount-product-checkbox');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = isChecked;
+                });
+                updateSelectionSummary();
+            });
+
+            if (discountToolApplyBtn) {
+                discountToolApplyBtn.addEventListener('click', async () => {
+                    await applyBulkDiscount();
+                });
+            }
+            if (discountToolRemoveBtn) {
+                discountToolRemoveBtn.addEventListener('click', async () => {
+                    await removeBulkDiscount();
+                });
+            }
+
+            const startCampaignTimers = () => {
+                if (activeTimers.campaignTimer) {
+                    clearInterval(activeTimers.campaignTimer);
+                }
+                activeTimers.campaignTimer = setInterval(() => {
+                    if (!newToolModal.classList.contains('hidden')) {
+                        updateAndRenderOffersList();
+                    } else {
+                        clearInterval(activeTimers.campaignTimer);
+                    }
+                }, 60000); 
+            };
+
+            const generateComparisonReport = () => {
+                const monthValue = reportMonthInput.value;
+                if (!monthValue) {
+                    showAlert('Please select a month to compare.');
+                    return;
+                }
+
+                const [year, month] = monthValue.split('-').map(Number);
+
+                // Current period
+                const currentStartDate = new Date(year, month - 1, 1);
+                const currentEndDate = new Date(year, month, 0, 23, 59, 59, 999);
+
+                // Previous period
+                const previousStartDate = new Date(year, month - 2, 1);
+                const previousEndDate = new Date(year, month - 1, 0, 23, 59, 59, 999);
+                
+                const title = `مقارنة المبيعات: ${currentStartDate.toLocaleDateString('ar-EG-u-nu-latn', { month: 'long', year: 'numeric' })} مقابل ${previousStartDate.toLocaleDateString('ar-EG-u-nu-latn', { month: 'long', year: 'numeric' })}`;
+
+                const calculateMetricsForPeriod = (start, end) => {
+                    const invoices = firestoreInvoices.filter(inv => inv.timestamp >= start.getTime() && inv.timestamp <= end.getTime());
+                    const returns = firestoreReturns.filter(ret => ret.timestamp >= start.getTime() && ret.timestamp <= end.getTime());
+                    const totalSales = invoices.reduce((sum, inv) => sum + inv.total, 0);
+                    const totalReturnValue = returns.reduce((sum, ret) => sum + ret.total, 0);
+                    const netSales = totalSales + totalReturnValue;
+                    const transactionCount = invoices.length;
+                    return { netSales, totalSales, totalReturnValue, transactionCount };
+                };
+                
+                const currentMetrics = calculateMetricsForPeriod(currentStartDate, currentEndDate);
+                const previousMetrics = calculateMetricsForPeriod(previousStartDate, previousEndDate);
+                
+                const calculateChange = (current, previous) => {
+                    if (previous === 0) {
+                        return current > 0 ? Infinity : 0; // Handle division by zero
+                    }
+                    return ((current - previous) / Math.abs(previous)) * 100;
+                };
+
+                const netSalesChange = calculateChange(currentMetrics.netSales, previousMetrics.netSales);
+                const totalSalesChange = calculateChange(currentMetrics.totalSales, previousMetrics.totalSales);
+                const totalReturnsChange = calculateChange(currentMetrics.totalReturnValue, previousMetrics.totalReturnValue);
+                const transactionsChange = calculateChange(currentMetrics.transactionCount, previousMetrics.transactionCount);
+
+                currentReportData = {
+                    reportType: 'monthly_comparison',
+                    title,
+                    metrics: [
+                        { label: 'Net Sales', current: currentMetrics.netSales, previous: previousMetrics.netSales, change: netSalesChange },
+                        { label: 'Total Sales', current: currentMetrics.totalSales, previous: previousMetrics.totalSales, change: totalSalesChange },
+                        { label: 'Total Returns', current: currentMetrics.totalReturnValue, previous: previousMetrics.totalReturnValue, change: totalReturnsChange },
+                        { label: 'Transactions', current: currentMetrics.transactionCount, previous: previousMetrics.transactionCount, change: transactionsChange }
+                    ]
+                };
+
+                const createComparisonCard = (label, current, previous, change, icon, colorClass) => {
+                    const isInfinite = !isFinite(change);
+                    const changeValue = isInfinite ? 'N/A' : `${change.toFixed(1)}%`;
+                    const changeColor = isInfinite ? 'text-slate-500' : (change >= 0 ? 'text-green-500' : 'text-red-500');
+                    const changeIcon = isInfinite ? 'minus' : (change >= 0 ? 'arrow-up' : 'arrow-down');
+
+                    return `
+                        <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80">
+                            <div class="flex items-start gap-5">
+                                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br ${colorClass} text-white rounded-xl shadow-md">
+                                    <i data-lucide="${icon}" class="w-7 h-7"></i>
+                                </div>
+                                <div>
+                                    <p class="text-base font-semibold text-slate-500">${label}</p>
+                                    <p class="text-3xl font-black text-slate-800 tracking-tight">${current.toFixed(2)} ج.م</p>
+                                    <p class="text-sm text-slate-400 font-medium mt-1">الشهر الماضي: ${previous.toFixed(2)} ج.م</p>
+                                </div>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-center gap-2 font-semibold ${changeColor}">
+                                <i data-lucide="${changeIcon}" class="w-5 h-5"></i>
+                                <span>${changeValue}</span>
+                            </div>
+                        </div>
+                    `;
+                };
+                
+                reportContent.innerHTML = `
+                     <div dir="rtl" class="text-right">
+                        <div class="text-center mb-8 pb-4 border-b-2 border-slate-300">
+                            <h3 class="text-2xl font-bold text-slate-800">${workerPermissions.shopName} - مقارنة المبيعات الشهرية</h3>
+                            <p class="text-base text-slate-600">${title}</p>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                            ${createComparisonCard('صافي المبيعات', currentMetrics.netSales, previousMetrics.netSales, netSalesChange, 'wallet', 'from-green-500 to-emerald-600')}
+                            ${createComparisonCard('إجمالي المبيعات', currentMetrics.totalSales, previousMetrics.totalSales, totalSalesChange, 'trending-up', 'from-blue-500 to-cyan-500')}
+                            ${createComparisonCard('إجمالي المرتجعات', Math.abs(currentMetrics.totalReturnValue), Math.abs(previousMetrics.totalReturnValue), totalReturnsChange, 'trending-down', 'from-red-500 to-rose-600')}
+                            ${createComparisonCard('عدد الفواتير', currentMetrics.transactionCount, previousMetrics.transactionCount, transactionsChange, 'file-text', 'from-indigo-500 to-purple-600').replace(/ ج\.م/g, '')}
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+                printReportBtn.disabled = false;
+                document.getElementById('export-pdf-btn').disabled = false;
+                document.getElementById('export-excel-btn').disabled = false;
+            };
+
+            const exportComparisonToExcel = () => {
+                if (!currentReportData || currentReportData.reportType !== 'monthly_comparison') return;
+
+                const { title, metrics } = currentReportData;
+                const wb = XLSX.utils.book_new();
+
+                const data = [
+                    ["Metric", "Current Month", "Previous Month", "Change (%)"],
+                    ...metrics.map(m => [
+                        m.label,
+                        m.current.toFixed(2),
+                        m.previous.toFixed(2),
+                        isFinite(m.change) ? m.change.toFixed(2) : 'N/A'
+                    ])
+                ];
+
+                const ws = XLSX.utils.aoa_to_sheet(data);
+                XLSX.utils.book_append_sheet(wb, ws, "Monthly Comparison");
+                const fileName = `Sales_Comparison_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+            };
+
             function setupInAppMaintenanceListener() {
                 if (!isOnlineMode || !userId) return;
                 const maintenanceView = document.getElementById('in-app-maintenance-view');
@@ -6868,6 +8524,11 @@
 
 </body>
 </html>
+
+
+
+
+
 
 
 
