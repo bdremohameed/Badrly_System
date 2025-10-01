@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Badrly POS System</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230078d4%22></rect><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2265%22 font-weight=%22bold%22 fill=%22white%22 font-family=%22sans-serif%22>B</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -178,34 +179,28 @@
             opacity: 0;
         }
 
-        /* Updated product card styles */
+        /* --- Updated Product Card Styles --- */
         .product-card {
             background-color: var(--input-bg);
             border: 1px solid var(--input-border);
             transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
             display: flex;
             flex-direction: column;
-            border-radius: 0.75rem;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border-radius: 1rem; /* More rounded */
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06); /* Softer shadow */
             cursor: pointer;
+            overflow: hidden; /* Crucial for image rounding */
         }
         .product-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+            transform: translateY(-6px); /* More lift on hover */
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12); /* Deeper shadow */
             border-color: var(--accent-color);
         }
         .product-card.out-of-stock {
-            opacity: 0.6;
-            background-color: #f8f8f8;
             cursor: not-allowed;
+            /* Out-of-stock overlay handles visual state */
         }
-        .product-card.low-stock {
-            border-left: 4px solid #f59e0b; 
-        }
-        .product-card.out-of-stock .product-stock {
-            color: #ef4444; /* red-500 */
-            background-color: #fee2e2; /* red-100 */
-        }
+        /* --- End Updated Product Card Styles --- */
 
         @keyframes bell-shake {
             0% { transform: rotate(0); }
@@ -235,7 +230,10 @@
             max-height: 500px; /* A large enough value to show all content */
             transition: max-height 0.5s ease-in;
             padding-top: 1rem;
-            padding-bottom: 1rem;
+            padding-bottom: 0;
+        }
+        .inventory-card.expanded .chevron-icon {
+            transform: rotate(180deg);
         }
 
         .stock-progress-bar {
@@ -262,6 +260,18 @@
             height: 100%;
             border-radius: 9999px;
             transition: width 0.5s ease-in-out;
+        }
+
+        /* --- Collapsible Customer Details --- */
+        #customer-details-content {
+            transition: max-height 0.4s ease-out;
+            max-height: 0;
+        }
+        #customer-details-container.expanded #customer-details-toggle i:last-of-type {
+            transform: rotate(180deg);
+        }
+        #customer-details-container.expanded #customer-details-content {
+            max-height: 500px; /* Adjust if content is taller */
         }
     </style>
 </head>
@@ -322,22 +332,37 @@
                 </div>
             </div>
         </div>
-        <div class="w-full max-w-7xl mx-auto p-4">
-            <div id="pos-view" class="flex flex-col lg:flex-row h-[calc(100vh-2rem)] gap-4">
-                <div class="w-full lg:w-3/5 panel p-6 flex flex-col">
+        <div class="w-full mx-auto p-4">
+            <div id="pos-view" class="flex flex-col lg:flex-row h-[calc(100vh-2rem)] gap-4 items-start">
+                <!-- Vertical Action Buttons for Desktop -->
+                <div class="hidden lg:flex flex-col gap-3 pt-6">
+                    <button id="view-invoices-btn" title="الفواتير" class="w-14 h-14 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 rounded-2xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
+                        <i data-lucide="history" class="w-6 h-6"></i>
+                    </button>
+                    <button id="view-returns-btn" title="المرتجعات" class="w-14 h-14 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 rounded-2xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
+                        <i data-lucide="undo-2" class="w-6 h-6"></i>
+                    </button>
+                    <button id="view-customers-btn" title="العملاء" class="w-14 h-14 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 rounded-2xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
+                        <i data-lucide="users" class="w-6 h-6"></i>
+                    </button>
+                    <button id="clear-sale-btn" title="مسح" class="w-14 h-14 flex items-center justify-center bg-white hover:bg-red-100 text-red-600 rounded-2xl transition-all border-2 border-red-100 hover:border-red-400 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
+                        <i data-lucide="x-circle" class="w-6 h-6"></i>
+                    </button>
+                </div>
+                <div class="w-full lg:flex-1 panel p-6 flex flex-col h-full">
                     <div id="products-section" class="flex flex-col h-full">
-                         <div class="flex justify-between items-center mb-4">
+                         <div class="flex justify-between items-center mb-4" dir="rtl">
                             <div class="flex items-center gap-4">
                                 <h2 class="text-3xl font-bold text-[var(--text-primary)]">Products</h2>
                             </div>
-                            <div id="user-info" class="text-right relative"></div>
+                            <div id="user-info" class="text-left relative"></div>
                         </div>
                         <div class="relative mb-4">
                             <input type="text" id="search-input" placeholder="Search for a product by name or code..." class="w-full p-3 pr-10 input-field"/>
                             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><i data-lucide="search" class="text-[var(--text-secondary)]"></i></div>
                         </div>
                         <div class="flex-grow overflow-y-auto pl-2">
-                            <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                            <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
                         </div>
                         <div id="add-new-product-section" class="hidden mt-4 pt-4 border-t border-[var(--panel-border)]">
                             <h3 class="text-lg font-bold text-slate-700 mb-3 flex items-center gap-2"><i data-lucide="plus-circle" class="w-5 h-5 text-green-500"></i>Quick Add Product</h3>
@@ -370,54 +395,76 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="product-screen-footer" class="mt-4 pt-4 border-t border-[var(--panel-border)] text-center text-xs text-[var(--text-secondary)] space-y-1">
-                            <div id="footer-live-info" class="flex justify-center items-center gap-4">
-                            </div>
-                            <div id="footer-session-info" class="h-4">
+                        <div id="product-screen-footer" class="mt-auto pt-2 border-t border-[var(--panel-border)] text-xs hidden">
+                            <div class="flex justify-between items-center px-2">
+                                <div id="footer-status-section" class="flex items-center gap-2 font-semibold">
+                                    <!-- Status injected here -->
+                                </div>
+                                <div id="footer-clock-section" class="font-mono font-bold text-slate-600 hidden">
+                                    <!-- Clock injected here -->
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div id="receipt-preview-area" class="hidden flex-col h-full panel p-4"></div>
                 </div>
 
-                <div class="w-full lg:w-2/5 panel p-6 flex flex-col">
-                    <div class="flex justify-between items-start">
-                        <h2 id="invoice-title" class="text-3xl font-bold text-[var(--text-primary)]">Invoice</h2>
+                <div class="w-full lg:w-1/3 panel p-4 md:p-6 flex flex-col bg-slate-50/50 h-full" dir="ltr">
+                    <!-- Invoice Header -->
+                    <div class="flex justify-between items-center pb-4 border-b border-slate-200">
+                        <h2 id="invoice-title" class="text-2xl font-bold text-slate-800 flex items-center gap-3">
+                            <i data-lucide="receipt-text" class="w-7 h-7 text-blue-500"></i>
+                            <span>Invoice</span>
+                        </h2>
                     </div>
-                    
-                    <div class="bg-slate-50/70 border border-slate-200/80 rounded-xl p-3 my-4 space-y-3">
-                        <h3 class="text-sm font-semibold text-slate-600">customer information.</h3>
-                        <div class="grid grid-cols-2 gap-2">
+                
+                    <!-- Customer & Cashier Section (Collapsible) -->
+                    <div id="customer-details-container" class="bg-white/70 backdrop-blur-sm border border-slate-200/80 rounded-2xl my-4 shadow-sm transition-all duration-300">
+                        <!-- Collapsible Header -->
+                        <div id="customer-details-toggle" class="p-4 flex justify-between items-center cursor-pointer">
+                            <h3 class="font-bold text-slate-600 flex items-center gap-2">
+                                <i data-lucide="user-round" class="w-5 h-5 text-slate-500"></i>
+                                <span>Customer Details</span>
+                            </h3>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-slate-500 transition-transform duration-300"></i>
+                        </div>
+                        <!-- Collapsible Content -->
+                        <div id="customer-details-content" class="px-4 space-y-3 overflow-hidden">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <div class="relative">
+                                    <i data-lucide="user" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                                    <input type="text" id="customer-name-input" placeholder="Customer Name" class="w-full p-2.5 pl-10 input-field rounded-lg text-sm">
+                                </div>
+                                 <div class="relative">
+                                    <i data-lucide="phone" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                                    <input type="text" id="customer-phone-input" placeholder="Phone Number" class="w-full p-2.5 pl-10 input-field rounded-lg text-sm">
+                                </div>
+                            </div>
                             <div class="relative">
-                                <i data-lucide="user" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                                <input type="text" id="customer-name-input" placeholder="Customer Name" class="w-full p-2 pl-9 input-field rounded-lg text-sm">
+                                 <i data-lucide="user-check" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                                <select id="cashier-select" class="w-full p-2.5 pl-10 input-field rounded-lg appearance-none text-sm font-medium">
+                                    <option value="">-- Select Cashier --</option>
+                                </select>
+                                <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
                             </div>
-                             <div class="relative">
-                                <i data-lucide="phone" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                                <input type="text" id="customer-phone-input" placeholder="Phone Number" class="w-full p-2 pl-9 input-field rounded-lg text-sm">
+                            <div class="relative">
+                                <i data-lucide="sticky-note" class="absolute left-3 top-3.5 w-5 h-5 text-slate-400"></i>
+                                <textarea id="invoice-notes-input" placeholder="Invoice Notes (for internal use)" class="w-full p-2.5 pl-10 input-field rounded-lg text-sm" rows="1"></textarea>
                             </div>
-                        </div>
-                        <div class="relative">
-                             <i data-lucide="user-check" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"></i>
-                            <select id="cashier-select" class="w-full p-2 pl-9 input-field rounded-lg appearance-none text-sm">
-                                <option value="">-- Select Cashier --</option>
-                            </select>
-                            <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
-                        </div>
-                        <div class="relative">
-                            <i data-lucide="sticky-note" class="absolute left-3 top-3 w-4 h-4 text-slate-400"></i>
-                            <textarea id="invoice-notes-input" placeholder="Invoice Notes (for internal use)" class="w-full p-2 pl-9 input-field rounded-lg text-sm" rows="1"></textarea>
+                            <!-- Padding bottom to match original spacing -->
+                            <div class="pb-4"></div>
                         </div>
                     </div>
-
-                    <div class="flex-grow h-0 overflow-y-auto border-y border-[var(--panel-border)] mb-4">
+                
+                    <!-- Cart Items -->
+                    <div class="flex-grow h-0 overflow-y-auto -mx-2 px-2 border-y border-slate-200/80">
                         <table class="w-full text-sm">
-                            <thead class="sticky top-0 bg-[var(--panel-bg)]">
+                            <thead class="sticky top-0 bg-slate-100/80 backdrop-blur-sm z-10">
                                 <tr>
-                                    <th class="py-3 text-left font-bold text-[var(--text-secondary)]">Item</th>
-                                    <th class="py-3 text-center font-bold text-[var(--text-secondary)]">Qty</th>
-                                    <th class="py-3 text-center font-bold text-[var(--text-secondary)]">Discount</th>
-                                    <th class="py-3 text-right font-bold text-[var(--text-secondary)]">Total</th>
+                                    <th class="py-3 text-left font-bold text-slate-600 px-2">Item</th>
+                                    <th class="py-3 text-center font-bold text-slate-600">Qty</th>
+                                    <th class="py-3 text-center font-bold text-slate-600">Discount</th>
+                                    <th class="py-3 text-right font-bold text-slate-600 px-2">Total</th>
                                     <th class="py-3"></th>
                                 </tr>
                             </thead>
@@ -425,58 +472,98 @@
                         </table>
                     </div>
                     
+                    <!-- Custom Item -->
                     <div class="my-4">
-                        <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-200/80">
+                        <div class="bg-white/70 p-3 rounded-xl border border-slate-200/80 shadow-sm">
                              <div class="grid grid-cols-12 gap-2 items-center">
                                 <div class="col-span-6">
                                     <div class="relative">
-                                        <i data-lucide="package" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-                                        <input type="text" id="custom-item-name" placeholder="Custom Item" class="w-full p-2 pl-9 input-field text-sm">
+                                        <i data-lucide="package-plus" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                        <input type="text" id="custom-item-name" placeholder="Custom Item" class="w-full p-2 pl-10 input-field text-sm">
                                     </div>
                                 </div>
                                 <div class="col-span-4">
                                     <div class="relative">
-                                        <i data-lucide="dollar-sign" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-                                        <input type="number" id="custom-item-price" placeholder="Price" class="w-full p-2 pl-9 input-field text-sm">
+                                        <i data-lucide="dollar-sign" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                        <input type="number" id="custom-item-price" placeholder="Price" class="w-full p-2 pl-10 input-field text-sm">
                                     </div>
                                 </div>
                                 <div class="col-span-2">
-                                    <button id="add-custom-item-btn" class="w-full h-full p-2 flex items-center justify-center bg-green-500 hover:bg-green-600 text-white font-bold rounded-lg shadow-md transition-all transform hover:scale-105"><i data-lucide="plus" class="h-5 w-5"></i></button>
+                                    <button id="add-custom-item-btn" class="w-full h-full p-2 flex items-center justify-center bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-lg shadow-md transition-all transform hover:scale-105" title="Add Custom Item"><i data-lucide="plus" class="h-5 w-5"></i></button>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="space-y-2 text-sm">
-                        <div class="flex justify-between items-center font-medium text-[var(--text-secondary)]"><span>Subtotal:</span><span id="subtotal" class="font-bold text-[var(--text-primary)]">0.00</span></div>
-                        <div class="flex justify-between items-center font-medium text-[var(--text-secondary)]"><span>Items Discount:</span><span id="total-discount" class="w-28 p-1 text-right text-base font-bold text-[var(--text-primary)]">0.00</span></div>
-                        <div class="flex justify-between items-center font-medium text-[var(--text-secondary)]"><span>Invoice Discount:</span><input type="number" id="invoice-discount-input" placeholder="0.00" class="w-28 p-1 input-field text-right text-base font-bold text-red-600"/></div>
-                        <hr class="border-[var(--panel-border)]"/>
-                        <div class="flex justify-between items-center font-bold text-2xl text-[var(--text-primary)]"><span>Total:</span><span id="total">0.00</span></div>
-                        <div class="flex justify-between items-center font-medium"><span>Tendered:</span><input type="number" id="tendered-input" placeholder="Leave empty" class="w-40 p-1 input-field text-right text-base font-bold"/></div>
-                        <hr class="my-1 border-[var(--panel-border)]"/>
-                        <div id="change-container" class="flex justify-between items-center font-bold text-lg p-1.5 rounded-lg"><span>Change:</span><span id="change">0.00</span></div>
-                        <div class="flex justify-between items-center font-medium text-[var(--text-secondary)]">
-                            <span>Payment Method:</span>
-                            <select id="payment-method" class="w-40 p-1 input-field text-sm font-bold">
-                                <option value="Cash">Cash</option>
-                                <option value="Vodafone Cash">Vodafone Cash</option>
-                                <option value="InstaPay">InstaPay</option>
-                                <option value="Credit">Credit</option>
-                            </select>
+                
+                    <!-- Totals Section -->
+                    <div class="space-y-4">
+                        <div class="bg-white/70 rounded-2xl p-4 space-y-3 text-sm shadow-sm border border-slate-200/80">
+                            <div class="flex justify-between items-center font-medium text-slate-500"><span>Subtotal</span><span id="subtotal" class="font-bold text-slate-800 font-mono">0.00</span></div>
+                            <div class="flex justify-between items-center font-medium text-slate-500"><span>Items Discount</span><span id="total-discount" class="font-bold text-slate-800 font-mono">0.00</span></div>
+                            <div class="flex justify-between items-center">
+                                <span class="font-medium text-slate-500">Invoice Discount</span>
+                                <input type="number" id="invoice-discount-input" placeholder="0.00" class="w-24 p-1 input-field text-right text-base font-bold text-red-600 bg-red-50/50"/>
+                            </div>
+                        </div>
+                    
+                        <div class="bg-blue-600 text-white rounded-2xl p-5 shadow-lg shadow-blue-500/30">
+                            <div class="flex justify-between items-center">
+                                <span class="font-bold text-lg">Total</span>
+                                <span id="total" class="font-mono font-black text-4xl">0.00</span>
+                            </div>
+                        </div>
+                    
+                        <div class="bg-white/70 rounded-2xl p-4 space-y-4 shadow-sm border border-slate-200/80">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="tendered-input" class="block text-xs font-semibold text-slate-500 mb-1">Tendered</label>
+                                    <input type="number" id="tendered-input" placeholder="0.00" class="w-full p-2.5 input-field text-lg font-bold bg-slate-100"/>
+                                </div>
+                                <div id="change-container" class="bg-green-100 text-green-800 rounded-lg p-2.5 text-center">
+                                    <label class="block text-xs font-semibold text-green-600 mb-1">Change</label>
+                                    <span id="change" class="font-mono font-bold text-2xl">0.00</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="payment-method" class="block text-xs font-semibold text-slate-500 mb-1">Payment Method</label>
+                                <div class="relative">
+                                    <i data-lucide="credit-card" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                                    <select id="payment-method" class="w-full pl-10 p-2.5 input-field text-sm font-bold bg-slate-100 appearance-none">
+                                        <option value="Cash">Cash</option>
+                                        <option value="Vodafone Cash">Vodafone Cash</option>
+                                        <option value="InstaPay">InstaPay</option>
+                                        <option value="Credit">Credit</option>
+                                    </select>
+                                    <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none"></i>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
-                    <div class="space-y-3 mt-auto pt-4 border-t">
-                        <div class="flex items-stretch gap-2">
-                            <button id="print-receipt-btn" class="flex-grow flex items-center justify-center gap-2 btn-primary py-3 rounded-xl shadow-lg text-base font-bold btn-glow transform hover:scale-105 transition-all"><i data-lucide="printer" class="w-4 h-4"></i><span>Save & Print</span></button>
-                            <button id="preview-receipt-btn" title="Preview" class="w-14 h-auto flex-shrink-0 flex items-center justify-center bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition-all"><i data-lucide="eye" class="w-4 h-4"></i></button>
+                    <!-- Actions Footer -->
+                    <div class="mt-auto pt-4 space-y-3">
+                        <div class="flex items-stretch gap-3">
+                            <button id="print-receipt-btn" class="flex-grow flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl shadow-lg shadow-blue-500/30 text-lg font-bold btn-glow transform hover:scale-105 transition-all">
+                                <i data-lucide="save" class="w-6 h-6"></i>
+                                <span>Save & Print</span>
+                            </button>
+                            <button id="preview-receipt-btn" title="Preview" class="w-16 h-auto flex-shrink-0 flex items-center justify-center bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition-all">
+                                <i data-lucide="eye" class="w-6 h-6"></i>
+                            </button>
                         </div>
-                        <div class="grid grid-cols-4 gap-2">
-                            <button id="view-invoices-btn" class="flex flex-col items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl transition-colors"><i data-lucide="history" class="w-4 h-4"></i><span class="text-xs">Invoices</span></button>
-                            <button id="view-returns-btn" class="flex flex-col items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl transition-colors"><i data-lucide="undo-2" class="w-4 h-4"></i><span class="text-xs">Returns</span></button>
-                            <button id="view-customers-btn" class="flex flex-col items-center justify-center gap-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold py-3 rounded-xl transition-colors"><i data-lucide="users-2" class="w-4 h-4"></i><span class="text-xs">Customers</span></button>
-                            <button id="clear-sale-btn" class="flex flex-col items-center justify-center gap-1 bg-red-50 hover:bg-red-100 text-red-600 border border-red-200/50 font-semibold py-3 rounded-xl transition-colors"><i data-lucide="x-circle" class="w-4 h-4"></i><span class="text-xs">Clear</span></button>
+                        <div class="grid grid-cols-4 gap-3 lg:hidden">
+                            <button id="view-invoices-btn-mobile" class="flex flex-col items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-600 font-semibold p-3 rounded-xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-md">
+                                <i data-lucide="history" class="w-5 h-5"></i><span class="text-xs">Invoices</span>
+                            </button>
+                            <button id="view-returns-btn-mobile" class="flex flex-col items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-600 font-semibold p-3 rounded-xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-md">
+                                <i data-lucide="undo-2" class="w-5 h-5"></i><span class="text-xs">Returns</span>
+                            </button>
+                            <button id="view-customers-btn-mobile" class="flex flex-col items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-600 font-semibold p-3 rounded-xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-md">
+                                <i data-lucide="users" class="w-5 h-5"></i><span class="text-xs">Customers</span>
+                            </button>
+                            <button id="clear-sale-btn-mobile" class="flex flex-col items-center justify-center gap-1.5 bg-white hover:bg-red-50 text-red-500 font-semibold p-3 rounded-xl transition-all border-2 border-red-200 hover:border-red-400 shadow-sm hover:shadow-md">
+                                <i data-lucide="x-circle" class="w-5 h-5"></i><span class="text-xs">Clear</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -655,17 +742,9 @@
                     </div>
                 </div>
 
-                <!-- Inventory Grid Header -->
-                <div class="flex-shrink-0 hidden md:grid grid-cols-12 gap-4 px-4 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
-                    <div class="col-span-5">Product</div>
-                    <div class="col-span-3">Stock Status</div>
-                    <div class="col-span-2 text-right">Price</div>
-                    <div class="col-span-2 text-center">Actions</div>
-                </div>
-
                 <!-- Inventory Grid -->
                 <div class="flex-grow overflow-y-auto pr-2 -mr-2">
-                    <div id="inventory-grid" class="space-y-2">
+                    <div id="inventory-grid" class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-3">
                         <!-- Inventory product cards will be injected here -->
                     </div>
                 </div>
@@ -788,6 +867,15 @@
                                 <div class="relative">
                                     <i data-lucide="package" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
                                     <input type="text" id="edit-product-name" class="w-full p-3 pl-10 input-field rounded-lg border-slate-200">
+                                </div>
+                            </div>
+                            
+                            <!-- Image URL -->
+                            <div>
+                                <label for="edit-product-image-url" class="block text-sm font-medium text-slate-600 mb-1">Image URL</label>
+                                <div class="relative">
+                                    <i data-lucide="image" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"></i>
+                                    <input type="text" id="edit-product-image-url" placeholder="https://example.com/image.png" class="w-full p-3 pl-10 input-field rounded-lg border-slate-200">
                                 </div>
                             </div>
                             
@@ -1369,9 +1457,6 @@
                     <button id="print-report-btn" class="w-full flex items-center justify-center gap-2 btn-primary py-3 rounded-xl shadow-lg btn-glow transform transition-transform hover:scale-105" disabled>
                         <i data-lucide="printer"></i><span>Print Report</span>
                     </button>
-                     <button id="export-pdf-btn" class="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 rounded-xl shadow-lg" disabled>
-                        <i data-lucide="file-text"></i><span>Export PDF</span>
-                    </button>
                     <button id="export-excel-btn" class="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-xl shadow-lg" disabled>
                         <i data-lucide="file-spreadsheet"></i><span>Export Excel</span>
                     </button>
@@ -1906,8 +1991,9 @@
             const customerNameInput = document.getElementById('customer-name-input');
             const customerPhoneInput = document.getElementById('customer-phone-input');
             const invoiceNotesInput = document.getElementById('invoice-notes-input');
-            const footerLiveInfoDiv = document.getElementById('footer-live-info');
-            const footerSessionInfoDiv = document.getElementById('footer-session-info');
+            const footerStatusSection = document.getElementById('footer-status-section');
+            const footerClockSection = document.getElementById('footer-clock-section');
+            const footerSessionSection = document.getElementById('footer-session-section');
             const customItemNameInput = document.getElementById('custom-item-name');
             const customItemPriceInput = document.getElementById('custom-item-price');
             const addCustomItemBtn = document.getElementById('add-custom-item-btn');
@@ -2022,6 +2108,15 @@
             const reportMonthPicker = document.getElementById('report-month-picker');
             const reportMonthInput = document.getElementById('report-month-input');
 
+
+            // --- New: Customer Details Toggle ---
+            const customerDetailsContainer = document.getElementById('customer-details-container');
+            const customerDetailsToggle = document.getElementById('customer-details-toggle');
+            if(customerDetailsToggle && customerDetailsContainer){
+                customerDetailsToggle.addEventListener('click', () => {
+                    customerDetailsContainer.classList.toggle('expanded');
+                });
+            }
 
             // Expense View Elements
             const backToPosFromExpensesBtn = document.getElementById('back-to-pos-from-expenses-btn');
@@ -2245,7 +2340,10 @@
                     clearInterval(autoLogoutTimer);
                     autoLogoutTimer = null;
                 }
-                footerSessionInfoDiv.textContent = '';
+                const dropdownTimerEl = document.getElementById('session-timer-dropdown');
+                if (dropdownTimerEl) {
+                    dropdownTimerEl.innerHTML = '';
+                }
             };
 
             const updateLogoutTimer = async () => {
@@ -2262,33 +2360,43 @@
                     signOut(auth);
                     return;
                 }
-                let displayString = "Logout in: ";
+                let displayString = "";
                 const days = Math.floor(timeLeft / 86400);
                 const hours = Math.floor((timeLeft % 86400) / 3600);
                 const minutes = Math.floor((timeLeft % 3600) / 60);
                 const seconds = Math.floor(timeLeft % 60);
-                footerSessionInfoDiv.classList.remove('text-green-500', 'text-yellow-500', 'text-orange-500', 'text-red-500');
-                if (days > 10) {
-                    footerSessionInfoDiv.classList.add('text-green-500');
-                } else if (days > 3) {
-                    footerSessionInfoDiv.classList.add('text-yellow-500');
-                } else if (days >= 1) {
-                    footerSessionInfoDiv.classList.add('text-orange-500');
-                } else {
-                    footerSessionInfoDiv.classList.add('text-red-500');
-                }
+                
+                const dropdownTimerEl = document.getElementById('session-timer-dropdown');
+
                 if (days > 30) {
                     const months = Math.floor(days / 30);
                     const remainingDays = days % 30;
                     displayString += `${months} months & ${remainingDays} days`;
                 } else if (days > 0) {
-                    displayString += `${days} days & ${hours} hours`;
+                    displayString += `${days}d, ${hours}h, ${minutes}m`;
                 } else if (hours > 0) {
-                    displayString += `${hours} hours & ${minutes} minutes`;
+                    displayString += `${hours}h, ${minutes}m, ${seconds}s`;
                 } else {
-                    displayString += `${minutes} minutes & ${seconds} seconds`;
+                    displayString += `${minutes}m, ${seconds}s`;
                 }
-                footerSessionInfoDiv.textContent = displayString;
+                
+                if (dropdownTimerEl) {
+                    let colorClass = '';
+                    if (days > 10) {
+                        colorClass = 'bg-green-100 text-green-700';
+                    } else if (days > 3) {
+                        colorClass = 'bg-yellow-100 text-yellow-700';
+                    } else if (days >= 1) {
+                        colorClass = 'bg-orange-100 text-orange-700';
+                    } else {
+                        colorClass = 'bg-red-100 text-red-700';
+                    }
+                    dropdownTimerEl.innerHTML = `<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold ${colorClass}">
+                        <i data-lucide="hourglass" class="w-3.5 h-3.5"></i>
+                        <span>Expires in: ${displayString}</span>
+                    </div>`;
+                    lucide.createIcons({ parentElement: dropdownTimerEl });
+                }
             };
 
             const startAutoLogoutTimer = (newExpiryTimestamp) => {
@@ -2499,21 +2607,23 @@
                 const canEdit = isDeveloperMode;
                 filteredProducts.forEach((product, index) => {
                     const productCardDiv = document.createElement('div');
-                    const isOutOfStock = product.quantity <= 0;
-                    const isLowStock = product.quantity > 0 && product.quantity <= 5;
+                    const isOutOfStock = product.quantity <= 0 && product.quantity !== Infinity;
+                    const isLowStock = product.quantity > 0 && product.quantity <= 5 && product.quantity !== Infinity;
                     const now = Date.now();
 
-                    let cardClasses = 'product-card product-card-enter relative';
+                    let cardClasses = 'product-card product-card-enter group';
                     if (isOutOfStock) cardClasses += ' out-of-stock';
-                    if (isLowStock) cardClasses += ' low-stock';
-
+                    
                     productCardDiv.className = cardClasses;
                     productCardDiv.style.animationDelay = `${index * 0.04}s`;
-
                     productCardDiv.dataset.id = product.id;
                     if (isOutOfStock) {
                         productCardDiv.disabled = true;
                     }
+                    
+                    const imageHTML = product.imageUrl
+                        ? `<img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'w-full h-full bg-slate-100 flex items-center justify-center\\'><i data-lucide=\\'image-off\\' class=\\'w-10 h-10 text-slate-400\\'></i></div>';">`
+                        : `<div class="w-full h-full bg-slate-100 flex items-center justify-center"><i data-lucide="package" class="w-10 h-10 text-slate-400"></i></div>`;
 
                     const hasCodes = product.codes && product.codes.length > 0;
 
@@ -2557,38 +2667,90 @@
 
                     if (discount > 0) {
                         priceHTML = `
-                            <div class="flex items-baseline gap-2">
+                            <div class="flex items-baseline gap-1">
                                 <p class="text-xl font-black text-red-600">${bestDiscountInfo.finalPrice.toFixed(2)}</p>
                                 <p class="text-sm font-bold text-slate-400 line-through">${product.price.toFixed(2)}</p>
                             </div>
+                            <p class="text-xs font-semibold text-slate-500">EGP</p>
                         `;
                     } else {
-                        priceHTML = `<p class="text-xl font-black text-[var(--accent-color)]">${product.price > 0 ? `${product.price.toFixed(2)}` : '-'}</p>`;
+                        priceHTML = `
+                            <p class="text-xl font-black text-[var(--accent-color)]">${product.price > 0 ? `${product.price.toFixed(2)}` : '-'}</p>
+                            <p class="text-xs font-semibold text-slate-500">EGP</p>
+                        `;
                     }
+                    
+                    const discountBadgeHTML = bestDiscountInfo.name
+                        ? `<div class="absolute top-3 left-3 px-3 py-1 bg-red-600 text-white text-xs font-bold rounded-full shadow-lg z-10">${bestDiscountInfo.name}</div>`
+                        : (discount > 0 ? `<div class="absolute top-3 left-3 w-10 h-10 flex items-center justify-center bg-red-600 text-white text-sm font-bold rounded-full shadow-lg z-10">-${discount}%</div>` : '');
 
-                    const discountText = bestDiscountInfo.name || (discount > 0 ? `-${discount}%` : '');
+                    let stockText = `${product.quantity}`;
+                    let stockIcon = 'package-check';
+                    let stockColor = 'text-green-600';
+
+                    if(product.quantity === Infinity) {
+                        stockText = '∞';
+                        stockIcon = 'infinity';
+                        stockColor = 'text-blue-600';
+                    }
+                    if(isOutOfStock) {
+                        stockText = 'Out';
+                        stockIcon = 'package-x';
+                        stockColor = 'text-red-600';
+                    }
+                    if(isLowStock) {
+                        stockText = `${product.quantity}`;
+                        stockIcon = 'alert-triangle';
+                        stockColor = 'text-amber-600';
+                    }
+                    
+                    const stockHTML = `
+                        <div class="flex items-center gap-1.5 ${stockColor}">
+                            <i data-lucide="${stockIcon}" class="w-4 h-4"></i>
+                            <span class="text-sm font-bold">${stockText}</span>
+                        </div>
+                    `;
 
                     productCardDiv.innerHTML = `
-                        ${isOnlineMode && canEdit ? `
-                        <button class="edit-product-btn absolute top-2 right-2 z-10 p-1.5 bg-white/80 backdrop-blur-sm rounded-full hover:bg-yellow-200 text-[var(--text-secondary)] hover:text-black transition-colors" data-id="${product.id}">
-                            <i data-lucide="pencil" class="h-4 w-4"></i>
-                        </button>
-                        ` : ''}
-                        ${hasCodes ? `<div class="absolute top-2 left-2 p-1 bg-purple-100/80 backdrop-blur-sm rounded-full" title="This product has multiple variations/codes"><i data-lucide="git-branch-plus" class="w-4 h-4 text-purple-600"></i></div>` : ''}
-                        ${discountText ? `<div class="absolute top-2 ${hasCodes ? 'left-10' : 'left-2'} px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full z-10">${discountText}</div>` : ''}
-
-                        <div class="flex-grow p-4 flex flex-col justify-between">
-                            <div>
-                                <div class="w-12 h-12 flex items-center justify-center bg-slate-100 rounded-lg mb-3">
-                                    <i data-lucide="package" class="w-7 h-7 text-slate-500"></i>
-                                </div>
-                                <p class="font-bold text-sm text-slate-800 leading-tight">${product.name}</p>
+                        <div class="relative">
+                            <div class="aspect-[4/3] w-full bg-slate-100">
+                                ${imageHTML}
                             </div>
 
-                            <div class="mt-3">
-                                ${priceHTML}
-                                <div class="product-stock text-xs font-medium inline-block px-2 py-0.5 rounded-full mt-1 ${isLowStock && !isOutOfStock ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-600'}">
-                                    ${isOutOfStock ? 'Out of Stock' : `${product.quantity} in stock`}
+                            ${discountBadgeHTML}
+                            
+                            ${isOnlineMode && canEdit ? `
+                            <button data-id="${product.id}" class="edit-product-btn absolute top-3 right-3 flex-shrink-0 p-2 bg-white/70 backdrop-blur-sm rounded-full text-slate-600 hover:bg-yellow-200 hover:text-black transition-all transform opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-90 z-10" title="Edit Product">
+                                <i data-lucide="pencil" class="h-4 w-4 pointer-events-none"></i>
+                            </button>
+                            ` : ''}
+
+                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div class="flex flex-col items-center gap-2 text-center">
+                                    <i data-lucide="shopping-cart" class="w-10 h-10 text-white"></i>
+                                    <span class="font-bold text-white text-lg">Add to Cart</span>
+                                </div>
+                            </div>
+                            
+                            ${isOutOfStock ? `
+                            <div class="absolute inset-0 bg-white/70 flex items-center justify-center">
+                                <span class="font-bold text-slate-600 bg-slate-200/80 backdrop-blur-sm px-4 py-2 rounded-full">Out of Stock</span>
+                            </div>
+                            ` : ''}
+                        </div>
+
+                        <div class="p-3 flex flex-col flex-grow">
+                            <p class="font-bold text-sm text-slate-800 leading-tight mb-1 h-10">${product.name}</p>
+                            
+                            <div class="flex-grow"></div>
+
+                            <div class="flex justify-between items-end mt-1">
+                                <div>
+                                    ${priceHTML}
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    ${hasCodes ? `<div class="p-1.5 bg-purple-100 rounded-full" title="This product has multiple variations/codes"><i data-lucide="git-branch-plus" class="w-4 h-4 text-purple-600"></i></div>` : ''}
+                                    ${stockHTML}
                                 </div>
                             </div>
                         </div>
@@ -3603,10 +3765,9 @@
 
             const updateClock = () => {
                 const now = new Date();
-                const options = { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
-                const clockEl = document.getElementById('live-clock');
-                if (clockEl) {
-                    clockEl.textContent = now.toLocaleString('en-US', options);
+                const options = { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true };
+                if (footerClockSection) {
+                    footerClockSection.textContent = now.toLocaleString('en-US', options);
                 }
             };
             
@@ -3623,19 +3784,20 @@
                 const totalProducts = productsToRender.length;
                 const lowStockCount = productsToRender.filter(p => p.quantity > 0 && p.quantity <= 10 && p.quantity !== Infinity).length;
                 const outOfStockCount = productsToRender.filter(p => p.quantity <= 0 && p.quantity !== Infinity).length;
+                const totalStockValue = productsToRender.reduce((sum, p) => sum + ((p.purchasePrice || 0) * (p.quantity === Infinity ? 0 : p.quantity)), 0);
 
                 // --- Render Stats ---
                 const statsContainer = document.getElementById('inventory-stats');
                 statsContainer.innerHTML = `
-                    <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-4 flex items-center gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/60 flex items-center gap-4">
                         <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-blue-100 text-blue-600 rounded-lg"><i data-lucide="package" class="w-5 h-5"></i></div>
                         <div><p class="text-sm text-slate-500 font-semibold">Total Products</p><p class="text-2xl font-bold text-slate-800">${totalProducts}</p></div>
                     </div>
-                    <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-4 flex items-center gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/60 flex items-center gap-4">
                         <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-amber-100 text-amber-600 rounded-lg"><i data-lucide="alert-triangle" class="w-5 h-5"></i></div>
-                        <div><p class="text-sm text-slate-500 font-semibold">Low Stock</p><p class="text-2xl font-bold text-slate-800">${lowStockCount}</p></div>
+                        <div><p class="text-sm text-slate-500 font-semibold">Low Stock Items</p><p class="text-2xl font-bold text-slate-800">${lowStockCount}</p></div>
                     </div>
-                    <div class="bg-slate-50 border border-slate-200/60 rounded-xl p-4 flex items-center gap-4">
+                    <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/60 flex items-center gap-4">
                         <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-red-100 text-red-600 rounded-lg"><i data-lucide="package-x" class="w-5 h-5"></i></div>
                         <div><p class="text-sm text-slate-500 font-semibold">Out of Stock</p><p class="text-2xl font-bold text-slate-800">${outOfStockCount}</p></div>
                     </div>
@@ -3644,37 +3806,46 @@
                 // --- Render Product List ---
                 inventoryGrid.innerHTML = '';
                 if (productsToRender.length === 0) {
-                    inventoryGrid.innerHTML = '<div class="text-center text-[var(--text-secondary)] py-16"><i data-lucide="search-x" class="mx-auto h-12 w-12"></i><p class="mt-2">No products found.</p></div>';
+                    inventoryGrid.innerHTML = '<div class="col-span-full text-center text-[var(--text-secondary)] py-16"><i data-lucide="search-x" class="mx-auto h-12 w-12"></i><p class="mt-2">No products found.</p></div>';
                     lucide.createIcons();
                     return;
                 }
 
                 productsToRender.forEach(product => {
                     const card = document.createElement('div');
-                    card.className = 'inventory-card bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden transition-all duration-300 hover:shadow-md hover:border-blue-300 group relative';
+                    card.className = 'inventory-card bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden transition-all duration-300 hover:shadow-lg hover:border-blue-300 group';
                     
                     const isUnlimited = product.quantity === Infinity;
                     const isOutOfStock = !isUnlimited && product.quantity <= 0;
                     const isLowStock = !isUnlimited && product.quantity > 0 && product.quantity <= 10;
                     const hasCodes = product.codes && product.codes.length > 0;
                     
+                    const imageHTML = product.imageUrl
+                        ? `<img src="${product.imageUrl}" alt="${product.name}" class="w-full h-full object-cover" onerror="this.onerror=null;this.parentElement.innerHTML='<div class=\\'w-full h-full bg-slate-100 flex items-center justify-center\\'><i data-lucide=\\'image-off\\' class=\\'w-10 h-10 text-slate-400\\'></i></div>';">`
+                        : `<div class="w-full h-full bg-slate-100 flex items-center justify-center"><i data-lucide="package" class="w-10 h-10 text-slate-400"></i></div>`;
+
+                    
                     let stockStatusText = '';
                     let stockStatusColor = 'text-slate-600';
+                    let stockBgColor = 'bg-slate-100';
                     if (isUnlimited) {
                         stockStatusText = 'Unlimited';
-                        stockStatusColor = 'text-green-600';
+                        stockStatusColor = 'text-green-700';
+                        stockBgColor = 'bg-green-100';
                     } else if (isOutOfStock) {
                         stockStatusText = 'Out of Stock';
-                        stockStatusColor = 'text-red-600';
+                        stockStatusColor = 'text-red-700';
+                        stockBgColor = 'bg-red-100';
                     } else if (isLowStock) {
                         stockStatusText = 'Low Stock';
-                        stockStatusColor = 'text-amber-600';
+                        stockStatusColor = 'text-amber-700';
+                        stockBgColor = 'bg-amber-100';
                     } else {
                         stockStatusText = 'In Stock';
                     }
-
-                    const maxStockForProgressBar = hasCodes ? product.codes.reduce((sum, c) => sum + (c.quantity > 50 ? c.quantity : 50) , 0) : Math.max(100, product.quantity);
-                    const stockPercentage = isUnlimited ? 100 : Math.min((product.quantity / maxStockForProgressBar) * 100, 100);
+                    
+                    const maxStockForProgressBar = hasCodes ? product.codes.reduce((sum, c) => sum + (c.quantity > 50 ? c.quantity : 50), 0) : Math.max(100, product.quantity);
+                    const stockPercentage = isUnlimited ? 100 : Math.min((product.quantity / (maxStockForProgressBar || 1)) * 100, 100);
                     let progressBarColor = 'bg-green-500';
                     if (isOutOfStock) {
                         progressBarColor = 'bg-red-500';
@@ -3687,58 +3858,60 @@
                         const codesList = product.codes.map(code => {
                             const codePrice = code.price || product.price;
                              return `
-                            <div class="flex justify-between items-center text-xs py-2 px-4 border-b border-slate-200 last:border-b-0">
+                            <div class="flex justify-between items-center text-xs py-1.5 px-3 border-b border-slate-200 last:border-b-0">
                                 <span class="text-slate-700 font-semibold">${code.code}</span>
-                                <div class="text-right">
-                                    <span class="font-mono font-bold text-slate-600">${codePrice.toFixed(2)} EGP</span>
-                                    <span class="ml-3 text-xs bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full font-mono">${code.quantity} units</span>
+                                <div class="text-right flex items-center gap-2">
+                                    <span class="font-mono font-bold text-slate-600">${codePrice.toFixed(2)}</span>
+                                    <span class="text-[10px] bg-slate-200 text-slate-600 px-1.5 py-0.5 rounded-full font-mono">${code.quantity}</span>
                                 </div>
                             </div>`;
                         }).join('');
 
                         detailsHTML = `
-                            <div class="inventory-card-details bg-slate-50/70 border-t border-slate-200/80">
-                                <h5 class="text-xs font-bold text-slate-500 pt-2 px-4">Variations</h5>
+                            <div class="inventory-card-details bg-slate-50/70">
+                                <h5 class="text-xs font-bold text-slate-500 pt-2 pb-1 px-3">Variations</h5>
                                 <div class="space-y-0">${codesList}</div>
                             </div>`;
                     }
 
                     card.innerHTML = `
-                        <div class="grid grid-cols-12 gap-4 items-center p-4 ${(hasCodes) ? 'inventory-card-toggle cursor-pointer' : ''}">
-                            <!-- Product Info -->
-                            <div class="col-span-12 md:col-span-5 flex items-center gap-4">
-                                <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-slate-100 rounded-lg">
-                                    <i data-lucide="package" class="w-6 h-6 text-slate-500"></i>
-                                </div>
+                        <div class="relative">
+                            <div class="aspect-[4/3] w-full bg-slate-100">
+                                ${imageHTML}
+                            </div>
+                             <button data-id="${product.id}" class="inventory-edit-btn absolute top-2 right-2 z-10 p-1.5 bg-white/60 backdrop-blur-sm rounded-full text-slate-600 hover:bg-blue-500 hover:text-white transition-all transform opacity-0 group-hover:opacity-100 group-hover:scale-100 scale-90" title="Edit Product">
+                                <i data-lucide="settings-2" class="h-4 w-4 pointer-events-none"></i>
+                            </button>
+                        </div>
+                        <div class="p-3">
+                            <h4 class="font-bold text-sm text-slate-800 leading-tight truncate h-10" title="${product.name}">${product.name}</h4>
+                            <div class="flex justify-between items-baseline mt-1">
                                 <div>
-                                    <h4 class="font-bold text-sm text-slate-800 leading-tight">${product.name}</h4>
-                                     ${hasCodes ? `<span class="text-xs font-bold text-purple-600 bg-purple-100 px-2 py-0.5 rounded-full">${product.codes.length} Variations</span>` : ''}
+                                    <span class="text-xs font-semibold text-slate-500">Sell</span>
+                                    <p class="font-bold text-base text-blue-600">${product.price.toFixed(2)}</p>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-xs font-semibold text-slate-500">Purchase</span>
+                                    <p class="font-bold text-sm text-slate-600">${(product.purchasePrice || 0).toFixed(2)}</p>
                                 </div>
                             </div>
+                        </div>
 
-                            <!-- Stock Status -->
-                            <div class="col-span-12 md:col-span-3">
-                                <div class="flex items-center gap-2">
+                        <div class="px-3 pb-3 mt-auto">
+                            <div class="flex justify-between items-center mb-1">
+                                <div class="flex items-center gap-1.5">
                                     <span class="font-bold text-lg leading-none ${isUnlimited ? 'text-green-600' : 'text-slate-800'}">${isUnlimited ? '∞' : product.quantity}</span>
-                                    <span class="text-xs font-semibold ${stockStatusColor}">${stockStatusText}</span>
+                                    <span class="text-[10px] font-bold px-1.5 py-0.5 rounded-full ${stockStatusColor} ${stockBgColor}">${stockStatusText}</span>
                                 </div>
-                                <div class="stock-progress-bar w-full bg-slate-200 rounded-full h-1 mt-1">
-                                    <div class="stock-progress-bar-inner ${progressBarColor} h-1 rounded-full transition-all duration-500" style="width: ${stockPercentage}%"></div>
+                                ${hasCodes ? `
+                                <div class="inventory-card-toggle cursor-pointer flex items-center gap-1 text-xs font-semibold text-slate-500 hover:text-blue-600">
+                                    <span>Details</span>
+                                    <i data-lucide="chevron-down" class="h-4 w-4 chevron-icon transition-transform"></i>
                                 </div>
+                                ` : ''}
                             </div>
-
-                            <!-- Price -->
-                            <div class="col-span-6 md:col-span-2 text-right">
-                                <span class="font-bold text-slate-800 text-lg">${product.price.toFixed(2)}</span>
-                                <span class="text-xs font-semibold text-slate-500">EGP</span>
-                            </div>
-
-                            <!-- Actions -->
-                            <div class="col-span-6 md:col-span-2 flex items-center justify-center gap-2">
-                                <button data-id="${product.id}" class="inventory-edit-btn z-10 flex-shrink-0 p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full">
-                                    <i data-lucide="settings-2" class="h-5 w-5 pointer-events-none"></i>
-                                </button>
-                                ${hasCodes ? `<i data-lucide="chevron-down" class="h-5 w-5 text-slate-400 chevron-icon transition-transform"></i>` : ''}
+                            <div class="stock-progress-bar w-full bg-slate-200 rounded-full h-1.5">
+                                <div class="stock-progress-bar-inner ${progressBarColor} h-full rounded-full transition-all duration-500" style="width: ${stockPercentage}%"></div>
                             </div>
                         </div>
                         ${detailsHTML}
@@ -3752,6 +3925,7 @@
                 if (productToEdit) {
                     editProductIdInput.value = productToEdit.id;
                     editProductNameInput.value = productToEdit.name;
+                    document.getElementById('edit-product-image-url').value = productToEdit.imageUrl || '';
                     document.getElementById('edit-product-purchase-price').value = productToEdit.purchasePrice || '';
                     document.getElementById('edit-product-profit-margin').value = productToEdit.profitMargin || '';
                     editProductPriceInput.value = productToEdit.price;
@@ -4400,13 +4574,18 @@
             function updateUIMode() {
                 if (isOnlineMode) {
                     const user = auth.currentUser;
-                    footerLiveInfoDiv.innerHTML = `<span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span class="font-bold text-green-600">Online</span><span id="live-clock" class="font-bold text-green-600"></span>`;
+                    footerStatusSection.innerHTML = ``;
+                    footerClockSection.classList.remove('text-red-600');
                     
                     let dropdownHTML = `
-                        <div class="p-3 border-b border-slate-200/60">
-                            <p class="font-bold text-sm text-slate-800">${user.displayName}</p>
-                            <p class="text-xs text-slate-500">${user.email}</p>
+                        <div class="flex items-center gap-3 p-3 border-b border-slate-200/60">
+                            <img src="${user.photoURL}" alt="Profile" class="w-10 h-10 rounded-full border-2 border-white shadow">
+                            <div>
+                                <p class="font-bold text-sm text-slate-800">${user.displayName}</p>
+                                <p class="text-xs text-slate-500">${user.email}</p>
+                            </div>
                         </div>
+                        <div id="session-timer-dropdown" class="text-center p-2 border-b border-slate-200/60"></div>
                         <div class="p-2">
                             <a href="#" id="view-expenses-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
                                 <i data-lucide="trending-down" class="w-5 h-5 text-slate-500"></i>
@@ -4463,7 +4642,7 @@
                     }
 
                     userInfoDiv.innerHTML = `<div class="flex items-center gap-3">
-                        <div class="text-right">
+                        <div class="text-right hidden">
                             <p class="font-bold text-sm text-slate-800 leading-tight">${user.displayName}</p>
                             <div id="developer-mode-status" class="text-xs text-cyan-600 font-semibold leading-tight"></div>
                         </div>
@@ -4471,7 +4650,7 @@
                             <i data-lucide="settings-2" class="h-5 w-5 text-slate-600"></i>
                         </button>
                     </div>
-                    <div id="settings-dropdown" class="absolute right-0 mt-2 w-64 rounded-xl shadow-2xl bg-white/80 backdrop-blur-lg z-20 hidden overflow-hidden panel p-0 space-y-0 border border-slate-200/80">
+                    <div id="settings-dropdown" class="absolute left-0 mt-2 w-64 rounded-xl shadow-2xl bg-white/80 backdrop-blur-lg z-20 hidden overflow-hidden panel p-0 space-y-0 border border-slate-200/80">
                         ${dropdownHTML}
                     </div>`;
                     
@@ -4540,7 +4719,8 @@
                     
                     applyPermissions();
                 } else {
-                    footerLiveInfoDiv.innerHTML = `<span class="w-2 h-2 bg-red-500 rounded-full"></span><span class="font-bold text-red-600">Offline</span><span id="live-clock" class="font-bold text-red-600"></span>`;
+                    footerStatusSection.innerHTML = ``;
+                    footerClockSection.classList.add('text-red-600');
                 }
                 updateClock();
                 lucide.createIcons();
@@ -5647,7 +5827,6 @@
 
                 reportContent.innerHTML = `<div class="flex items-center justify-center h-full text-slate-500"><p>Select a report type and date range to generate a report.</p></div>`;
                 printReportBtn.disabled = true;
-                document.getElementById('export-pdf-btn').disabled = true;
                 document.getElementById('export-excel-btn').disabled = true;
                 reportsModal.classList.remove('hidden');
                 reportTypeSelect.dispatchEvent(new Event('change')); // Trigger change to set initial UI
@@ -5706,7 +5885,7 @@
                             showAlert('Start date cannot be after the end date.');
                             return;
                         }
-                        title = `تقرير مخصص: من ${startDate.toLocaleDateString('ar-EG')} إلى ${endDate.toLocaleDateString('ar-EG')}`;
+                        title = `تقرير مخصص: من ${startDate.toLocaleString('ar-EG')} إلى ${endDate.toLocaleString('ar-EG')}`;
                         break;
                 }
 
@@ -5717,11 +5896,13 @@
 
                 const filteredInvoices = firestoreInvoices.filter(inv => inv.timestamp >= startDate.getTime() && inv.timestamp <= endDate.getTime());
                 const filteredReturns = firestoreReturns.filter(ret => ret.timestamp >= startDate.getTime() && ret.timestamp <= endDate.getTime());
+                const filteredExpenses = firestoreExpenses.filter(exp => exp.timestamp >= startDate.getTime() && exp.timestamp <= endDate.getTime());
                 
                 // --- Calculations ---
                 const totalSales = filteredInvoices.reduce((sum, inv) => sum + inv.total, 0);
                 const totalReturnValue = filteredReturns.reduce((sum, ret) => sum + ret.total, 0); // Returns are negative
-                const netSales = totalSales + totalReturnValue;
+                const totalExpenses = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+                const netSales = totalSales + totalReturnValue - totalExpenses;
                 const transactionCount = filteredInvoices.length;
 
                 const paymentMethodTotals = filteredInvoices.reduce((acc, inv) => {
@@ -5789,6 +5970,7 @@
                     netSales,
                     totalSales,
                     totalReturnValue,
+                    totalExpenses,
                     transactionCount,
                     paymentRows: Object.entries(paymentMethodTotals).map(([method, total]) => [method, total.toFixed(2)]),
                     cashierRows: Object.entries(cashierTotals).map(([name, total]) => [name, total.toFixed(2)]),
@@ -5877,10 +6059,11 @@
                             <p class="text-base text-slate-600">${title}</p>
                         </div>
 
-                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
                             ${createStatCard('صافي المبيعات', netSales.toFixed(2) + ' ج.م', 'wallet', 'bg-green-500')}
                             ${createStatCard('إجمالي المبيعات', totalSales.toFixed(2) + ' ج.م', 'trending-up', 'bg-blue-500')}
                             ${createStatCard('إجمالي المرتجعات', Math.abs(totalReturnValue).toFixed(2) + ' ج.م', 'trending-down', 'bg-red-500')}
+                            ${createStatCard('إجمالي المصروفات', totalExpenses.toFixed(2) + ' ج.م', 'minus-circle', 'bg-orange-500')}
                             ${createStatCard('عدد الفواتير', transactionCount, 'file-text', 'bg-indigo-500')}
                         </div>
 
@@ -5945,7 +6128,6 @@
 
                 lucide.createIcons();
                 printReportBtn.disabled = false;
-                document.getElementById('export-pdf-btn').disabled = false;
                 document.getElementById('export-excel-btn').disabled = false;
             };
 
@@ -6007,6 +6189,7 @@
 
                 const filteredInvoices = firestoreInvoices.filter(inv => inv.timestamp >= startDate.getTime() && inv.timestamp <= endDate.getTime());
                 const filteredReturns = firestoreReturns.filter(ret => ret.timestamp >= startDate.getTime() && ret.timestamp <= endDate.getTime());
+                const filteredExpenses = firestoreExpenses.filter(exp => exp.timestamp >= startDate.getTime() && exp.timestamp <= endDate.getTime());
 
                 const createPrintSection = (title, items, isReturn = false) => {
                     let rows = items.map(item => `
@@ -6041,7 +6224,8 @@
 
                 const totalSales = filteredInvoices.reduce((sum, inv) => sum + inv.total, 0);
                 const totalReturnValue = filteredReturns.reduce((sum, ret) => sum + ret.total, 0);
-                const netSales = totalSales + totalReturnValue;
+                const totalExpenses = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+                const netSales = totalSales + totalReturnValue - totalExpenses;
 
                 const printLayoutHTML = `
                     <div class="p-4" dir="rtl">
@@ -6062,6 +6246,10 @@
                                 <div class="flex justify-between font-semibold">
                                     <span class="text-slate-600">إجمالي المرتجعات:</span>
                                     <span class="font-mono text-red-500">${Math.abs(totalReturnValue).toFixed(2)} ج.م</span>
+                                </div>
+                                <div class="flex justify-between font-semibold">
+                                    <span class="text-slate-600">إجمالي المصروفات:</span>
+                                    <span class="font-mono text-orange-500">${totalExpenses.toFixed(2)} ج.م</span>
                                 </div>
                                 <div class="flex justify-between font-bold text-2xl mt-2 pt-2 border-t border-slate-300">
                                     <span class="text-slate-800">صافي الإجمالي:</span>
@@ -6125,82 +6313,6 @@
                 // Download the file
                 const fileName = `Sales_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
                 XLSX.writeFile(wb, fileName);
-            };
-
-            const exportReportToPDF = async () => {
-                const reportElement = document.getElementById('report-content');
-                 if (!currentReportData) {
-                    showAlert('Please generate a report first.');
-                    return;
-                }
-                
-                showAlert('Generating PDF... Please wait.');
-
-                // Create a temporary container specifically for rendering the PDF content
-                const printContainer = document.createElement('div');
-                printContainer.style.position = 'absolute';
-                printContainer.style.left = '-9999px'; // Position off-screen to avoid visual flicker
-                printContainer.style.width = '210mm'; // A4 width for a consistent layout
-                printContainer.style.background = '#fff';
-                printContainer.innerHTML = reportElement.innerHTML;
-                document.body.appendChild(printContainer);
-
-                // Re-create lucide icons in the clone as they might not be carried over
-                lucide.createIcons({ parentElement: printContainer });
-
-                try {
-                    const { jsPDF } = window.jspdf;
-                    const canvas = await html2canvas(printContainer, {
-                        scale: 2, 
-                        useCORS: true,
-                        logging: false,
-                        // Ensure the canvas captures the full height of the cloned content
-                        height: printContainer.scrollHeight,
-                        windowHeight: printContainer.scrollHeight
-                    });
-                    
-                    document.body.removeChild(printContainer); // Clean up immediately after the canvas is created
-
-                    const imgData = canvas.toDataURL('image/png');
-                    const pdf = new jsPDF({
-                        orientation: 'p',
-                        unit: 'mm',
-                        format: 'a4'
-                    });
-
-                    const pdfWidth = pdf.internal.pageSize.getWidth();
-                    const pdfHeight = pdf.internal.pageSize.getHeight();
-                    
-                    const canvasWidth = canvas.width;
-                    const canvasHeight = canvas.height;
-
-                    const margin = 10;
-                    const imgWidth = pdfWidth - margin * 2;
-                    const imgHeight = (canvasHeight * imgWidth) / canvasWidth;
-                    
-                    let heightLeft = imgHeight;
-                    let position = 0;
-
-                    pdf.addImage(imgData, 'PNG', margin, margin, imgWidth, imgHeight);
-                    heightLeft -= (pdfHeight - margin * 2);
-
-                    while (heightLeft > 0) {
-                        position -= (pdfHeight - margin); // Adjust position for the next page
-                        pdf.addPage();
-                        pdf.addImage(imgData, 'PNG', margin, position, imgWidth, imgHeight);
-                        heightLeft -= (pdfHeight - margin * 2);
-                    }
-                    
-                    const fileName = `Sales_Report_${new Date().toISOString().split('T')[0]}.pdf`;
-                    pdf.save(fileName);
-
-                } catch (error) {
-                    console.error("Error generating PDF:", error);
-                    showAlert('An error occurred while creating the PDF.');
-                    if (document.body.contains(printContainer)){
-                        document.body.removeChild(printContainer); // Ensure cleanup on error
-                    }
-                }
             };
 
             const printExpenses = () => {
@@ -6369,6 +6481,7 @@
                 
                 const newData = {
                     name: editProductNameInput.value,
+                    imageUrl: document.getElementById('edit-product-image-url').value.trim() || null,
                     purchasePrice: parseFloat(document.getElementById('edit-product-purchase-price').value) || 0,
                     profitMargin: parseFloat(document.getElementById('edit-product-profit-margin').value) || 0,
                     price: parseFloat(editProductPriceInput.value) || 0,
@@ -6530,9 +6643,7 @@
             reportsCloseBtn.addEventListener('click', () => reportsModal.classList.add('hidden'));
             printReportBtn.addEventListener('click', printReport);
             generateReportBtn.addEventListener('click', generateAndDisplayReport);
-            const exportPdfBtn = document.getElementById('export-pdf-btn');
             const exportExcelBtn = document.getElementById('export-excel-btn');
-            exportPdfBtn.addEventListener('click', exportReportToPDF);
             exportExcelBtn.addEventListener('click', exportReportToExcel);
 
             reportTypeSelect.addEventListener('change', (e) => {
@@ -8249,8 +8360,13 @@
                     currentExpenseTypeInput.value = newType;
                     expenseTypeModal.classList.add('hidden');
                 }
-                newExpenseTypeInput.value = '';
             });
+            
+            document.getElementById('view-invoices-btn-mobile').addEventListener('click', showSavedInvoicesView);
+            document.getElementById('view-returns-btn-mobile').addEventListener('click', showReturnsView);
+            document.getElementById('view-customers-btn-mobile').addEventListener('click', openCustomersModal);
+            document.getElementById('clear-sale-btn-mobile').addEventListener('click', clearSale);
+
 
             const newProductPurchasePriceInput = document.getElementById('new-product-purchase-price');
             const newProductProfitMarginInput = document.getElementById('new-product-profit-margin');
@@ -8381,11 +8497,13 @@
                 const calculateMetricsForPeriod = (start, end) => {
                     const invoices = firestoreInvoices.filter(inv => inv.timestamp >= start.getTime() && inv.timestamp <= end.getTime());
                     const returns = firestoreReturns.filter(ret => ret.timestamp >= start.getTime() && ret.timestamp <= end.getTime());
+                    const expenses = firestoreExpenses.filter(exp => exp.timestamp >= start.getTime() && exp.timestamp <= end.getTime());
                     const totalSales = invoices.reduce((sum, inv) => sum + inv.total, 0);
                     const totalReturnValue = returns.reduce((sum, ret) => sum + ret.total, 0);
-                    const netSales = totalSales + totalReturnValue;
+                    const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+                    const netSales = totalSales + totalReturnValue - totalExpenses;
                     const transactionCount = invoices.length;
-                    return { netSales, totalSales, totalReturnValue, transactionCount };
+                    return { netSales, totalSales, totalReturnValue, transactionCount, totalExpenses };
                 };
                 
                 const currentMetrics = calculateMetricsForPeriod(currentStartDate, currentEndDate);
@@ -8402,6 +8520,7 @@
                 const totalSalesChange = calculateChange(currentMetrics.totalSales, previousMetrics.totalSales);
                 const totalReturnsChange = calculateChange(currentMetrics.totalReturnValue, previousMetrics.totalReturnValue);
                 const transactionsChange = calculateChange(currentMetrics.transactionCount, previousMetrics.transactionCount);
+                const expensesChange = calculateChange(currentMetrics.totalExpenses, previousMetrics.totalExpenses);
 
                 currentReportData = {
                     reportType: 'monthly_comparison',
@@ -8410,7 +8529,8 @@
                         { label: 'Net Sales', current: currentMetrics.netSales, previous: previousMetrics.netSales, change: netSalesChange },
                         { label: 'Total Sales', current: currentMetrics.totalSales, previous: previousMetrics.totalSales, change: totalSalesChange },
                         { label: 'Total Returns', current: currentMetrics.totalReturnValue, previous: previousMetrics.totalReturnValue, change: totalReturnsChange },
-                        { label: 'Transactions', current: currentMetrics.transactionCount, previous: previousMetrics.transactionCount, change: transactionsChange }
+                        { label: 'Transactions', current: currentMetrics.transactionCount, previous: previousMetrics.transactionCount, change: transactionsChange },
+                        { label: 'Total Expenses', current: currentMetrics.totalExpenses, previous: previousMetrics.totalExpenses, change: expensesChange }
                     ]
                 };
 
@@ -8446,17 +8566,17 @@
                             <h3 class="text-2xl font-bold text-slate-800">${workerPermissions.shopName} - مقارنة المبيعات الشهرية</h3>
                             <p class="text-base text-slate-600">${title}</p>
                         </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
                             ${createComparisonCard('صافي المبيعات', currentMetrics.netSales, previousMetrics.netSales, netSalesChange, 'wallet', 'from-green-500 to-emerald-600')}
                             ${createComparisonCard('إجمالي المبيعات', currentMetrics.totalSales, previousMetrics.totalSales, totalSalesChange, 'trending-up', 'from-blue-500 to-cyan-500')}
                             ${createComparisonCard('إجمالي المرتجعات', Math.abs(currentMetrics.totalReturnValue), Math.abs(previousMetrics.totalReturnValue), totalReturnsChange, 'trending-down', 'from-red-500 to-rose-600')}
+                            ${createComparisonCard('إجمالي المصروفات', currentMetrics.totalExpenses, previousMetrics.totalExpenses, expensesChange, 'minus-circle', 'from-orange-500 to-amber-600')}
                             ${createComparisonCard('عدد الفواتير', currentMetrics.transactionCount, previousMetrics.transactionCount, transactionsChange, 'file-text', 'from-indigo-500 to-purple-600').replace(/ ج\.م/g, '')}
                         </div>
                     </div>
                 `;
                 lucide.createIcons();
                 printReportBtn.disabled = false;
-                document.getElementById('export-pdf-btn').disabled = false;
                 document.getElementById('export-excel-btn').disabled = false;
             };
 
@@ -8524,15 +8644,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
