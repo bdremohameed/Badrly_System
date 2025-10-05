@@ -71,26 +71,48 @@
         }
 
 
-        @keyframes cutePopup {
+        /* Enhanced animation for smoother screen entry */
+        @keyframes smoothEnter {
+            from {
+                opacity: 0;
+                transform: scale(0.95) translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes modalEnterEffect {
             0% {
                 opacity: 0;
-                transform: scale(0.8);
-            }
-            80% {
-                opacity: 1;
-                transform: scale(1.05);
+                transform: scale(0.9) translateY(20px);
+                filter: blur(5px);
             }
             100% {
-                transform: scale(1);
+                opacity: 1;
+                transform: scale(1) translateY(0);
+                filter: blur(0);
             }
         }
 
-        .login-panel-enter {
-             animation: cutePopup 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        @keyframes shake {
+            10%, 90% { transform: translateX(-2px); }
+            20%, 80% { transform: translateX(4px); }
+            30%, 50%, 70% { transform: translateX(-6px); }
+            40%, 60% { transform: translateX(6px); }
         }
 
-        .view-enter-effect {
-             animation: cutePopup 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        .shake {
+            animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+        }
+
+        .modal-enter {
+            animation: modalEnterEffect 0.5s cubic-bezier(0.165, 0.84, 0.44, 1) forwards;
+        }
+
+        .login-panel-enter, .view-enter-effect {
+             animation: smoothEnter 0.4s ease-out forwards;
         }
 
         .btn-glow:hover {
@@ -336,26 +358,26 @@
             <div id="pos-view" class="flex flex-col lg:flex-row h-[calc(100vh-2rem)] gap-4 items-start">
                 <!-- Vertical Action Buttons for Desktop -->
                 <div class="hidden lg:flex flex-col gap-3 pt-6">
-                    <button id="view-invoices-btn" title="الفواتير" class="w-14 h-14 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 rounded-2xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
-                        <i data-lucide="history" class="w-6 h-6"></i>
+                    <button id="view-invoices-btn" title="Invoices" class="w-12 h-12 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 rounded-full transition-all border border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-md transform hover:-translate-y-1">
+                        <i data-lucide="receipt-text" class="w-5 h-5"></i>
                     </button>
-                    <button id="view-returns-btn" title="المرتجعات" class="w-14 h-14 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 rounded-2xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
-                        <i data-lucide="undo-2" class="w-6 h-6"></i>
+                    <button id="view-returns-btn" title="Returns" class="w-12 h-12 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 rounded-full transition-all border border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-md transform hover:-translate-y-1">
+                        <i data-lucide="arrow-left-right" class="w-5 h-5"></i>
                     </button>
-                    <button id="view-customers-btn" title="العملاء" class="w-14 h-14 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 rounded-2xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
-                        <i data-lucide="users" class="w-6 h-6"></i>
+                    <button id="view-customers-btn" title="Customers" class="w-12 h-12 flex items-center justify-center bg-white hover:bg-slate-100 text-slate-700 rounded-full transition-all border border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-md transform hover:-translate-y-1">
+                        <i data-lucide="users-2" class="w-5 h-5"></i>
                     </button>
-                    <button id="clear-sale-btn" title="مسح" class="w-14 h-14 flex items-center justify-center bg-white hover:bg-red-100 text-red-600 rounded-2xl transition-all border-2 border-red-100 hover:border-red-400 shadow-sm hover:shadow-lg transform hover:-translate-y-1">
-                        <i data-lucide="x-circle" class="w-6 h-6"></i>
+                    <button id="clear-sale-btn" title="Clear Sale" class="w-12 h-12 flex items-center justify-center bg-white hover:bg-red-100 text-red-600 rounded-full transition-all border border-slate-200/80 hover:border-red-400 shadow-sm hover:shadow-md transform hover:-translate-y-1">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
                 </div>
                 <div class="w-full lg:flex-1 panel p-6 flex flex-col h-full">
                     <div id="products-section" class="flex flex-col h-full">
-                         <div class="flex justify-between items-center mb-4" dir="rtl">
+                         <div class="flex justify-between items-center mb-4">
+                            <div id="user-info" class="text-left relative"></div>
                             <div class="flex items-center gap-4">
                                 <h2 class="text-3xl font-bold text-[var(--text-primary)]">Products</h2>
                             </div>
-                            <div id="user-info" class="text-left relative"></div>
                         </div>
                         <div class="relative mb-4">
                             <input type="text" id="search-input" placeholder="Search for a product by name or code..." class="w-full p-3 pr-10 input-field"/>
@@ -553,96 +575,123 @@
                         </div>
                         <div class="grid grid-cols-4 gap-3 lg:hidden">
                             <button id="view-invoices-btn-mobile" class="flex flex-col items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-600 font-semibold p-3 rounded-xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-md">
-                                <i data-lucide="history" class="w-5 h-5"></i><span class="text-xs">Invoices</span>
+                                <i data-lucide="receipt-text" class="w-5 h-5"></i><span class="text-xs">Invoices</span>
                             </button>
                             <button id="view-returns-btn-mobile" class="flex flex-col items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-600 font-semibold p-3 rounded-xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-md">
-                                <i data-lucide="undo-2" class="w-5 h-5"></i><span class="text-xs">Returns</span>
+                                <i data-lucide="arrow-left-right" class="w-5 h-5"></i><span class="text-xs">Returns</span>
                             </button>
                             <button id="view-customers-btn-mobile" class="flex flex-col items-center justify-center gap-1.5 bg-white hover:bg-slate-50 text-slate-600 font-semibold p-3 rounded-xl transition-all border-2 border-slate-200/80 hover:border-blue-400 hover:text-blue-600 shadow-sm hover:shadow-md">
-                                <i data-lucide="users" class="w-5 h-5"></i><span class="text-xs">Customers</span>
+                                <i data-lucide="users-2" class="w-5 h-5"></i><span class="text-xs">Customers</span>
                             </button>
                             <button id="clear-sale-btn-mobile" class="flex flex-col items-center justify-center gap-1.5 bg-white hover:bg-red-50 text-red-500 font-semibold p-3 rounded-xl transition-all border-2 border-red-200 hover:border-red-400 shadow-sm hover:shadow-md">
-                                <i data-lucide="x-circle" class="w-5 h-5"></i><span class="text-xs">Clear</span>
+                                <i data-lucide="trash-2" class="w-5 h-5"></i><span class="text-xs">Clear</span>
                             </button>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div id="invoices-view" class="hidden-view h-[calc(100vh-2rem)] p-6 flex-col panel view-enter-effect">
-                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-3xl font-bold text-[var(--text-primary)]">Saved Invoices</h2>
-                    <div class="flex items-center gap-2">
-                        <button id="show-archive-btn" class="flex items-center justify-center gap-2 bg-slate-500 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors" title="Invoice Archive">
-                            <i data-lucide="history"></i>
+            <div id="invoices-view" class="hidden-view h-[calc(100vh-2rem)] p-4 sm:p-6 flex flex-col panel view-enter-effect bg-slate-50/50">
+                <!-- Header -->
+                <div class="flex-shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-slate-200">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-blue-500 to-cyan-400 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30">
+                            <i data-lucide="receipt-text" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-bold text-slate-800">Saved Invoices</h2>
+                            <p class="text-sm text-slate-500">Review, print, or manage past transactions.</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-2 mt-4 sm:mt-0">
+                        <button id="show-archive-btn" class="flex items-center justify-center gap-2 bg-white hover:bg-slate-100 text-slate-600 font-semibold py-2 px-4 rounded-lg shadow-sm border border-slate-200/80 transition-all transform hover:scale-105" title="Invoice Archive">
+                            <i data-lucide="archive" class="w-4 h-4"></i>
+                            <span>Archive</span>
                         </button>
-                        <button id="show-unconfirmed-btn" class="relative flex items-center justify-center gap-2 bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors" title="Unconfirmed Invoices">
-                            <i id="unconfirmed-icon" data-lucide="bell"></i>
-                            <span id="unconfirmed-count-badge" class="hidden absolute -top-2 -right-2 w-5 h-5 bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center">0</span>
+                        <button id="show-unconfirmed-btn" class="relative flex items-center justify-center gap-2 bg-white hover:bg-yellow-50 text-yellow-600 font-semibold py-2 px-4 rounded-lg shadow-sm border border-slate-200/80 transition-all transform hover:scale-105" title="Unconfirmed Invoices">
+                            <i id="unconfirmed-icon" data-lucide="bell" class="w-4 h-4"></i>
+                            <span>Pending</span>
+                            <span id="unconfirmed-count-badge" class="hidden absolute -top-2 -right-2 w-5 h-5 bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white">0</span>
                         </button>
-                        <button id="back-to-pos-btn" class="flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg shadow-lg"><i data-lucide="arrow-left"></i><span>Back</span></button>
+                        <button id="back-to-pos-btn" class="flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg shadow-lg transform hover:scale-105"><i data-lucide="arrow-left" class="w-4 h-4"></i><span>Back to POS</span></button>
                     </div>
                 </div>
-                <div class="mb-4 p-4 bg-gray-100 rounded-lg flex flex-col md:flex-row gap-4 items-center">
+
+                <!-- Filters -->
+                <div class="flex-shrink-0 mb-4 p-4 bg-white rounded-xl flex flex-col md:flex-row gap-4 items-center border border-slate-200/80 shadow-sm">
                     <div class="relative flex-grow w-full md:w-auto">
-                        <input type="text" id="invoice-search-input" placeholder="Search by ID, customer name, or phone..." class="w-full p-3 pr-10 input-field"/>
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><i data-lucide="search" class="text-[var(--text-secondary)]"></i></div>
+                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="invoice-search-input" placeholder="Search by ID, customer name, or phone..." class="w-full p-3 pl-10 input-field rounded-lg"/>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <label for="invoice-start-date" class="text-sm font-medium text-[var(--text-secondary)] whitespace-nowrap">From:</label>
-                        <input type="date" id="invoice-start-date" class="p-2 input-field">
+                    <div class="relative w-full md:w-auto">
+                         <i data-lucide="calendar-days" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"></i>
+                        <input type="date" id="invoice-start-date" class="w-full p-3 pl-10 input-field rounded-lg">
                     </div>
-                    <div class="flex items-center gap-2">
-                        <label for="invoice-end-date" class="text-sm font-medium text-[var(--text-secondary)] whitespace-nowrap">To:</label>
-                        <input type="date" id="invoice-end-date" class="p-2 input-field">
+                    <div class="relative w-full md:w-auto">
+                        <i data-lucide="calendar-days" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"></i>
+                        <input type="date" id="invoice-end-date" class="w-full p-3 pl-10 input-field rounded-lg">
                     </div>
                 </div>
-                <div class="flex-grow bg-gray-50 rounded-lg p-6 overflow-y-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead class="sticky top-0 bg-[var(--panel-bg)]">
+
+                <!-- Invoice List -->
+                <div class="flex-grow overflow-y-auto pr-2 -mr-4">
+                    <table class="w-full text-sm text-left border-separate" style="border-spacing: 0 0.75rem;">
+                        <thead class="sticky top-0 bg-slate-50/80 backdrop-blur-sm z-10">
                             <tr>
-                                <th class="p-3 text-[var(--text-secondary)]">Invoice #</th><th class="p-3 text-[var(--text-secondary)]">Date</th><th class="p-3 text-[var(--text-secondary)]">Customer</th><th class="p-3 text-[var(--text-secondary)]">Total</th><th class="p-3 text-[var(--text-secondary)]">Paid</th><th class="p-3 text-[var(--text-secondary)]">Discount</th><th class="p-3 text-[var(--text-secondary)]">Remaining</th><th class="p-3 text-right text-[var(--text-secondary)]">Actions</th>
+                                <th class="p-3 text-slate-500 font-semibold uppercase text-xs tracking-wider">Invoice #</th>
+                                <th class="p-3 text-slate-500 font-semibold uppercase text-xs tracking-wider">Customer</th>
+                                <th class="p-3 text-slate-500 font-semibold uppercase text-xs tracking-wider">Summary</th>
+                                <th class="p-3 text-slate-500 font-semibold uppercase text-xs tracking-wider text-center">Status</th>
+                                <th class="p-3 text-right text-slate-500 font-semibold uppercase text-xs tracking-wider">Actions</th>
                             </tr>
                         </thead>
                         <tbody id="invoices-list"></tbody>
-                        <tfoot id="invoices-summary" class="bg-gray-200 font-bold text-[var(--text-primary)]"></tfoot>
                     </table>
+                </div>
+
+                <!-- Summary Footer -->
+                <div id="invoices-summary" class="flex-shrink-0 mt-4 pt-4 border-t border-slate-200">
+                    <!-- Summary content injected by JS -->
                 </div>
             </div>
 
-            <div id="returns-view" class="hidden-view h-[calc(100vh-2rem)] p-6 flex-col panel view-enter-effect">
-                 <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-3xl font-bold text-[var(--text-primary)]">Returns List</h2>
-                    <button id="back-to-pos-from-returns-btn" class="flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg shadow-lg"><i data-lucide="arrow-left"></i><span>Back</span></button>
+            <div id="returns-view" class="hidden-view h-[calc(100vh-2rem)] p-4 sm:p-6 flex flex-col panel view-enter-effect bg-slate-50/50">
+                <!-- Header -->
+                <div class="flex-shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 pb-4 border-b border-slate-200">
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/30">
+                            <i data-lucide="arrow-left-right" class="w-8 h-8"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-3xl font-bold text-slate-800">Returns List</h2>
+                            <p class="text-sm text-slate-500">Review and manage processed returns.</p>
+                        </div>
+                    </div>
+                    <button id="back-to-pos-from-returns-btn" class="flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg shadow-lg mt-4 sm:mt-0 transform hover:scale-105">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                        <span>Back to POS</span>
+                    </button>
                 </div>
-                <div class="mb-4 p-4 bg-gray-100 rounded-lg flex flex-col md:flex-row gap-4 items-center">
+
+                <!-- Filters -->
+                <div class="flex-shrink-0 mb-4 p-4 bg-white rounded-xl flex flex-col md:flex-row gap-4 items-center border border-slate-200/80 shadow-sm">
                     <div class="relative flex-grow w-full md:w-auto">
-                        <input type="text" id="return-search-input" placeholder="Search by return ID, customer, or original invoice..." class="w-full p-3 pr-10 input-field"/>
-                        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><i data-lucide="search" class="text-[var(--text-secondary)]"></i></div>
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="return-search-input" placeholder="Search by return ID, customer, or original invoice..." class="w-full p-3 pl-10 input-field rounded-lg"/>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <label for="return-start-date" class="text-sm font-medium text-[var(--text-secondary)] whitespace-nowrap">From:</label>
-                        <input type="date" id="return-start-date" class="p-2 input-field">
+                    <div class="relative w-full md:w-auto">
+                        <i data-lucide="calendar-days" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"></i>
+                        <input type="date" id="return-start-date" class="w-full p-3 pl-10 input-field rounded-lg">
                     </div>
-                    <div class="flex items-center gap-2">
-                        <label for="return-end-date" class="text-sm font-medium text-[var(--text-secondary)] whitespace-nowrap">To:</label>
-                        <input type="date" id="return-end-date" class="p-2 input-field">
+                    <div class="relative w-full md:w-auto">
+                        <i data-lucide="calendar-days" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"></i>
+                        <input type="date" id="return-end-date" class="w-full p-3 pl-10 input-field rounded-lg">
                     </div>
                 </div>
-                <div class="flex-grow bg-gray-50 rounded-lg p-6 overflow-y-auto">
-                    <table class="w-full text-sm text-left">
-                        <thead class="sticky top-0 bg-[var(--panel-bg)]">
-                            <tr>
-                                <th class="p-3 text-[var(--text-secondary)]">Return #</th>
-                                <th class="p-3 text-[var(--text-secondary)]">Date</th>
-                                <th class="p-3 text-[var(--text-secondary)]">Customer</th>
-                                <th class="p-3 text-[var(--text-secondary)]">Original Invoice</th>
-                                <th class="p-3 text-[var(--text-secondary)]">Return Value</th>
-                                <th class="p-3 text-right text-[var(--text-secondary)]">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="returns-list"></tbody>
-                    </table>
+                
+                <!-- Returns List -->
+                <div id="returns-list" class="flex-grow overflow-y-auto pr-2 -mr-4 space-y-3">
+                    <!-- Return items will be injected here by JS -->
                 </div>
             </div>
 
@@ -826,17 +875,21 @@
             </div>
         </div>
     </div>
-    <div id="password-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-[105] p-4">
-        <div class="login-panel-enter w-full max-w-sm text-center">
-            <div class="relative panel bg-white/80 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-2xl shadow-slate-300/20">
-                <div class="w-16 h-16 bg-gradient-to-br from-orange-500 to-amber-400 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-orange-500/30">
-                    <i data-lucide="key-round" class="w-10 h-10"></i>
+    <div id="password-modal" class="hidden fixed inset-0 bg-black/30 backdrop-blur-md flex items-center justify-center z-[105] p-4">
+        <div class="modal-enter w-full max-w-sm">
+            <div class="relative bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-2xl shadow-slate-400/20 text-center border border-white/50">
+                <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-cyan-400 text-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
+                    <i data-lucide="shield-check" class="w-10 h-10"></i>
                 </div>
-                <h3 id="modal-title" class="text-2xl font-bold mb-2 text-slate-800">Password Required</h3>
-                <p id="modal-message" class="text-slate-500 mb-6">Please enter the password to continue.</p>
-                <input type="password" id="password-input" class="w-full p-3 input-field rounded-lg text-center mb-6">
+                <h3 id="modal-title" class="text-2xl font-bold mb-2 text-slate-800">Admin Access</h3>
+                <p id="modal-message" class="text-slate-500 mb-8">Please enter the password to continue.</p>
+                <div class="relative mb-2">
+                    <i data-lucide="lock" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                    <input type="password" id="password-input" class="w-full p-3 pl-12 input-field rounded-lg text-center tracking-widest text-lg bg-white/80 border-slate-300 placeholder:text-slate-400">
+                </div>
+                <div id="password-error-message" class="text-red-600 font-bold h-8 mb-2 text-sm flex items-center justify-center gap-1"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <button id="modal-cancel-btn" class="w-full py-3 bg-white hover:bg-slate-50 text-slate-600 font-bold rounded-lg shadow-sm border border-slate-200 transition-all">Cancel</button>
+                    <button id="modal-cancel-btn" class="w-full py-3 bg-white hover:bg-slate-100 text-slate-700 font-bold rounded-lg shadow-sm border border-slate-200/80 transition-all">Cancel</button>
                     <button id="modal-confirm-btn" class="w-full py-3 btn-primary rounded-lg btn-glow transform transition-transform hover:scale-105">Confirm</button>
                 </div>
             </div>
@@ -944,6 +997,10 @@
                                     <input type="text" id="new-product-code-input" placeholder="e.g., L, Blue, #12345" class="w-full p-2 input-field rounded-lg text-sm">
                                 </div>
                                 <div class="w-full flex-grow grid grid-cols-2 md:grid-cols-5 gap-2">
+                                     <div>
+                                        <label class="block text-xs font-medium text-slate-500 mb-1">Image URL</label>
+                                        <input type="text" id="new-product-code-image-url" placeholder="https://..." class="w-full p-2 input-field rounded-lg text-sm">
+                                    </div>
                                     <div>
                                         <label class="block text-xs font-medium text-slate-500 mb-1">Purchase</label>
                                         <input type="number" id="new-product-code-purchase-price" placeholder="0.00" class="w-full p-2 input-field rounded-lg text-sm">
@@ -959,10 +1016,6 @@
                                     <div>
                                          <label class="block text-xs font-medium text-slate-500 mb-1">Qty</label>
                                         <input type="number" id="new-product-code-quantity" placeholder="0" class="w-full p-2 input-field rounded-lg text-sm">
-                                    </div>
-                                    <div>
-                                         <label class="block text-xs font-medium text-slate-500 mb-1">Disc. %</label>
-                                        <input type="number" id="new-product-code-discount" placeholder="10" class="w-full p-2 input-field rounded-lg text-sm">
                                     </div>
                                 </div>
                                 <div class="w-full md:w-auto flex-shrink-0">
@@ -1006,6 +1059,10 @@
                     <div>
                         <label for="edit-code-name-input" class="block text-sm font-medium text-slate-600 mb-1">Variation Name / Code</label>
                         <input type="text" id="edit-code-name-input" class="w-full p-3 input-field rounded-lg border-slate-200">
+                    </div>
+                     <div>
+                        <label for="edit-code-image-url-input" class="block text-sm font-medium text-slate-600 mb-1">Image URL</label>
+                        <input type="text" id="edit-code-image-url-input" class="w-full p-3 input-field rounded-lg border-slate-200" placeholder="https://...">
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
@@ -1360,12 +1417,12 @@
     </div>
     <div id="customers-modal" class="hidden fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50 p-4">
         <div class="login-panel-enter w-full max-w-6xl">
-             <div class="relative panel bg-slate-50/80 backdrop-blur-2xl rounded-2xl shadow-2xl h-[90vh] flex flex-col overflow-hidden">
+             <div class="relative panel bg-slate-50 backdrop-blur-2xl rounded-2xl shadow-2xl h-[90vh] flex flex-col overflow-hidden">
                 <button id="customers-close-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-500 bg-white/50 hover:bg-slate-200/80 transition-colors z-20">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
 
-                <div class="flex-shrink-0 flex items-center gap-4 mb-4 p-6 border-b border-slate-200/80">
+                <div class="flex-shrink-0 flex items-center gap-4 p-6 border-b border-slate-200/80 bg-white/50">
                      <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-400 text-white rounded-3xl flex items-center justify-center shadow-lg shadow-green-500/30">
                         <i data-lucide="users-2" class="w-10 h-10"></i>
                     </div>
@@ -1377,8 +1434,8 @@
                 
                 <div class="flex-grow grid grid-cols-1 md:grid-cols-12 overflow-hidden">
                     <!-- Left Column: Customer List -->
-                    <div class="md:col-span-4 lg:col-span-3 border-r border-slate-200/80 flex flex-col overflow-hidden">
-                        <div class="p-4 flex-shrink-0">
+                    <div class="md:col-span-4 lg:col-span-3 bg-white border-r border-slate-200/80 flex flex-col overflow-hidden">
+                        <div class="p-4 flex-shrink-0 border-b border-slate-200/60">
                             <div class="relative">
                                 <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 pointer-events-none"></i>
                                 <input type="text" id="customer-search-input" placeholder="Search by name or phone..." class="w-full p-3 pl-12 input-field rounded-lg border-slate-200"/>
@@ -1387,15 +1444,15 @@
                         <div id="customers-list" class="flex-grow overflow-y-auto p-2 space-y-1">
                             <!-- Customer items will be injected here -->
                         </div>
-                        <div class="p-4 mt-auto flex-shrink-0 border-t border-slate-200/80">
-                            <button id="download-customers-btn" class="w-full flex items-center justify-center gap-2 btn-secondary py-3 rounded-lg font-semibold transition-transform hover:scale-105">
-                                <i data-lucide="download"></i><span>Download as Excel</span>
+                        <div class="p-4 mt-auto flex-shrink-0 border-t border-slate-200/80 bg-slate-50/50">
+                            <button id="download-customers-btn" class="w-full flex items-center justify-center gap-2 bg-white hover:bg-slate-100 border border-slate-200/80 text-slate-600 py-3 rounded-lg font-semibold transition-transform hover:scale-105">
+                                <i data-lucide="download-cloud" class="w-5 h-5 text-slate-500"></i><span>Download as Excel</span>
                             </button>
                         </div>
                     </div>
 
                     <!-- Right Column: Customer Details -->
-                    <div id="customer-details-view" class="md:col-span-8 lg:col-span-9 flex flex-col overflow-y-auto p-6 bg-white/50">
+                    <div id="customer-details-view" class="md:col-span-8 lg:col-span-9 flex flex-col overflow-y-auto p-6 sm:p-8">
                         <!-- Details will be injected here -->
                     </div>
                 </div>
@@ -2245,21 +2302,58 @@
                 discountToolNameInput.focus();
             };
 
-            const showPasswordModal = (title, message) => {
+            const showPasswordModal = (title, message, correctPassword) => {
+                const modalContent = passwordModal.querySelector('.relative');
+                const errorMessageEl = document.getElementById('password-error-message');
+
                 modalTitle.textContent = title;
                 modalMessage.textContent = message;
                 passwordInput.value = '';
+                errorMessageEl.innerHTML = '';
+                modalContent.classList.remove('shake');
+
                 passwordModal.classList.remove('hidden');
                 passwordInput.focus();
+
                 return new Promise((resolve) => {
-                    modalConfirmBtn.onclick = () => {
-                        passwordModal.classList.add('hidden');
-                        resolve(passwordInput.value);
+                    const confirmHandler = () => {
+                        const enteredPassword = passwordInput.value;
+                        if (enteredPassword === correctPassword) {
+                            cleanup();
+                            resolve(true);
+                        } else {
+                            errorMessageEl.innerHTML = `<i data-lucide="alert-circle" class="w-5 h-5"></i> <strong>Incorrect Password</strong>`;
+                            lucide.createIcons({ parentElement: errorMessageEl });
+                            modalContent.classList.add('shake');
+                            passwordInput.value = '';
+                            passwordInput.focus();
+                            setTimeout(() => {
+                                modalContent.classList.remove('shake');
+                            }, 500);
+                        }
                     };
-                    modalCancelBtn.onclick = () => {
-                        passwordModal.classList.add('hidden');
-                        resolve(null);
+
+                    const cancelHandler = () => {
+                        cleanup();
+                        resolve(false);
                     };
+                    
+                    const cleanup = () => {
+                        passwordModal.classList.add('hidden');
+                        modalConfirmBtn.removeEventListener('click', confirmHandler);
+                        modalCancelBtn.removeEventListener('click', cancelHandler);
+                        passwordInput.removeEventListener('keypress', enterKeyHandler);
+                    };
+                    
+                    const enterKeyHandler = (e) => {
+                        if (e.key === 'Enter') {
+                            confirmHandler();
+                        }
+                    };
+
+                    modalConfirmBtn.addEventListener('click', confirmHandler);
+                    modalCancelBtn.addEventListener('click', cancelHandler);
+                    passwordInput.addEventListener('keypress', enterKeyHandler);
                 });
             };
 
@@ -2884,10 +2978,17 @@
                         stockHTML = `<div class="text-xs font-semibold text-red-700 bg-red-100 px-2 py-1 rounded-full">Out of Stock</div>`;
                     }
 
+                    const codeImage = codeObj.imageUrl || product.imageUrl || 'https://placehold.co/100x100/e2e8f0/64748b?text=IMG';
+
                     optionDiv.innerHTML = `
-                        <div class="flex-grow">
-                            <p class="font-bold text-slate-800 text-lg">${codeObj.code}</p>
-                            ${codeDiscountText ? `<p class="text-sm text-slate-500 font-medium">${codeDiscountText}</p>`: ''}
+                        <div class="flex items-center gap-4">
+                            <div class="w-16 h-16 flex-shrink-0 bg-slate-100 rounded-lg overflow-hidden">
+                                <img src="${codeImage}" class="w-full h-full object-cover">
+                            </div>
+                            <div class="flex-grow">
+                                <p class="font-bold text-slate-800 text-lg">${codeObj.code}</p>
+                                ${codeDiscountText ? `<p class="text-sm text-slate-500 font-medium">${codeDiscountText}</p>`: ''}
+                            </div>
                         </div>
                         <div class="text-right flex-shrink-0 flex items-center gap-4">
                             ${stockHTML}
@@ -3084,15 +3185,10 @@
                 cashierSelect.classList.remove('border-red-500', 'border-2');
                 const selectedCashier = workerPermissions.cashiers[selectedCashierIndex];
 
-                const enteredKey = await showPasswordModal(`Confirm Cashier: ${selectedCashier.name}`, 'Please enter the activation key.');
+                const correct = await showPasswordModal(`Confirm Cashier: ${selectedCashier.name}`, 'Please enter the activation key.', selectedCashier.key);
 
-                if (enteredKey === null) return; 
+                if (!correct) return; // User cancelled or failed password
 
-                if (enteredKey !== selectedCashier.key) {
-                    showAlert('Incorrect activation key.');
-                    return;
-                }
-                
                 const invoiceObject = await saveInvoice(selectedCashier);
                 if (invoiceObject) {
                     if (!isReturnMode) {
@@ -3949,21 +4045,23 @@
                     productCodesList.innerHTML = '';
                     (productToEdit.codes || []).forEach(codeObj => {
                         const codeEl = document.createElement('div');
-                        codeEl.className = 'product-code-entry bg-white p-3 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-4 hover:bg-slate-50 cursor-pointer transition-colors';
+                        codeEl.className = 'product-code-entry bg-white p-3 rounded-xl border border-slate-200 flex items-center gap-4 hover:bg-slate-50 cursor-pointer transition-colors';
                         codeEl.dataset.code = codeObj.code;
                         codeEl.dataset.purchasePrice = codeObj.purchasePrice || 0;
                         codeEl.dataset.profitMargin = codeObj.profitMargin || 0;
                         codeEl.dataset.price = codeObj.price || 0;
                         codeEl.dataset.quantity = codeObj.quantity || 0;
                         codeEl.dataset.discount = codeObj.discount || 0;
+                        codeEl.dataset.imageUrl = codeObj.imageUrl || '';
                         
                         codeEl.innerHTML = `
-                             <div class="w-full sm:w-1/4 pointer-events-none">
-                                <div class="flex items-center justify-between">
+                            <div class="flex-shrink-0 w-12 h-12 bg-slate-100 rounded-lg overflow-hidden">
+                                <img src="${codeObj.imageUrl || productToEdit.imageUrl || 'https://placehold.co/100x100/e2e8f0/64748b?text=IMG'}" class="w-full h-full object-cover">
+                            </div>
+                             <div class="flex-grow grid grid-cols-2 sm:grid-cols-6 gap-x-4 gap-y-1 w-full pointer-events-none">
+                                <div class="col-span-2 sm:col-span-6">
                                     <span class="font-bold text-slate-800 code-name">${codeObj.code}</span>
                                 </div>
-                            </div>
-                            <div class="flex-grow grid grid-cols-2 sm:grid-cols-5 gap-2 w-full pointer-events-none">
                                 <div>
                                     <label class="block text-xs font-medium text-slate-500">Purchase</label>
                                     <span class="font-semibold text-sm">${(codeObj.purchasePrice || 0).toFixed(2)}</span>
@@ -3985,7 +4083,7 @@
                                     <span class="font-semibold text-sm">${codeObj.discount || 0}%</span>
                                 </div>
                             </div>
-                            <button class="delete-product-code-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100 z-10">
+                            <button class="delete-product-code-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100 z-10 self-start sm:self-center">
                                 <i data-lucide="x-circle" class="w-5 h-5 pointer-events-none"></i>
                             </button>
                         `;
@@ -4037,7 +4135,7 @@
                 let totalReturns = returnsToCalc.reduce((sum, ret) => sum + ret.total, 0);
 
                 if (invoicesToRender.length === 0) {
-                    invoicesListTbody.innerHTML = '<tr><td colspan="8" class="text-center text-[var(--text-secondary)] py-10">No invoices match the search criteria.</td></tr>';
+                    invoicesListTbody.innerHTML = '<tr><td colspan="5" class="text-center text-[var(--text-secondary)] py-10">No invoices match the search criteria.</td></tr>';
                 } else {
                     invoicesToRender.forEach(invoice => {
                         const dateObj = new Date(invoice.timestamp);
@@ -4045,6 +4143,7 @@
                         const timeString = dateObj.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
                         const remaining = invoice.total - invoice.tendered;
                         const row = document.createElement('tr');
+                        row.className = 'bg-white rounded-xl shadow-sm hover:shadow-lg hover:ring-2 hover:ring-blue-300 transition-all';
                         
                         const canManage = isDeveloperMode;
 
@@ -4061,25 +4160,51 @@
                         }
                         
                         actionsHTML += `</div>`;
-
-                        let editedHTML = '';
-                        if (invoice.editedTimestamp) {
-                            const editedDate = new Date(invoice.editedTimestamp);
-                            const editedTime = editedDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                            editedHTML = `<div class="text-xs text-[var(--text-secondary)] font-mono">Edited at ${editedTime}</div>`;
-                        }
                         
                         const totalDiscount = (invoice.discount || 0) + (invoice.invoiceDiscount || 0);
 
+                        let statusHTML = `<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
+                            <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Paid
+                        </div>`;
+                        if (remaining > 0) {
+                            statusHTML = `<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700">
+                                <i data-lucide="alert-circle" class="w-3.5 h-3.5"></i> Due: ${remaining.toFixed(2)}
+                            </div>`;
+                        } else if (invoice.editedTimestamp) {
+                            statusHTML = `<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-blue-100 text-blue-700">
+                                <i data-lucide="edit-3" class="w-3.5 h-3.5"></i> Edited
+                            </div>`;
+                        }
+
                         row.innerHTML = `
-                            <td class="p-3"><div class="font-mono">${invoice.id}</div>${editedHTML}</td>
-                            <td class="p-3"><div>${invoice.date}</div><div class="text-xs text-[var(--text-secondary)]">${dayName} - ${timeString}</div></td>
-                            <td class="p-3">${invoice.customerName}</td>
-                            <td class="p-3 font-bold text-[var(--accent-color)]">${invoice.total.toFixed(2)}</td>
-                            <td class="p-3 font-bold text-green-600">${invoice.tendered.toFixed(2)}</td>
-                            <td class="p-3 font-bold text-orange-600">${totalDiscount.toFixed(2)}</td>
-                            <td class="p-3 font-bold text-red-600">${remaining.toFixed(2)}</td>
-                            <td class="p-3 text-right">${actionsHTML}</td>
+                            <td class="p-4 rounded-l-xl">
+                                <p class="font-bold text-slate-800 font-mono">${invoice.id}</p>
+                                <p class="text-xs text-slate-500">${dayName}, ${timeString}</p>
+                            </td>
+                            <td class="p-4">
+                                <p class="font-semibold text-slate-700">${invoice.customerName}</p>
+                                <p class="text-xs text-slate-500 font-mono">${invoice.customerPhone || 'No phone number'}</p>
+                            </td>
+                            <td class="p-4">
+                                <div class="flex items-center gap-4">
+                                    <div>
+                                        <p class="text-xs text-slate-500">Total</p>
+                                        <p class="font-bold text-blue-600">${invoice.total.toFixed(2)}</p>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-slate-500">Discount</p>
+                                        <p class="font-bold text-orange-600">${totalDiscount.toFixed(2)}</p>
+                                    </div>
+                                     <div>
+                                        <p class="text-xs text-slate-500">Paid</p>
+                                        <p class="font-bold text-green-600">${invoice.tendered.toFixed(2)}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="p-4 text-center">
+                                ${statusHTML}
+                            </td>
+                            <td class="p-4 text-right rounded-r-xl">${actionsHTML}</td>
                         `;
                         invoicesListTbody.appendChild(row);
                         grandTotal += invoice.tendered;
@@ -4089,76 +4214,73 @@
                         else if (invoice.paymentMethod === 'Credit') totalCredit += invoice.tendered;
                     });
                 }
-                invoicesSummaryTfoot.innerHTML = `
-                    <tr>
-                        <td colspan="8" class="p-4 bg-slate-100/50">
-                            <div class="max-w-6xl mx-auto">
-                                <h3 class="text-xl font-bold text-center text-slate-700 mb-6">Payments Summary (Current Filter)</h3>
-                                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                                    <!-- Grand Total Payments Card -->
-                                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
-                                        <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl shadow-md shadow-green-500/30">
-                                            <i data-lucide="wallet" class="w-7 h-7"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-base font-semibold text-slate-500">Total Payments</p>
-                                            <p class="text-3xl font-black text-slate-800 tracking-tight">${grandTotal.toFixed(2)} EGP</p>
-                                        </div>
-                                    </div>
-                                    <!-- Total Returns Card -->
-                                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
-                                        <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-xl shadow-md shadow-red-500/30">
-                                            <i data-lucide="arrow-down-circle" class="w-7 h-7"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-base font-semibold text-slate-500">Total Returns</p>
-                                            <p class="text-3xl font-black text-slate-800 tracking-tight">${totalReturns.toFixed(2)} EGP</p>
-                                        </div>
-                                    </div>
-                                    <!-- Net Total Card -->
-                                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
-                                        <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl shadow-md shadow-blue-500/30">
-                                            <i data-lucide="receipt" class="w-7 h-7"></i>
-                                        </div>
-                                        <div>
-                                            <p class="text-base font-semibold text-slate-500">Net Total</p>
-                                            <p class="text-3xl font-black text-slate-800 tracking-tight">${(grandTotal + totalReturns).toFixed(2)} EGP</p>
-                                        </div>
-                                    </div>
+                const invoicesSummaryDiv = document.getElementById('invoices-summary');
+                invoicesSummaryDiv.innerHTML = `
+                    <div class="max-w-6xl mx-auto">
+                        <h3 class="text-xl font-bold text-center text-slate-700 mb-6">Payments Summary (Current Filter)</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                            <!-- Grand Total Payments Card -->
+                            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
+                                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl shadow-md shadow-green-500/30">
+                                    <i data-lucide="wallet" class="w-7 h-7"></i>
                                 </div>
-                                
-                                <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80">
-                                    <h4 class="text-lg font-bold text-slate-600 mb-4 text-center">Payment Method Breakdown</h4>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                                        <!-- Cash -->
-                                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
-                                            <div class="w-10 h-10 mx-auto flex items-center justify-center bg-teal-100 text-teal-600 rounded-full mb-2"><i data-lucide="banknote" class="w-6 h-6"></i></div>
-                                            <p class="text-sm text-slate-500 font-semibold">Cash</p>
-                                            <p class="font-bold text-slate-800 text-xl">${totalCash.toFixed(2)}</p>
-                                        </div>
-                                        <!-- Vodafone -->
-                                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
-                                            <div class="w-10 h-10 mx-auto flex items-center justify-center bg-red-100 text-red-600 rounded-full mb-2"><i data-lucide="smartphone" class="w-6 h-6"></i></div>
-                                            <p class="text-sm text-slate-500 font-semibold">Vodafone</p>
-                                            <p class="font-bold text-slate-800 text-xl">${totalVodafone.toFixed(2)}</p>
-                                        </div>
-                                        <!-- InstaPay -->
-                                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
-                                            <div class="w-10 h-10 mx-auto flex items-center justify-center bg-sky-100 text-sky-600 rounded-full mb-2"><i data-lucide="scan" class="w-6 h-6"></i></div>
-                                            <p class="text-sm text-slate-500 font-semibold">InstaPay</p>
-                                            <p class="font-bold text-slate-800 text-xl">${totalInstaPay.toFixed(2)}</p>
-                                        </div>
-                                        <!-- Credit -->
-                                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
-                                            <div class="w-10 h-10 mx-auto flex items-center justify-center bg-indigo-100 text-indigo-600 rounded-full mb-2"><i data-lucide="credit-card" class="w-6 h-6"></i></div>
-                                            <p class="text-sm text-slate-500 font-semibold">Credit</p>
-                                            <p class="font-bold text-slate-800 text-xl">${totalCredit.toFixed(2)}</p>
-                                        </div>
-                                    </div>
+                                <div>
+                                    <p class="text-base font-semibold text-slate-500">Total Payments</p>
+                                    <p class="text-3xl font-black text-slate-800 tracking-tight">${grandTotal.toFixed(2)} EGP</p>
                                 </div>
                             </div>
-                        </td>
-                    </tr>
+                            <!-- Total Returns Card -->
+                            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
+                                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-xl shadow-md shadow-red-500/30">
+                                    <i data-lucide="arrow-down-circle" class="w-7 h-7"></i>
+                                </div>
+                                <div>
+                                    <p class="text-base font-semibold text-slate-500">Total Returns</p>
+                                    <p class="text-3xl font-black text-slate-800 tracking-tight">${totalReturns.toFixed(2)} EGP</p>
+                                </div>
+                            </div>
+                            <!-- Net Total Card -->
+                            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
+                                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl shadow-md shadow-blue-500/30">
+                                    <i data-lucide="receipt" class="w-7 h-7"></i>
+                                </div>
+                                <div>
+                                    <p class="text-base font-semibold text-slate-500">Net Total</p>
+                                    <p class="text-3xl font-black text-slate-800 tracking-tight">${(grandTotal + totalReturns).toFixed(2)} EGP</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80">
+                            <h4 class="text-lg font-bold text-slate-600 mb-4 text-center">Payment Method Breakdown</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <!-- Cash -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
+                                    <div class="w-10 h-10 mx-auto flex items-center justify-center bg-teal-100 text-teal-600 rounded-full mb-2"><i data-lucide="banknote" class="w-6 h-6"></i></div>
+                                    <p class="text-sm text-slate-500 font-semibold">Cash</p>
+                                    <p class="font-bold text-slate-800 text-xl">${totalCash.toFixed(2)}</p>
+                                </div>
+                                <!-- Vodafone -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
+                                    <div class="w-10 h-10 mx-auto flex items-center justify-center bg-red-100 text-red-600 rounded-full mb-2"><i data-lucide="smartphone" class="w-6 h-6"></i></div>
+                                    <p class="text-sm text-slate-500 font-semibold">Vodafone</p>
+                                    <p class="font-bold text-slate-800 text-xl">${totalVodafone.toFixed(2)}</p>
+                                </div>
+                                <!-- InstaPay -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
+                                    <div class="w-10 h-10 mx-auto flex items-center justify-center bg-sky-100 text-sky-600 rounded-full mb-2"><i data-lucide="scan" class="w-6 h-6"></i></div>
+                                    <p class="text-sm text-slate-500 font-semibold">InstaPay</p>
+                                    <p class="font-bold text-slate-800 text-xl">${totalInstaPay.toFixed(2)}</p>
+                                </div>
+                                <!-- Credit -->
+                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
+                                    <div class="w-10 h-10 mx-auto flex items-center justify-center bg-indigo-100 text-indigo-600 rounded-full mb-2"><i data-lucide="credit-card" class="w-6 h-6"></i></div>
+                                    <p class="text-sm text-slate-500 font-semibold">Credit</p>
+                                    <p class="font-bold text-slate-800 text-xl">${totalCredit.toFixed(2)}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 `;
                  lucide.createIcons();
             }
@@ -4185,26 +4307,47 @@
                 }
 
                 returnsToRender.sort((a, b) => b.timestamp - a.timestamp);
-                returnsListTbody.innerHTML = '';
+                const returnsListContainer = document.getElementById('returns-list');
+                returnsListContainer.innerHTML = '';
                 if (returnsToRender.length === 0) {
-                    returnsListTbody.innerHTML = '<tr><td colspan="6" class="text-center text-[var(--text-secondary)] py-10">No returns match the search criteria.</td></tr>';
+                    returnsListContainer.innerHTML = '<div class="text-center text-[var(--text-secondary)] py-16"><i data-lucide="search-x" class="mx-auto h-12 w-12 text-slate-400"></i><p class="mt-2 font-semibold">No returns match the search criteria.</p></div>';
                 } else {
                     returnsToRender.forEach(ret => {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td class="p-3 font-mono">${ret.id}</td>
-                            <td class="p-3">${ret.date}</td>
-                            <td class="p-3">${ret.customerName}</td>
-                            <td class="p-3 font-mono">${ret.originalInvoiceId}</td>
-                            <td class="p-3 font-bold text-red-600">${ret.total.toFixed(2)}</td>
-                            <td class="p-3 text-right">
-                                <div class="flex items-center justify-end gap-2">
+                        const returnCard = document.createElement('div');
+                        returnCard.className = 'bg-white rounded-xl shadow-sm hover:shadow-md hover:ring-2 hover:ring-amber-300 transition-all p-4';
+                        
+                        returnCard.innerHTML = `
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-amber-100 text-amber-600 rounded-lg">
+                                        <i data-lucide="receipt" class="w-5 h-5"></i>
+                                    </div>
+                                    <div>
+                                        <p class="font-bold text-slate-800 font-mono">${ret.id}</p>
+                                        <p class="text-xs text-slate-500">${new Date(ret.timestamp).toLocaleString('en-US')}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-4 sm:mt-0 flex items-center justify-end gap-2">
                                     <button data-id="${ret.id}" class="view-return-details-btn flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-500 hover:text-blue-600 transition-colors" title="View Details"><i data-lucide="eye" class="h-5 w-5"></i></button>
                                     <button data-id="${ret.id}" class="print-saved-return-btn flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 transition-colors" title="Print Return"><i data-lucide="printer" class="h-5 w-5"></i></button>
                                 </div>
-                            </td>
+                            </div>
+                            <div class="mt-4 pt-4 border-t border-slate-200/80 grid grid-cols-1 sm:grid-cols-3 gap-4 text-sm">
+                                <div>
+                                    <p class="text-xs text-slate-500 font-semibold mb-1">Customer</p>
+                                    <p class="font-medium text-slate-700">${ret.customerName}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 font-semibold mb-1">Original Invoice</p>
+                                    <p class="font-medium text-slate-700 font-mono">${ret.originalInvoiceId}</p>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-slate-500 font-semibold mb-1">Return Value</p>
+                                    <p class="font-bold text-xl text-red-600 font-mono">${ret.total.toFixed(2)} EGP</p>
+                                </div>
+                            </div>
                         `;
-                        returnsListTbody.appendChild(row);
+                        returnsListContainer.appendChild(returnCard);
                     });
                 }
                 lucide.createIcons();
@@ -4242,18 +4385,6 @@
                 posView.classList.add('flex'); 
             }
             
-            const showExpensesView = () => {
-                renderExpensesList();
-                posView.classList.add('hidden-view');
-                invoicesView.classList.add('hidden-view');
-                returnsView.classList.add('hidden-view');
-                invoiceDetailsView.classList.add('hidden-view');
-                expensesView.classList.remove('hidden-view');
-                expensesView.classList.add('flex');
-                deleteAllExpensesBtn.style.display = isDeveloperMode ? 'flex' : 'none';
-                lucide.createIcons();
-            };
-
             const showInventoryView = () => {
                 renderInventoryList();
                 posView.classList.add('hidden-view');
@@ -4263,6 +4394,18 @@
                 expensesView.classList.add('hidden-view');
                 inventoryView.classList.remove('hidden-view');
                 inventoryView.classList.add('flex');
+                lucide.createIcons();
+            };
+
+            const showExpensesView = () => {
+                renderExpensesList();
+                posView.classList.add('hidden-view');
+                invoicesView.classList.add('hidden-view');
+                returnsView.classList.add('hidden-view');
+                invoiceDetailsView.classList.add('hidden-view');
+                expensesView.classList.remove('hidden-view');
+                expensesView.classList.add('flex');
+                deleteAllExpensesBtn.style.display = isDeveloperMode ? 'flex' : 'none';
                 lucide.createIcons();
             };
 
@@ -4297,26 +4440,15 @@
                         return false;
                     }
                 } else {
-                    const password = await showPasswordModal(title, message);
-                    if (password === "123") { 
-                        return true;
-                    } else if (password !== null) {
-                        await showAlert('Incorrect password.');
-                        return false;
-                    }
-                    return false;
+                    // Offline mode uses the password modal
+                    const correct = await showPasswordModal(title, message, "123"); // Hardcoded password from original logic
+                    return correct;
                 }
             };
 
             const confirmDangerousAction = async (title, message) => {
-                const password = await showPasswordModal(title, `${message}\nPlease enter the manager password to proceed.`);
-                if (password === workerPassword) {
-                    return true;
-                } else if (password !== null) {
-                    await showAlert('Incorrect manager password. Action cancelled.');
-                    return false;
-                }
-                return false; // User cancelled
+                const correct = await showPasswordModal(title, `${message}\nPlease enter the manager password to proceed.`, workerPassword);
+                return correct;
             };
 
             const deleteInvoice = async (invoiceId, firestoreId) => {
@@ -4395,7 +4527,10 @@
             const showInvoiceDetails = async (invoiceId) => {
                 let invoicesToSearch = isOnlineMode ? firestoreInvoices : JSON.parse(localStorage.getItem('savedInvoices')) || [];
                 const invoice = invoicesToSearch.find(inv => inv.id === invoiceId);
-                if (!invoice) return;
+                if (!invoice) {
+                    showAlert('Could not find the requested invoice details. The original invoice may have been deleted.');
+                    return;
+                }
 
                 let returnsForThisInvoice = [];
                 if(isOnlineMode) {
@@ -4561,11 +4696,9 @@
                 if (isDeveloperMode) {
                     isDeveloperMode = false;
                 } else {
-                    const password = await showPasswordModal('Enable Manager', 'Please enter the owner password to continue.');
-                    if (password === workerPassword) {
+                    const correct = await showPasswordModal('Enable Manager', 'Please enter the owner password to continue.', workerPassword);
+                    if (correct) {
                         isDeveloperMode = true;
-                    } else if (password !== null) {
-                        await showAlert('Incorrect password.');
                     }
                 }
                 updateUIMode();
@@ -4642,7 +4775,7 @@
                     }
 
                     userInfoDiv.innerHTML = `<div class="flex items-center gap-3">
-                        <div class="text-right hidden">
+                        <div class="text-left hidden">
                             <p class="font-bold text-sm text-slate-800 leading-tight">${user.displayName}</p>
                             <div id="developer-mode-status" class="text-xs text-cyan-600 font-semibold leading-tight"></div>
                         </div>
@@ -5639,24 +5772,27 @@
                 const customersListContainer = document.getElementById('customers-list');
                 customersListContainer.innerHTML = '';
                 if (sortedCustomers.length === 0) {
-                    customersListContainer.innerHTML = '<p class="text-center text-[var(--text-secondary)] p-10">No customers found.</p>';
+                    customersListContainer.innerHTML = '<p class="text-center text-slate-500 p-10">No customers found.</p>';
                 } else {
                     sortedCustomers.forEach(customer => {
                         const customerDiv = document.createElement('div');
-                        customerDiv.className = 'customer-list-item flex items-center justify-between p-3 rounded-lg hover:bg-blue-100/50 border border-transparent transition-all cursor-pointer';
+                        customerDiv.className = 'customer-list-item group flex items-center justify-between p-3 rounded-lg hover:bg-blue-100/60 border-2 border-transparent hover:border-blue-200 transition-all cursor-pointer';
                         customerDiv.dataset.phone = customer.phone;
 
                         customerDiv.innerHTML = `
-                            <div class="flex items-center gap-3 overflow-hidden">
-                                <div class="bg-slate-200 text-slate-600 rounded-full h-10 w-10 flex-shrink-0 flex items-center justify-center">
-                                    <i data-lucide="user" class="w-5 h-5"></i>
+                            <div class="flex items-center gap-4 overflow-hidden">
+                                <div class="w-12 h-12 flex-shrink-0 rounded-full bg-slate-200 text-slate-600 flex items-center justify-center">
+                                    <i data-lucide="user-round" class="w-6 h-6"></i>
                                 </div>
                                 <div class="truncate">
                                     <p class="font-bold text-sm text-slate-800 truncate">${customer.name}</p>
                                     <p class="text-xs text-slate-500 font-mono">${customer.phone}</p>
                                 </div>
                             </div>
-                            <i data-lucide="chevron-right" class="h-5 w-5 text-slate-400 flex-shrink-0"></i>
+                            <div class="flex items-center gap-2">
+                                <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-1 rounded-full">${customer.invoiceCount} invoices</span>
+                                <i data-lucide="chevron-right" class="h-5 w-5 text-slate-400 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity"></i>
+                              </div>
                         `;
                         customersListContainer.appendChild(customerDiv);
                     });
@@ -5685,12 +5821,12 @@
                 const lastPurchase = new Date(customerInvoices[0].timestamp).toLocaleDateString('en-US');
                 
                 const invoiceRows = customerInvoices.map(inv => `
-                    <tr class="border-b border-slate-200 last:border-b-0 hover:bg-slate-50">
-                        <td class="p-3 font-mono text-slate-700">${inv.id}</td>
-                        <td class="p-3 text-slate-600">${new Date(inv.timestamp).toLocaleDateString('en-US')}</td>
-                        <td class="p-3 text-slate-600">${inv.items.length}</td>
-                        <td class="p-3 font-bold text-blue-600 font-mono text-left">${inv.total.toFixed(2)} EGP</td>
-                        <td class="p-3 text-center">
+                    <tr class="border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50">
+                        <td class="p-4 font-mono text-slate-700">${inv.id}</td>
+                        <td class="p-4 text-slate-600">${new Date(inv.timestamp).toLocaleDateString('en-US')}</td>
+                        <td class="p-4 text-slate-600">${inv.items.length}</td>
+                        <td class="p-4 font-bold text-blue-600 font-mono text-left">${inv.total.toFixed(2)} EGP</td>
+                        <td class="p-4 text-center">
                              <button data-id="${inv.id}" class="view-invoice-details-btn-from-customer flex items-center justify-center w-8 h-8 rounded-full bg-slate-100 hover:bg-blue-100 text-slate-500 hover:text-blue-600 transition-colors" title="View Details">
                                 <i data-lucide="eye" class="h-4 w-4"></i>
                             </button>
@@ -5700,43 +5836,52 @@
 
                 detailsView.innerHTML = `
                     <div class="flex-shrink-0">
-                        <div class="flex items-center justify-between">
+                        <div class="flex flex-col sm:flex-row items-start justify-between pb-6 border-b border-slate-200">
                              <div>
-                                <h3 class="text-2xl font-bold text-slate-800">${customerName}</h3>
-                                <p class="text-slate-500 font-mono">${phone}</p>
+                                <h3 class="text-3xl font-bold text-slate-800">${customerName}</h3>
+                                <p class="text-slate-500 font-mono mt-1">${phone}</p>
                             </div>
-                            <button class="add-customer-to-invoice-btn-detailed flex items-center gap-2 py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold" data-name="${customerName}" data-phone="${phone}">
+                            <button class="add-customer-to-invoice-btn-detailed mt-4 sm:mt-0 flex items-center gap-2 py-2 px-4 bg-green-500 hover:bg-green-600 text-white rounded-lg font-semibold transform hover:scale-105 transition-transform" data-name="${customerName}" data-phone="${phone}">
                                 <i data-lucide="plus-circle" class="w-5 h-5"></i>
                                 <span>Add to Current Invoice</span>
                             </button>
                         </div>
                        
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                            <div class="bg-white p-4 rounded-xl border border-slate-200">
-                                <p class="text-sm font-semibold text-slate-500">Total Spent</p>
-                                <p class="text-2xl font-bold text-green-600">${totalSpent.toFixed(2)} EGP</p>
+                            <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-start gap-4">
+                                <div class="w-12 h-12 flex-shrink-0 rounded-lg bg-green-100 text-green-600 flex items-center justify-center"><i data-lucide="wallet" class="w-6 h-6"></i></div>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-500">Total Spent</p>
+                                    <p class="text-2xl font-bold text-green-600">${totalSpent.toFixed(2)} EGP</p>
+                                </div>
                             </div>
-                            <div class="bg-white p-4 rounded-xl border border-slate-200">
-                                <p class="text-sm font-semibold text-slate-500">Number of Invoices</p>
-                                <p class="text-2xl font-bold text-slate-700">${customerInvoices.length}</p>
+                            <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-start gap-4">
+                                <div class="w-12 h-12 flex-shrink-0 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center"><i data-lucide="receipt" class="w-6 h-6"></i></div>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-500">Invoices</p>
+                                    <p class="text-2xl font-bold text-slate-700">${customerInvoices.length}</p>
+                                </div>
                             </div>
-                             <div class="bg-white p-4 rounded-xl border border-slate-200">
-                                <p class="text-sm font-semibold text-slate-500">Last Purchase</p>
-                                <p class="text-xl font-bold text-slate-700">${lastPurchase}</p>
+                             <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm flex items-start gap-4">
+                                <div class="w-12 h-12 flex-shrink-0 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center"><i data-lucide="calendar-check-2" class="w-6 h-6"></i></div>
+                                <div>
+                                    <p class="text-sm font-semibold text-slate-500">Last Purchase</p>
+                                    <p class="text-xl font-bold text-slate-700">${lastPurchase}</p>
+                                </div>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-6 flex-grow overflow-y-auto">
-                         <h4 class="font-bold text-slate-700 mb-2">Invoice History</h4>
-                         <div class="border rounded-lg overflow-hidden bg-white">
-                             <table class="w-full text-sm text-right">
-                                <thead class="bg-slate-50">
+                    <div class="mt-8 flex-grow overflow-y-auto">
+                         <h4 class="font-bold text-lg text-slate-700 mb-3">Invoice History</h4>
+                         <div class="border rounded-lg overflow-hidden bg-white shadow-sm">
+                             <table class="w-full text-sm">
+                                <thead class="bg-slate-50/70">
                                     <tr>
-                                        <th class="p-3 font-semibold text-slate-500">Invoice #</th>
-                                        <th class="p-3 font-semibold text-slate-500">Date</th>
-                                        <th class="p-3 font-semibold text-slate-500">Items</th>
-                                        <th class="p-3 font-semibold text-slate-500 text-left">Total</th>
-                                        <th class="p-3"></th>
+                                        <th class="p-4 text-left font-semibold text-slate-500">Invoice #</th>
+                                        <th class="p-4 text-left font-semibold text-slate-500">Date</th>
+                                        <th class="p-4 text-left font-semibold text-slate-500">Items</th>
+                                        <th class="p-4 font-semibold text-slate-500 text-left">Total</th>
+                                        <th class="p-4"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -5753,10 +5898,10 @@
                 document.getElementById('customer-search-input').value = '';
                 renderCustomersList();
                 document.getElementById('customer-details-view').innerHTML = `
-                    <div class="flex flex-col items-center justify-center h-full text-slate-400 text-center">
+                    <div class="flex flex-col items-center justify-center h-full text-slate-400 text-center p-8">
                         <i data-lucide="users-2" class="w-24 h-24 text-slate-300 mb-4"></i>
-                        <h4 class="text-lg font-bold">Select a customer from the list</h4>
-                        <p>To view their complete purchase history.</p>
+                        <h4 class="text-lg font-bold text-slate-600">Select a customer from the list</h4>
+                        <p>To view their complete purchase history and details.</p>
                     </div>
                 `;
                 customersModal.classList.remove('hidden');
@@ -6451,22 +6596,22 @@
                 
                 const codeElements = productCodesList.querySelectorAll('.product-code-entry');
                 const codes = Array.from(codeElements).map(div => {
-                    const hasInputs = div.querySelector('input.product-code-quantity-input');
-
-                    if (hasInputs) {
-                        // This is a newly added variation with input fields
-                        return {
-                            code: div.querySelector('.code-name').textContent.trim(),
-                            purchasePrice: parseFloat(div.querySelector('.product-code-purchase-price-input').value) || 0,
-                            profitMargin: parseFloat(div.querySelector('.product-code-profit-margin-input').value) || 0,
-                            price: parseFloat(div.querySelector('.product-code-price-input').value) || 0,
-                            quantity: parseInt(div.querySelector('.product-code-quantity-input').value, 10) || 0,
-                            discount: parseInt(div.querySelector('.product-code-discount-input').value, 10) || 0,
-                        };
-                    } else {
-                        // This is an existing variation, read from dataset
+                     const hasInputs = div.querySelector('input.product-code-quantity-input');
+                     if (hasInputs) {
+                         // This is a newly added variation with input fields
+                         return {
+                             code: div.querySelector('.code-name').textContent.trim(),
+                             imageUrl: div.dataset.imageUrl || null,
+                             purchasePrice: parseFloat(div.querySelector('.product-code-purchase-price-input').value) || 0,
+                             profitMargin: parseFloat(div.querySelector('.product-code-profit-margin-input').value) || 0,
+                             price: parseFloat(div.querySelector('.product-code-price-input').value) || 0,
+                             quantity: parseInt(div.querySelector('.product-code-quantity-input').value, 10) || 0,
+                             discount: 0,
+                         };
+                     } else {
                         return {
                             code: div.dataset.code,
+                            imageUrl: div.dataset.imageUrl || null,
                             purchasePrice: parseFloat(div.dataset.purchasePrice) || 0,
                             profitMargin: parseFloat(div.dataset.profitMargin) || 0,
                             price: parseFloat(div.dataset.price) || 0,
@@ -6494,9 +6639,8 @@
                 editProductModal.classList.add('hidden');
             });
             modalDeleteProductBtn.addEventListener('click', async () => {
-                const confirmed = await showPasswordModal('Confirm Product Deletion', 'To delete this product, please enter the owner password.');
-                if (confirmed === workerPassword) await deleteProduct(editProductIdInput.value);
-                else if (confirmed !== null) await showAlert('Incorrect password.');
+                const correct = await showPasswordModal('Confirm Product Deletion', 'To delete this product, please enter the owner password.', workerPassword);
+                if (correct) await deleteProduct(editProductIdInput.value);
             });
             modalEditCancelBtn.addEventListener('click', () => editProductModal.classList.add('hidden'));
             tenderedInput.addEventListener('input', updateTotals);
@@ -6811,68 +6955,54 @@
                 const newProfitMargin = parseFloat(document.getElementById('new-product-code-profit-margin').value) || 0;
                 const newPrice = parseFloat(document.getElementById('new-product-code-price').value) || 0;
                 const newQuantity = parseInt(document.getElementById('new-product-code-quantity').value, 10) || 0;
-                const newDiscount = parseInt(document.getElementById('new-product-code-discount').value, 10) || 0;
+                const newImageUrl = document.getElementById('new-product-code-image-url').value.trim();
 
                 if (newCode) {
                     const codeEl = document.createElement('div');
-                    codeEl.className = 'product-code-entry bg-white p-3 rounded-xl border border-slate-200 flex flex-col sm:flex-row items-start sm:items-center gap-4';
+                    codeEl.className = 'product-code-entry bg-white p-3 rounded-xl border border-slate-200 flex items-center gap-4 hover:bg-slate-50 cursor-pointer transition-colors';
+                    codeEl.dataset.code = newCode;
+                    codeEl.dataset.purchasePrice = newPurchasePrice;
+                    codeEl.dataset.profitMargin = newProfitMargin;
+                    codeEl.dataset.price = newPrice;
+                    codeEl.dataset.quantity = newQuantity;
+                    codeEl.dataset.discount = 0; // Default discount to 0
+                    codeEl.dataset.imageUrl = newImageUrl;
+                    
                     codeEl.innerHTML = `
-                         <div class="w-full sm:w-1/4">
-                            <div class="flex items-center justify-between">
+                        <div class="flex-shrink-0 w-12 h-12 bg-slate-100 rounded-lg overflow-hidden">
+                            <img src="${newImageUrl || 'https://placehold.co/100x100/e2e8f0/64748b?text=IMG'}" class="w-full h-full object-cover">
+                        </div>
+                        <div class="flex-grow grid grid-cols-2 sm:grid-cols-6 gap-x-4 gap-y-1 w-full pointer-events-none">
+                            <div class="col-span-2 sm:col-span-6">
                                 <span class="font-bold text-slate-800 code-name">${newCode}</span>
-                                <button class="delete-product-code-btn sm:hidden text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100">
-                                    <i data-lucide="x-circle" class="w-5 h-5 pointer-events-none"></i>
-                                </button>
                             </div>
+                            <div><label class="block text-xs font-medium text-slate-500">Purchase</label><span class="font-semibold text-sm">${newPurchasePrice.toFixed(2)}</span></div>
+                            <div><label class="block text-xs font-medium text-slate-500">Profit %</label><span class="font-semibold text-sm">${newProfitMargin}%</span></div>
+                            <div><label class="block text-xs font-medium text-slate-500">Selling</label><span class="font-semibold text-sm">${newPrice.toFixed(2)}</span></div>
+                            <div><label class="block text-xs font-medium text-slate-500">Qty</label><span class="font-semibold text-sm">${newQuantity}</span></div>
+                            <div><label class="block text-xs font-medium text-slate-500">Disc. %</label><span class="font-semibold text-sm">0%</span></div>
                         </div>
-                        <div class="flex-grow grid grid-cols-2 sm:grid-cols-5 gap-2 w-full">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-500 mb-1">Purchase</label>
-                                <input type="number" value="${newPurchasePrice || ''}" class="product-code-purchase-price-input p-1.5 input-field text-center text-sm rounded-md w-full">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-500 mb-1">Profit %</label>
-                                <input type="number" value="${newProfitMargin || ''}" class="product-code-profit-margin-input p-1.5 input-field text-center text-sm rounded-md w-full">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-500 mb-1">Selling</label>
-                                <input type="number" value="${newPrice || ''}" class="product-code-price-input p-1.5 input-field text-center text-sm rounded-md font-bold bg-slate-100 w-full">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-500 mb-1">Qty</label>
-                                <input type="number" value="${newQuantity}" class="product-code-quantity-input p-1.5 input-field text-center text-sm rounded-md w-full">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-500 mb-1">Disc. %</label>
-                                <input type="number" value="${newDiscount || ''}" class="product-code-discount-input p-1.5 input-field text-center text-sm rounded-md w-full">
-                            </div>
-                        </div>
-                        <button class="delete-product-code-btn hidden sm:block text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100">
+                        <button class="delete-product-code-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100 z-10 self-start sm:self-center">
                             <i data-lucide="x-circle" class="w-5 h-5 pointer-events-none"></i>
                         </button>
                     `;
                     
-                    const purchaseInput = codeEl.querySelector('.product-code-purchase-price-input');
-                    const profitInput = codeEl.querySelector('.product-code-profit-margin-input');
-                    const sellingInput = codeEl.querySelector('.product-code-price-input');
-
-                    purchaseInput.addEventListener('input', () => calculateSellingPrice(purchaseInput, profitInput, sellingInput));
-                    profitInput.addEventListener('input', () => calculateSellingPrice(purchaseInput, profitInput, sellingInput));
-
                     codeEl.querySelector('.delete-product-code-btn').onclick = (e) => {
+                        e.stopPropagation();
                         e.target.closest('.product-code-entry').remove();
                         updateTotalQuantityInModal();
                     };
-                    codeEl.querySelector('.product-code-quantity-input').oninput = updateTotalQuantityInModal;
+                    
+                    codeEl.addEventListener('click', () => openEditCodeModal(codeEl));
                     productCodesList.appendChild(codeEl);
                     
-                    // Clear input fields for adding a new variation
+                    // Clear input fields
                     newProductCodeInput.value = '';
+                    document.getElementById('new-product-code-image-url').value = '';
                     document.getElementById('new-product-code-purchase-price').value = '';
                     document.getElementById('new-product-code-profit-margin').value = '';
                     document.getElementById('new-product-code-price').value = '';
                     document.getElementById('new-product-code-quantity').value = '';
-                    document.getElementById('new-product-code-discount').value = '';
 
                     lucide.createIcons();
                     updateTotalQuantityInModal();
@@ -6890,6 +7020,7 @@
                 
                 document.getElementById('edit-product-code-original-code').value = code;
                 document.getElementById('edit-code-name-input').value = code;
+                document.getElementById('edit-code-image-url-input').value = codeCardElement.dataset.imageUrl;
                 document.getElementById('edit-code-purchase-price').value = codeCardElement.dataset.purchasePrice;
                 document.getElementById('edit-code-profit-margin').value = codeCardElement.dataset.profitMargin;
                 document.getElementById('edit-code-price').value = codeCardElement.dataset.price;
@@ -6911,6 +7042,7 @@
 
                 // Read new values from modal
                 const newCode = document.getElementById('edit-code-name-input').value.trim();
+                const newImageUrl = document.getElementById('edit-code-image-url-input').value.trim();
                 const newPurchasePrice = parseFloat(document.getElementById('edit-code-purchase-price').value) || 0;
                 const newProfitMargin = parseFloat(document.getElementById('edit-code-profit-margin').value) || 0;
                 const newPrice = parseFloat(document.getElementById('edit-code-price').value) || 0;
@@ -6924,6 +7056,7 @@
 
                 // Update the dataset attributes on the card in the main modal
                 codeCardElement.dataset.code = newCode;
+                codeCardElement.dataset.imageUrl = newImageUrl;
                 codeCardElement.dataset.purchasePrice = newPurchasePrice;
                 codeCardElement.dataset.profitMargin = newProfitMargin;
                 codeCardElement.dataset.price = newPrice;
@@ -6932,34 +7065,20 @@
 
                 // Update the display HTML of the card
                 codeCardElement.innerHTML = `
-                     <div class="w-full sm:w-1/4 pointer-events-none">
-                        <div class="flex items-center justify-between">
+                    <div class="flex-shrink-0 w-12 h-12 bg-slate-100 rounded-lg overflow-hidden">
+                        <img src="${newImageUrl || 'https://placehold.co/100x100/e2e8f0/64748b?text=IMG'}" class="w-full h-full object-cover">
+                    </div>
+                     <div class="flex-grow grid grid-cols-2 sm:grid-cols-6 gap-x-4 gap-y-1 w-full pointer-events-none">
+                        <div class="col-span-2 sm:col-span-6">
                             <span class="font-bold text-slate-800 code-name">${newCode}</span>
                         </div>
+                        <div><label class="block text-xs font-medium text-slate-500">Purchase</label><span class="font-semibold text-sm">${newPurchasePrice.toFixed(2)}</span></div>
+                        <div><label class="block text-xs font-medium text-slate-500">Profit %</label><span class="font-semibold text-sm">${newProfitMargin}%</span></div>
+                        <div><label class="block text-xs font-medium text-slate-500">Selling</label><span class="font-semibold text-sm">${newPrice.toFixed(2)}</span></div>
+                        <div><label class="block text-xs font-medium text-slate-500">Qty</label><span class="font-semibold text-sm">${newQuantity}</span></div>
+                        <div><label class="block text-xs font-medium text-slate-500">Disc. %</label><span class="font-semibold text-sm">${newDiscount}%</span></div>
                     </div>
-                    <div class="flex-grow grid grid-cols-2 sm:grid-cols-5 gap-2 w-full pointer-events-none">
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500">Purchase</label>
-                            <span class="font-semibold text-sm">${newPurchasePrice.toFixed(2)}</span>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500">Profit %</label>
-                            <span class="font-semibold text-sm">${newProfitMargin}%</span>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500">Selling</label>
-                            <span class="font-semibold text-sm">${newPrice.toFixed(2)}</span>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500">Qty</label>
-                            <span class="font-semibold text-sm">${newQuantity}</span>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500">Disc. %</label>
-                            <span class="font-semibold text-sm">${newDiscount}%</span>
-                        </div>
-                    </div>
-                    <button class="delete-product-code-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100 z-10">
+                    <button class="delete-product-code-btn text-red-400 hover:text-red-600 p-1 rounded-full hover:bg-red-100 z-10 self-start sm:self-center">
                         <i data-lucide="x-circle" class="w-5 h-5 pointer-events-none"></i>
                     </button>
                 `;
