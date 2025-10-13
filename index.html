@@ -4,8 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Badrly POS System</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%230078d4%22></rect><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2265%22 font-weight=%22bold%22 fill=%22white%22 font-family=%22sans-serif%22>B</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2220%22 fill=%22%23561C24%22></rect><text x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22central%22 text-anchor=%22middle%22 font-size=%2265%22 font-weight=%22bold%22 fill=%22white%22 font-family=%22sans-serif%22>B</text></svg>">
+    
+    <!-- PWA and App Icon Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#561C24">
+    <link rel="apple-touch-icon" href="https://placehold.co/180x180/561C24/ffffff?text=B&font=sans">
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQmFkcmx5IFBPUyBTeXN0ZW0iLCJzaG9ydF9uYW1lIjoiQmFkcmx5UE9TIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiMxZjFmMWYiLCJ0aGVtZV9jb2xvciI6IiM1NjFDMjQiLCJpY29ucyI6W3sic3JjIjoiaHR0cHM6Ly9wbGFjZWhvbGQuY28vMTkyeDE5Mi81NjFDMjQvZmZmZmZmP3RleHQ9QiZmb250PXNhbnMiLCJzaXplcyI6IjE5MngxOTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9LHsic3JjIjoiaHR0cHM6Ly9wbGFjZWhvbGQuY28vNTEyeDUxMi81NjFDMjQvZmZmZmZmP3RleHQ9QiZmb250PXNhbnMiLCJzaXplcyI6IjUxMng1MTIiLCJ0eXBlIjoiaW1hZ2UvcG5nIiwicHVycG9zZSI6ImFueSBtYXNrYWJsZSJ9XX0=">
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=IBM+Plex+Sans+Arabic:wght@400;500;700&display=swap" rel="stylesheet">
@@ -19,7 +31,7 @@
     
     <style>
         :root {
-            --font-sans: 'Inter', sans-serif;
+            --font-sans: 'Inter', 'IBM Plex Sans Arabic', sans-serif;
             --font-receipt: 'IBM Plex Sans Arabic', sans-serif;
             --bg-color: #f3f3f3; 
             --text-primary: #000000;
@@ -35,6 +47,23 @@
             --secondary-btn-bg: #e1e1e1;
             --secondary-btn-hover: #d1d1d1;
         }
+
+        [data-theme="dark"] {
+            --bg-color: #121212;
+            --text-primary: #f5f5f5;
+            --text-secondary: #b3b3b3;
+            --accent-color: #C7B7A3;
+            --accent-hover: #E8D8C4;
+            --accent-glow: rgba(199, 183, 163, 0.2);
+            --btn-text-primary: #FFFFFF;
+            --panel-bg: #1f1f1f;
+            --panel-border: #4a4a4a;
+            --input-bg: #262626;
+            --input-border: #5a5a5a;
+            --secondary-btn-bg: #3a3a3a;
+            --secondary-btn-hover: #4a4a4a;
+        }
+
         body {
             font-family: var(--font-sans);
             background-color: var(--bg-color);
@@ -185,6 +214,20 @@
         }
         .hidden-view { display: none !important; }
 
+        #search-container.active {
+            width: 20rem; /* w-80 */
+        }
+        #search-container.active #search-input {
+            opacity: 1;
+            cursor: text;
+        }
+        #search-container.active #search-toggle-btn .search-icon {
+            transform: scale(0);
+        }
+        #search-container.active #search-toggle-btn .close-icon {
+            transform: scale(1);
+        }
+
         @keyframes fadeInScaleUp {
             from {
                 opacity: 0;
@@ -240,6 +283,36 @@
             animation: bell-shake 0.8s ease-in-out infinite;
         }
 
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(-100%);
+            }
+        }
+
+        .notification-slide-in {
+            animation: slideDown 0.5s ease-out forwards;
+        }
+        
+        .notification-slide-out {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+
         .inventory-card-details {
             max-height: 0;
             overflow: hidden;
@@ -284,6 +357,26 @@
             transition: width 0.5s ease-in-out;
         }
 
+        .notification-indicator::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #ef4444; /* red-500 */
+            border: 1.5px solid white;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.8);
+            animation: pulse-dot 1.5s infinite ease-out;
+        }
+
+        @keyframes pulse-dot {
+            0% { transform: scale(0.9); opacity: 1; }
+            70% { transform: scale(1.2); opacity: 0.5; }
+            100% { transform: scale(0.9); opacity: 1; }
+        }
+
         /* --- Collapsible Customer Details --- */
         #customer-details-content {
             transition: max-height 0.4s ease-out;
@@ -295,47 +388,244 @@
         #customer-details-container.expanded #customer-details-content {
             max-height: 500px; /* Adjust if content is taller */
         }
+
+         /* --- Dark Mode Overrides --- */
+        [data-theme="dark"] body {
+            background-color: var(--bg-color);
+            background-image: none;
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] .panel, 
+        [data-theme="dark"] .bg-white\/60,
+        [data-theme="dark"] .bg-white\/70,
+        [data-theme="dark"] .bg-white\/80,
+        [data-theme="dark"] .bg-white\/90 {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--panel-border);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        [data-theme="dark"] .bg-white { background-color: var(--panel-bg) !important; }
+        [data-theme="dark"] .text-slate-800,
+        [data-theme="dark"] .text-slate-700,
+        [data-theme="dark"] .text-slate-600,
+        [data-theme="dark"] .text-gray-800,
+        [data-theme="dark"] .text-gray-700 { 
+            color: var(--text-primary) !important; 
+        }
+        [data-theme="dark"] .text-slate-500,
+        [data-theme="dark"] .text-slate-400,
+        [data-theme="dark"] .text-gray-500,
+        [data-theme="dark"] .text-gray-400 { 
+            color: var(--text-secondary) !important; 
+        }
+        [data-theme="dark"] .border-slate-200,
+        [data-theme="dark"] .border-slate-200\/80,
+        [data-theme="dark"] .border-slate-300 { 
+            border-color: var(--panel-border) !important; 
+        }
+        [data-theme="dark"] .shadow-slate-300\/20 { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1); }
+        
+        [data-theme="dark"] .bg-slate-50, 
+        [data-theme="dark"] .hover\:bg-slate-50:hover,
+        [data-theme="dark"] .bg-slate-50\/50,
+        [data-theme="dark"] .bg-slate-50\/70 { 
+            background-color: rgba(58, 58, 58, 0.3) !important; 
+        }
+
+        [data-theme="dark"] .bg-slate-100,
+        [data-theme="dark"] .bg-slate-100\/80,
+        [data-theme="dark"] .bg-slate-200,
+        [data-theme="dark"] .bg-slate-200\/60,
+        [data-theme="dark"] .bg-slate-200\/80 {
+            background-color: var(--secondary-btn-bg) !important;
+        }
+        [data-theme="dark"] .hover\:bg-slate-100:hover,
+        [data-theme="dark"] .hover\:bg-slate-200:hover,
+        [data-theme="dark"] .hover\:bg-slate-200\/80:hover {
+            background-color: var(--secondary-btn-hover) !important;
+        }
+        
+        [data-theme="dark"] .bg-green-100 { background-color: rgba(74, 222, 128, 0.15) !important; }
+        [data-theme="dark"] .text-green-800, [data-theme="dark"] .text-green-700, [data-theme="dark"] .text-green-600 { color: #86efac !important; }
+        [data-theme="dark"] .bg-green-500 { background-color: #22c55e !important; }
+        [data-theme="dark"] .hover\:bg-green-600:hover { background-color: #16a34a !important; }
+        
+        [data-theme="dark"] .bg-red-100 { background-color: rgba(248, 113, 113, 0.15) !important; }
+        [data-theme="dark"] .hover\:bg-red-100:hover, [data-theme="dark"] .hover\:bg-red-50:hover { background-color: rgba(248, 113, 113, 0.25) !important; }
+        [data-theme="dark"] .text-red-700 { color: #fda4af !important; }
+        [data-theme="dark"] .text-red-600, [data-theme="dark"] .text-red-500 { color: #f87171 !important; }
+        [data-theme="dark"] .bg-red-50\/50 { background-color: rgba(239, 68, 68, 0.2) !important; }
+
+        [data-theme="dark"] .bg-yellow-50 { background-color: rgba(250, 204, 21, 0.15) !important; }
+        [data-theme="dark"] .text-yellow-600 { color: #fcd34d !important; }
+        
+        [data-theme="dark"] .bg-blue-100 { background-color: rgba(96, 165, 250, 0.15) !important; }
+        [data-theme="dark"] .text-blue-700, [data-theme="dark"] .text-blue-600 { color: var(--accent-color) !important; }
+        [data-theme="dark"] .bg-blue-600 { background-color: var(--accent-color) !important; color: #1b120e !important; }
+        [data-theme="dark"] .hover\:bg-blue-700:hover { background-color: var(--accent-hover) !important; }
+        
+        [data-theme="dark"] .bg-sky-500, [data-theme="dark"] .hover\:text-sky-600:hover { color: var(--accent-hover) !important; }
+        [data-theme="dark"] .text-sky-500 { color: var(--accent-color) !important; }
+
+        [data-theme="dark"] #customer-details-view { background-color: transparent !important; }
+        [data-theme="dark"] #reports-modal .bg-white { background-color: var(--panel-bg) !important; }
+        [data-theme="dark"] #invoice-details-content { background-color: var(--input-bg) !important; }
+        [data-theme="dark"] #customers-modal .bg-white { background-color: var(--input-bg) !important; }
+        [data-theme="dark"] #customers-modal .bg-slate-50 { background-color: var(--panel-bg) !important; }
+        [data-theme="dark"] #customers-modal .hover\:bg-blue-100\/60:hover { background-color: rgba(166, 133, 105, 0.2) !important; }
+        [data-theme="dark"] #customers-modal .bg-blue-100 { background-color: rgba(166, 133, 105, 0.2) !important; }
+        [data-theme="dark"] #customers-modal .bg-green-500 { background-image: linear-gradient(to top right, #a68569, #7b5f48) !important; }
+        [data-theme="dark"] #customers-modal .bg-white\/50 { background-color: rgba(83, 64, 48, 0.3) !important; }
+        [data-theme="dark"] #customers-modal .bg-slate-200 { background-color: rgba(123, 95, 72, 0.3) !important; color: var(--accent-color) !important; }
+
+        [data-theme="dark"] .product-card {
+            background-color: rgba(40, 40, 40, 0.5); /* semi-transparent background */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid var(--panel-border);
+        }
+        [data-theme="dark"] .product-card:hover {
+            background-color: rgba(50, 50, 50, 0.7);
+        }
+
+        /* --- Bulk Discount & Cashier Modal Dark Mode --- */
+        [data-theme="dark"] #new-tool-modal .bg-white,
+        [data-theme="dark"] #new-tool-modal .bg-slate-100,
+        [data-theme="dark"] #cashier-profiles-modal .bg-white\/50 {
+            background-color: var(--panel-bg) !important;
+        }
+        [data-theme="dark"] #new-tool-modal .bg-slate-50\/50,
+        [data-theme="dark"] #cashier-profiles-modal .bg-slate-50\/70 {
+             background-color: rgba(83, 64, 48, 0.4) !important;
+        }
+
+        [data-theme="dark"] #new-tool-modal .group:hover .main-product-row {
+            background-color: var(--secondary-btn-hover) !important;
+        }
+
+        [data-theme="dark"] #new-tool-modal .border-slate-300 {
+            border-color: var(--panel-border) !important;
+        }
+
+        [data-theme="dark"] #new-tool-modal .text-purple-600 { color: #d8b4fe !important; }
+        [data-theme="dark"] #new-tool-modal .bg-purple-100 { background-color: rgba(216, 180, 254, 0.15) !important; }
+        [data-theme="dark"] #new-tool-modal .from-purple-500 { --tw-gradient-from: #a68569; --tw-gradient-to: rgba(166, 133, 105, 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+        [data-theme="dark"] #new-tool-modal .to-indigo-500 { --tw-gradient-to: #7b5f48; }
+        [data-theme="dark"] #new-tool-modal .text-blue-500 { color: var(--accent-color) !important; }
+        [data-theme="dark"] #new-tool-modal .bg-blue-500 { background-color: var(--accent-color) !important; color: #1b120e !important; }
+        [data-theme="dark"] #new-tool-modal .hover\:bg-blue-600:hover { background-color: var(--accent-hover) !important; }
+
+        [data-theme="dark"] #cashier-profiles-modal .bg-teal-500 { --tw-gradient-from: #a68569; --tw-gradient-to: rgba(166, 133, 105, 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+        [data-theme="dark"] #cashier-profiles-modal .to-cyan-500 { --tw-gradient-to: #7b5f48; }
+        [data-theme="dark"] #cashier-profiles-modal .bg-blue-100 { background-color: rgba(166, 133, 105, 0.2) !important; }
+        [data-theme="dark"] #cashier-profiles-modal .text-blue-600 { color: var(--accent-color) !important; }
+
+        [data-theme="dark"] #unconfirmed-invoices-modal .from-yellow-500 { --tw-gradient-from: #a68569; --tw-gradient-to: rgba(166, 133, 105, 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
+        [data-theme="dark"] #unconfirmed-invoices-modal .to-orange-400 { --tw-gradient-to: #7b5f48; }
+        [data-theme="dark"] #unconfirmed-invoices-modal .bg-yellow-100 { background-color: rgba(166, 133, 105, 0.2) !important; }
+        [data-theme="dark"] #unconfirmed-invoices-modal .text-yellow-600 { color: var(--accent-color) !important; }
+
+        [data-theme="dark"] #invoice-archive-modal .text-gray-800 { color: var(--text-primary) !important; }
+        [data-theme="dark"] #invoice-archive-modal .text-gray-500 { color: var(--text-secondary) !important; }
+
+
+        [data-theme="dark"] .product-card.out-of-stock { background-color: rgba(20, 20, 20, 0.7); opacity: 0.6;}
+        [data-theme="dark"] .product-card.low-stock { border-color: #b45309; }
+        
+        [data-theme="dark"] .btn-primary {
+            background-image: linear-gradient(to top right, #6D2932, #561C24);
+            color: #ffffff;
+            border: none;
+        }
+        [data-theme="dark"] .btn-primary:hover {
+            background-image: linear-gradient(to top right, #561C24, #6D2932);
+        }
+        [data-theme="dark"] .btn-secondary { color: var(--text-primary); }
+
+        [data-theme="dark"] select option {
+            background-color: #34251b;
+            color: var(--text-primary);
+        }
+        [data-theme="dark"] #invoices-list tr, 
+        [data-theme="dark"] #returns-list > div {
+            background-color: var(--panel-bg);
+        }
+        [data-theme="dark"] #invoices-list .bg-white,
+        [data-theme="dark"] #returns-list .bg-white {
+            background-color: transparent !important;
+        }
+
+        [data-theme="dark"] #developer-info-modal .bg-white\/40 {
+             background-color: rgba(83, 64, 48, 0.4) !important;
+        }
+
+        [data-theme="dark"] .bg-purple-100 { background-color: rgba(168, 85, 247, 0.2) !important; }
+        [data-theme="dark"] .text-purple-800 { color: #d8b4fe !important; }
+        [data-theme="dark"] .bg-sky-100 { background-color: rgba(56, 189, 248, 0.2) !important; }
+        [data-theme="dark"] .text-sky-800 { color: #7dd3fc !important; }
+
+        [data-theme="dark"] .w-24.h-24.bg-gradient-to-br,
+        [data-theme="dark"] .w-14.h-14.bg-gradient-to-br,
+        [data-theme="dark"] .w-16.h-16.bg-gradient-to-br,
+        [data-theme="dark"] .w-12.h-12.bg-gradient-to-br,
+        [data-theme="dark"] .w-20.h-20.bg-gradient-to-br {
+            background-image: linear-gradient(to top right, #6D2932, #561C24) !important;
+        }
+
     </style>
 </head>
 <body>
+    <div id="top-notification" class="hidden fixed top-0 left-0 right-0 z-[250] p-4 flex justify-center pointer-events-none">
+        <div id="top-notification-content" class="w-full max-w-md text-center pointer-events-auto">
+            <div class="relative panel bg-white/80 backdrop-blur-xl p-4 sm:p-5 rounded-2xl shadow-2xl shadow-slate-300/20 flex items-start gap-4">
+                 <div id="notification-icon-container" class="w-12 h-12 flex-shrink-0 text-white rounded-xl flex items-center justify-center shadow-lg">
+                    <i id="notification-icon" data-lucide="info" class="w-7 h-7"></i>
+                </div>
+                <div class="flex-grow text-left">
+                    <h3 id="notification-title" class="text-lg font-bold">Notification</h3>
+                    <p id="notification-message" class="text-sm mt-1"></p>
+                </div>
+                <button id="notification-close-btn" class="p-2 rounded-full text-slate-500 hover:bg-slate-200/60 transition-colors flex-shrink-0">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
-    <div id="login-view" class="flex items-center justify-center min-h-screen p-4 bg-slate-100">
+    <div id="login-view" class="relative flex items-center justify-center min-h-screen p-4 bg-white dark:bg-[#161616] overflow-hidden transition-colors duration-500">
         <!-- Background Shapes -->
-        <div class="absolute top-0 -left-4 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
-        <div class="absolute top-0 -right-4 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-2000"></div>
-        <div class="absolute bottom-0 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob animation-delay-4000"></div>
+        <div class="absolute -top-1/4 -left-1/4 w-96 h-96 bg-sky-200 dark:bg-sky-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-50 dark:opacity-40 animate-blob"></div>
+        <div class="absolute -bottom-1/4 -right-1/4 w-96 h-96 bg-purple-200 dark:bg-purple-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-50 dark:opacity-40 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-1/4 -left-1/4 w-80 h-80 bg-pink-200 dark:bg-pink-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-50 dark:opacity-40 animate-blob animation-delay-4000"></div>
+        
+        <button id="login-help-btn" class="absolute top-6 right-6 p-2 rounded-full text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-white transition-colors z-20" title="Help Center">
+            <i data-lucide="life-buoy" class="w-6 h-6"></i>
+        </button>
 
         <div class="login-panel-enter w-full max-w-md text-center z-10">
-            <div class="relative bg-white/60 backdrop-blur-xl p-8 sm:p-12 rounded-2xl shadow-2xl shadow-slate-300/20 border border-white/80">
-                <button id="login-help-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 transition-colors" title="Help Center">
-                    <i data-lucide="life-buoy" class="w-6 h-6"></i>
-                </button>
-                
-                <div class="w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-400 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30 transform -rotate-12">
-                    <i data-lucide="shopping-cart" class="w-12 h-12"></i>
-                </div>
-                
-                <h1 class="text-3xl font-black text-slate-800 mb-2">Welcome to Badrly</h1>
-                <p class="text-slate-500 mb-8">Your integrated system for managing sales and inventory with ease and security.</p>
-
-                <div class="space-y-4">
-                    <button id="login-btn" class="w-full flex items-center justify-center gap-3 btn-primary text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-blue-500/30 text-lg transition-all transform hover:scale-105 btn-glow">
-                        <svg class="w-6 h-6" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.657-3.356-11.303-7.962l-6.571,4.819C9.656,39.663,16.318,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
-                        <span>Continue with Google</span>
-                    </button>
-                    <button id="owner-settings-btn" class="hidden w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-50 text-slate-600 font-bold py-4 px-4 rounded-xl shadow-sm border border-slate-200 text-lg transition-all transform hover:scale-105">
-                        <i data-lucide="shield-check" class="text-slate-500"></i>
-                        <span>Owner Access</span>
-                    </button>
-                </div>
-
-                <p id="login-status-message" class="text-slate-400 mt-8 h-6 transition-all"></p>
-
-                <div class="absolute bottom-4 left-0 right-0 text-center text-xs text-slate-400">
-                    <p>Powered by Al-Badr</p>
-                    <a href="http://badre.site/" target="_blank" class="font-semibold text-sky-500 hover:text-sky-600 transition-colors">Website</a>
-                </div>
+            <div class="w-32 h-32 bg-gradient-to-br from-sky-500 to-purple-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-sky-500/20">
+                <i data-lucide="shopping-cart" class="w-16 h-16"></i>
             </div>
+            
+            <h1 class="text-5xl font-black text-slate-800 dark:text-white mb-3">Welcome to Badrly</h1>
+            <p class="text-slate-500 dark:text-slate-400 text-lg mb-10">Your integrated system for managing sales and inventory with ease and security.</p>
+
+            <div class="space-y-4 max-w-sm mx-auto">
+                <button id="login-btn" class="w-full flex items-center justify-center gap-3 bg-slate-900 dark:bg-white text-white dark:text-slate-800 font-bold py-4 px-4 rounded-xl shadow-lg text-lg transition-all transform hover:scale-105">
+                    <svg class="w-6 h-6" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.657-3.356-11.303-7.962l-6.571,4.819C9.656,39.663,16.318,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+                    <span>Continue with Google</span>
+                </button>
+                <button id="owner-settings-btn" class="hidden w-full flex items-center justify-center gap-3 bg-white hover:bg-slate-50 dark:bg-slate-800/50 dark:hover:bg-slate-700/70 text-slate-600 dark:text-slate-300 font-bold py-4 px-4 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 text-lg transition-all transform hover:scale-105">
+                    <i data-lucide="shield-check" class="text-slate-500 dark:text-slate-400"></i>
+                    <span>Owner Access</span>
+                </button>
+            </div>
+            <p id="login-status-message" class="text-slate-400 mt-8 h-6 transition-all"></p>
+        </div>
+        
+        <div class="absolute bottom-6 left-0 right-0 text-center text-xs text-slate-400 dark:text-slate-500 z-10">
+            <p>Powered by Al-Badr</p>
+            <a href="http://badre.site/" target="_blank" class="font-semibold text-sky-500 dark:text-sky-400 hover:text-sky-600 dark:hover:text-sky-300 transition-colors">Website</a>
         </div>
     </div>
 
@@ -373,15 +663,17 @@
                 </div>
                 <div class="w-full lg:flex-1 panel p-6 flex flex-col h-full">
                     <div id="products-section" class="flex flex-col h-full">
-                         <div class="flex justify-between items-center mb-4">
+                         <div class="flex items-center mb-4 gap-4">
                             <div id="user-info" class="text-left relative"></div>
-                            <div class="flex items-center gap-4">
-                                <h2 class="text-3xl font-bold text-[var(--text-primary)]">Products</h2>
+                            <div id="search-container" class="relative flex justify-end items-center h-12 transition-all duration-300 ease-in-out w-12">
+                                <input type="text" id="search-input" placeholder="Search..." class="absolute top-0 left-0 w-full h-full pl-12 pr-4 text-sm input-field rounded-full shadow-sm transition-all duration-300 ease-in-out opacity-0 cursor-pointer origin-left" />
+                                <button id="search-toggle-btn" class="absolute top-0 left-0 w-12 h-12 flex items-center justify-center text-slate-500 z-10">
+                                    <i data-lucide="search" class="search-icon transition-all duration-300"></i>
+                                    <i data-lucide="x" class="close-icon transition-all duration-300 scale-0 absolute"></i>
+                                </button>
                             </div>
-                        </div>
-                        <div class="relative mb-4">
-                            <input type="text" id="search-input" placeholder="Search for a product by name or code..." class="w-full p-3 pr-10 input-field"/>
-                            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none"><i data-lucide="search" class="text-[var(--text-secondary)]"></i></div>
+                            <div class="flex-grow"></div>
+                            <h2 class="text-3xl font-bold text-[var(--text-primary)] text-right">Products</h2>
                         </div>
                         <div class="flex-grow overflow-y-auto pl-2">
                             <div id="products-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3"></div>
@@ -528,7 +820,7 @@
                             </div>
                         </div>
                     
-                        <div class="bg-blue-600 text-white rounded-2xl p-5 shadow-lg shadow-blue-500/30">
+                        <div class="bg-[var(--accent-color)] text-[var(--btn-text-primary)] rounded-2xl p-5 shadow-lg">
                             <div class="flex justify-between items-center">
                                 <span class="font-bold text-lg">Total</span>
                                 <span id="total" class="font-mono font-black text-4xl">0.00</span>
@@ -565,11 +857,11 @@
                     <!-- Actions Footer -->
                     <div class="mt-auto pt-4 space-y-3">
                         <div class="flex items-stretch gap-3">
-                            <button id="print-receipt-btn" class="flex-grow flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-xl shadow-lg shadow-blue-500/30 text-lg font-bold btn-glow transform hover:scale-105 transition-all">
+                            <button id="print-receipt-btn" class="flex-grow flex items-center justify-center gap-2.5 btn-primary py-4 rounded-xl shadow-lg text-lg font-bold btn-glow transform hover:scale-105 transition-all">
                                 <i data-lucide="save" class="w-6 h-6"></i>
                                 <span>Save & Print</span>
                             </button>
-                            <button id="preview-receipt-btn" title="Preview" class="w-16 h-auto flex-shrink-0 flex items-center justify-center bg-slate-700 hover:bg-slate-800 text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition-all">
+                            <button id="preview-receipt-btn" title="Preview" class="w-16 h-auto flex-shrink-0 flex items-center justify-center btn-secondary font-bold rounded-xl shadow-lg transform hover:scale-105 transition-all">
                                 <i data-lucide="eye" class="w-6 h-6"></i>
                             </button>
                         </div>
@@ -861,17 +1153,6 @@
                         </button>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-    <div id="alert-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-[110] p-4">
-        <div class="login-panel-enter w-full max-w-sm text-center">
-            <div class="relative panel bg-white/80 backdrop-blur-xl p-8 sm:p-10 rounded-2xl shadow-2xl shadow-slate-300/20">
-                <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-400 text-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/30">
-                    <i data-lucide="info" class="w-10 h-10"></i>
-                </div>
-                <p id="alert-message" class="text-lg mb-8 text-slate-700 font-medium"></p>
-                <button id="alert-ok-btn" class="w-full py-3 btn-primary rounded-lg btn-glow transform transition-transform hover:scale-105">OK</button>
             </div>
         </div>
     </div>
@@ -1540,97 +1821,99 @@
         </div>
     </div>
 
-    <div id="developer-info-modal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-md flex items-center justify-center z-50 p-4">
-        <div class="login-panel-enter w-full max-w-4xl">
-            <div class="relative panel bg-slate-50/80 backdrop-blur-2xl rounded-2xl shadow-2xl flex flex-col md:flex-row overflow-hidden max-h-[90vh]">
-                <button id="developer-info-close-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-500 bg-white/50 hover:bg-slate-200/80 transition-colors z-10">
+    <div id="developer-info-modal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-md flex items-center justify-center z-50 p-4">
+        <div class="login-panel-enter w-full max-w-3xl mx-auto">
+            <div class="relative bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl border border-white/30 dark:border-white/10 rounded-3xl shadow-2xl text-slate-800 dark:text-white overflow-hidden">
+                <button id="developer-info-close-btn" class="absolute top-6 right-6 p-2 rounded-full text-slate-600 dark:text-white/70 bg-black/10 hover:bg-black/20 transition-colors z-20">
                     <i data-lucide="x" class="w-6 h-6"></i>
                 </button>
-                <!-- Left Column -->
-                <div class="w-full md:w-1/3 bg-white/40 p-8 flex flex-col items-center justify-center text-center border-r border-slate-200/60">
-                    <img src="https://i.ibb.co/gZLR0jJd/5990e47e-caab-4e0a-ab8c-4ebd601a9bb7.jpg" alt="Developer Picture" class="w-32 h-32 rounded-full mb-4 ring-4 ring-white/60 shadow-lg">
-                    <h3 class="text-2xl font-bold text-slate-800">Badr Ibrahim Mohamed</h3>
-                    <p class="text-slate-500 mt-1 font-semibold">Graphic & Software Designer</p>
-                    <div class="mt-4 pt-4 border-t border-slate-200/80 w-full text-sm text-slate-600 space-y-2">
-                         <a href="tel:+201069913150" class="flex items-center justify-center gap-2 hover:text-sky-600 transition-colors">
+
+                <!-- Profile Header -->
+                <div class="p-8 text-center border-b border-slate-300/20 dark:border-white/10">
+                    <img src="https://i.postimg.cc/X7B4bsm1/Picsart-25-09-29-14-09-33-370-polarr.jpg" alt="Developer Picture" class="w-32 h-32 rounded-full mb-4 ring-4 ring-slate-300 dark:ring-amber-200/30 shadow-lg mx-auto">
+                    <h3 class="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">Badr Ibraheem Mohameed</h3>
+                    <p class="text-slate-600 dark:text-amber-200/90 mt-1 text-lg font-semibold">Graphic & Software Designer</p>
+                    <div class="mt-4 flex items-center justify-center flex-wrap gap-x-6 gap-y-2 text-sm text-slate-500 dark:text-amber-100/80">
+                         <a href="tel:+201069913150" class="flex items-center gap-2 hover:text-slate-900 dark:hover:text-white transition-colors">
                             <i data-lucide="phone" class="w-4 h-4"></i>
                             <span>+201069913150</span>
                         </a>
-                        <a href="mailto:bdr.e.mohameed@gmail.com" class="flex items-center justify-center gap-2 hover:text-sky-600 transition-colors">
+                        <a href="mailto:bdr.e.mohameed@gmail.com" class="flex items-center gap-2 hover:text-slate-900 dark:hover:text-white transition-colors">
                             <i data-lucide="mail" class="w-4 h-4"></i>
                             <span>bdr.e.mohameed@gmail.com</span>
                         </a>
                     </div>
-                    <div class="flex items-center justify-center flex-wrap gap-3 mt-6">
-                        <a href="https://badre.site/" target="_blank" class="p-3 bg-white/70 rounded-full text-sky-800 hover:bg-sky-500 hover:text-white transition-all transform hover:scale-110 shadow-md" title="Portfolio">
-                           <i data-lucide="globe" class="w-6 h-6"></i>
-                        </a>
-                        <a href="https://www.facebook.com/bdr.e.mohmed" target="_blank" class="p-3 bg-white/70 rounded-full text-slate-600 hover:bg-blue-600 hover:text-white transition-colors" title="Facebook">
-                           <svg class="w-6 h-6" role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-                        </a>
-                        <a href="https://www.instagram.com/bdr_e_mohamed" target="_blank" class="p-3 bg-white/70 rounded-full text-slate-600 hover:bg-pink-600 hover:text-white transition-colors" title="Instagram">
-                            <i data-lucide="instagram" class="w-6 h-6"></i>
-                        </a>
-                        <a href="https://github.com/bdremohameed" target="_blank" class="p-3 bg-white/70 rounded-full text-slate-600 hover:bg-gray-800 hover:text-white transition-colors" title="GitHub">
-                            <i data-lucide="github" class="w-6 h-6"></i>
-                        </a>
-                   </div>
                 </div>
 
-                <!-- Right Column -->
-                <div class="w-full md:w-2/3 p-8 relative overflow-y-auto">
-                    <div class="space-y-6">
+                <!-- Main Content -->
+                <div class="p-8 grid grid-cols-1 md:grid-cols-2 gap-8 max-h-[50vh] overflow-y-auto">
+                    <!-- Left column -->
+                    <div class="space-y-8">
                         <div>
-                            <h4 class="font-bold text-slate-800 flex items-center gap-3 mb-3 text-xl">
-                                <i data-lucide="user-round" class="w-6 h-6 text-sky-500"></i>
+                            <h4 class="font-bold text-slate-700 dark:text-amber-200/90 flex items-center gap-3 mb-3 text-lg">
+                                <i data-lucide="user-round" class="w-5 h-5"></i>
                                 <span>About Me</span>
                             </h4>
-                            <p class="text-slate-600 leading-relaxed">
-                                Creative graphic designer and software developer from Faiyum, Egypt with over 3 years of experience in print and digital advertising. Skilled in using 3D elements, Adobe Creative Suite, and modern web technologies to deliver high-quality, impactful visual projects and user experiences.
+                            <p class="text-slate-600 dark:text-white/70 leading-relaxed text-sm">
+                                Creative graphic designer and software developer from Faiyum, Egypt with over 3 years of experience. Skilled in using 3D elements, Adobe Creative Suite, and modern web technologies to deliver impactful visual projects.
                             </p>
                         </div>
-                        
                         <div>
-                            <h4 class="font-bold text-slate-800 flex items-center gap-3 mb-4 text-xl">
-                                <i data-lucide="sparkles" class="w-6 h-6 text-green-500"></i>
+                            <h4 class="font-bold text-slate-700 dark:text-amber-200/90 flex items-center gap-3 mb-3 text-lg">
+                                <i data-lucide="sparkles" class="w-5 h-5"></i>
                                 <span>My Services</span>
                             </h4>
-                            <ul class="space-y-2 text-slate-600">
-                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Software Systems Design</span></li>
-                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Database Management</span></li>
-                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Sales and Inventory Reports</span></li>
-                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Technical Support & System Updates</span></li>
-                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-5 h-5 text-green-500"></i><span>Data Security & System Protection</span></li>
+                            <ul class="space-y-2 text-slate-700 dark:text-white/80 text-sm">
+                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-4 h-4 text-green-500 dark:text-amber-300"></i><span>Software Systems Design</span></li>
+                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-4 h-4 text-green-500 dark:text-amber-300"></i><span>Database Management</span></li>
+                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-4 h-4 text-green-500 dark:text-amber-300"></i><span>Sales & Inventory Reports</span></li>
+                                <li class="flex items-center gap-3"><i data-lucide="check-circle-2" class="w-4 h-4 text-green-500 dark:text-amber-300"></i><span>Technical Support & Updates</span></li>
                             </ul>
                         </div>
-                        
-                        <div>
-                            <h4 class="font-bold text-slate-800 flex items-center gap-3 mb-4 text-xl">
-                                <i data-lucide="layers" class="w-6 h-6 text-purple-500"></i>
-                                <span>Skills & Technologies</span>
-                            </h4>
-                            <div class="space-y-4">
-                                <div>
-                                     <h5 class="font-semibold text-slate-500 mb-2">Programming Languages</h5>
-                                     <div class="flex flex-wrap gap-2">
-                                        <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">JavaScript</span>
-                                        <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">SQL</span>
-                                        <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">C#</span>
-                                        <span class="bg-purple-100 text-purple-800 text-sm font-medium px-3 py-1 rounded-full">PHP</span>
-                                    </div>
+                    </div>
+                    <!-- Right column -->
+                    <div>
+                         <h4 class="font-bold text-slate-700 dark:text-amber-200/90 flex items-center gap-3 mb-3 text-lg">
+                            <i data-lucide="layers" class="w-5 h-5"></i>
+                            <span>Skills & Technologies</span>
+                        </h4>
+                        <div class="space-y-4">
+                            <div>
+                                 <h5 class="font-semibold text-slate-500 dark:text-white/60 mb-2 text-sm">Programming Languages</h5>
+                                 <div class="flex flex-wrap gap-2">
+                                    <span class="bg-slate-200 dark:bg-[#C7B7A3]/10 text-slate-700 dark:text-[#E8D8C4] text-xs font-medium px-3 py-1 rounded-full border border-slate-300 dark:border-[#C7B7A3]/20">JavaScript</span>
+                                    <span class="bg-slate-200 dark:bg-[#C7B7A3]/10 text-slate-700 dark:text-[#E8D8C4] text-xs font-medium px-3 py-1 rounded-full border border-slate-300 dark:border-[#C7B7A3]/20">SQL</span>
+                                    <span class="bg-slate-200 dark:bg-[#C7B7A3]/10 text-slate-700 dark:text-[#E8D8C4] text-xs font-medium px-3 py-1 rounded-full border border-slate-300 dark:border-[#C7B7A3]/20">C#</span>
+                                    <span class="bg-slate-200 dark:bg-[#C7B7A3]/10 text-slate-700 dark:text-[#E8D8C4] text-xs font-medium px-3 py-1 rounded-full border border-slate-300 dark:border-[#C7B7A3]/20">PHP</span>
                                 </div>
-                                 <div>
-                                     <h5 class="font-semibold text-slate-500 mb-2">Software Used</h5>
-                                     <div class="flex flex-wrap gap-2">
-                                        <span class="bg-sky-100 text-sky-800 text-sm font-medium px-3 py-1 rounded-full">Visual Studio</span>
-                                        <span class="bg-sky-100 text-sky-800 text-sm font-medium px-3 py-1 rounded-full">MySQL / SQL Server</span>
-                                        <span class="bg-sky-100 text-sky-800 text-sm font-medium px-3 py-1 rounded-full">Firebase</span>
-                                    </div>
+                            </div>
+                             <div>
+                                 <h5 class="font-semibold text-slate-500 dark:text-white/60 mb-2 text-sm">Software Used</h5>
+                                 <div class="flex flex-wrap gap-2">
+                                    <span class="bg-slate-200 dark:bg-[#C7B7A3]/10 text-slate-700 dark:text-[#E8D8C4] text-xs font-medium px-3 py-1 rounded-full border border-slate-300 dark:border-[#C7B7A3]/20">Visual Studio</span>
+                                    <span class="bg-slate-200 dark:bg-[#C7B7A3]/10 text-slate-700 dark:text-[#E8D8C4] text-xs font-medium px-3 py-1 rounded-full border border-slate-300 dark:border-[#C7B7A3]/20">MySQL / SQL Server</span>
+                                    <span class="bg-slate-200 dark:bg-[#C7B7A3]/10 text-slate-700 dark:text-[#E8D8C4] text-xs font-medium px-3 py-1 rounded-full border border-slate-300 dark:border-[#C7B7A3]/20">Firebase</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
+
+                <!-- Footer with Social Links -->
+                <div class="p-6 bg-black/5 dark:bg-black/20 border-t border-slate-300/20 dark:border-white/10 flex items-center justify-center gap-4">
+                    <a href="https://badre.site/" target="_blank" class="p-3 bg-white dark:bg-white/10 rounded-full text-slate-600 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/20 hover:text-slate-900 dark:hover:text-white transition-all transform hover:scale-110 shadow-md" title="Portfolio">
+                       <i data-lucide="globe" class="w-5 h-5"></i>
+                    </a>
+                    <a href="https://www.facebook.com/bdr.e.mohmed" target="_blank" class="p-3 bg-white dark:bg-white/10 rounded-full text-slate-600 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/20 hover:text-slate-900 dark:hover:text-white transition-all transform hover:scale-110 shadow-md" title="Facebook">
+                       <svg class="w-5 h-5" role="img" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    </a>
+                    <a href="https://www.instagram.com/bdr_e_mohamed" target="_blank" class="p-3 bg-white dark:bg-white/10 rounded-full text-slate-600 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/20 hover:text-slate-900 dark:hover:text-white transition-all transform hover:scale-110 shadow-md" title="Instagram">
+                        <i data-lucide="instagram" class="w-5 h-5"></i>
+                    </a>
+                    <a href="https://github.com/bdremohameed" target="_blank" class="p-3 bg-white dark:bg-white/10 rounded-full text-slate-600 dark:text-white/80 hover:bg-slate-200 dark:hover:bg-white/20 hover:text-slate-900 dark:hover:text-white transition-all transform hover:scale-110 shadow-md" title="GitHub">
+                        <i data-lucide="github" class="w-5 h-5"></i>
+                    </a>
+               </div>
             </div>
         </div>
     </div>
@@ -1945,6 +2228,23 @@
         </div>
     </div>
 
+    <div id="renewal-notification-modal" class="hidden fixed top-0 left-0 right-0 z-[250] p-4 flex justify-center pointer-events-none">
+        <div id="renewal-notification-content" class="w-full max-w-2xl text-center pointer-events-auto">
+            <div class="relative panel bg-white/80 backdrop-blur-xl p-4 sm:p-5 rounded-2xl shadow-2xl shadow-slate-300/20 flex items-start gap-4">
+                 <div id="renewal-icon-container" class="w-12 h-12 flex-shrink-0 text-white rounded-xl flex items-center justify-center shadow-lg">
+                    <i id="renewal-icon" data-lucide="bell-ring" class="w-7 h-7"></i>
+                </div>
+                <div class="flex-grow text-left">
+                    <h3 id="renewal-title" class="text-lg font-bold"></h3>
+                    <p id="renewal-message" class="text-sm mt-1">Your access will expire in <span id="renewal-time-left" class="font-bold"></span>. Please contact the owner to renew your subscription.</p>
+                </div>
+                <button id="renewal-close-btn" class="p-2 rounded-full text-slate-500 hover:bg-slate-200/60 transition-colors flex-shrink-0">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
         <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, reauthenticateWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -2013,6 +2313,8 @@
             let isLockOverridden = false;
             let currentlyViewingUnconfirmedId = null;
             let currentReportData = null;
+            let currentTheme = 'light';
+            let latestVersionNumber = null;
             
             let db, auth, userId, app;
 
@@ -2035,6 +2337,8 @@
             const inventorySearchInput = document.getElementById('inventory-search-input');
             const productsGrid = document.getElementById('products-grid');
             const searchInput = document.getElementById('search-input');
+            const searchContainer = document.getElementById('search-container');
+            const searchToggleBtn = document.getElementById('search-toggle-btn');
             const cartItemsTbody = document.getElementById('cart-items');
             const subtotalEl = document.getElementById('subtotal');
             const totalDiscountEl = document.getElementById('total-discount');
@@ -2078,9 +2382,6 @@
             const passwordInput = document.getElementById('password-input');
             const modalCancelBtn = document.getElementById('modal-cancel-btn');
             const modalConfirmBtn = document.getElementById('modal-confirm-btn');
-            const alertModal = document.getElementById('alert-modal');
-            const alertMessage = document.getElementById('alert-message');
-            const alertOkBtn = document.getElementById('alert-ok-btn');
             const reauthConfirmModal = document.getElementById('reauth-confirm-modal');
             const reauthConfirmBtn = document.getElementById('reauth-confirm-btn');
             const reauthCancelBtn = document.getElementById('reauth-cancel-btn');
@@ -2204,6 +2505,54 @@
             const archiveDetailsCloseBtn = document.getElementById('archive-details-close-btn');
             const archiveDetailsContent = document.getElementById('archive-details-content');
 
+            const updateVersionNotificationIndicator = () => {
+                const lastSeenVersion = localStorage.getItem('lastSeenVersion') || '0';
+                const show = latestVersionNumber && latestVersionNumber !== lastSeenVersion;
+
+                const settingsBtn = document.getElementById('settings-btn');
+                const versionInfoIconWrapper = document.getElementById('version-info-icon-wrapper');
+
+                if (settingsBtn) {
+                    settingsBtn.classList.toggle('notification-indicator', show);
+                }
+                if (versionInfoIconWrapper) {
+                    versionInfoIconWrapper.classList.toggle('notification-indicator', show);
+                }
+            };
+
+            const applyTheme = (theme) => {
+                document.documentElement.setAttribute('data-theme', theme);
+                if (theme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+                currentTheme = theme;
+                localStorage.setItem('badrly-pos-theme', theme);
+            };
+
+            const toggleTheme = () => {
+                let newTheme;
+                if (currentTheme === 'light') {
+                    newTheme = 'dark';
+                } else {
+                    newTheme = 'light';
+                }
+                applyTheme(newTheme);
+            };
+
+            const loadTheme = () => {
+                const savedTheme = localStorage.getItem('badrly-pos-theme');
+                const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                if (savedTheme) {
+                    applyTheme(savedTheme);
+                } else if (systemPrefersDark) {
+                    applyTheme('dark');
+                } else {
+                    applyTheme('light');
+                }
+            };
+
             const editExpenseModal = document.getElementById('edit-expense-modal');
             const editExpenseIdInput = document.getElementById('edit-expense-id');
             const editExpenseDescriptionInput = document.getElementById('edit-expense-description');
@@ -2244,6 +2593,9 @@
             const modalConfirmNotesBtn = document.getElementById('modal-confirm-notes-btn');
             const modalCancelNotesBtn = document.getElementById('modal-cancel-notes-btn');
 
+            const renewalNotificationModal = document.getElementById('renewal-notification-modal');
+            const renewalCloseBtn = document.getElementById('renewal-close-btn');
+
             const systemLockModal = document.getElementById('system-lock-modal');
             const systemLockMessage = document.getElementById('system-lock-message');
             const systemLockEnabledToggle = document.getElementById('system-lock-enabled-toggle');
@@ -2274,14 +2626,73 @@
             const discountToolRemoveBtn = document.getElementById('discount-tool-remove-btn');
             let collectedOffers = new Map();
 
-            const showAlert = (message) => {
-                alertMessage.textContent = message;
-                alertModal.classList.remove('hidden');
-                return new Promise((resolve) => {
-                    alertOkBtn.onclick = () => {
-                        alertModal.classList.add('hidden');
+            let notificationTimeout;
+            const showAlert = (message, type = 'info', title = 'Notification') => {
+                 return new Promise((resolve) => {
+                    const notificationModal = document.getElementById('top-notification');
+                    const notificationContent = document.getElementById('top-notification-content');
+                    const iconContainer = document.getElementById('notification-icon-container');
+                    const iconEl = document.getElementById('notification-icon');
+                    const titleEl = document.getElementById('notification-title');
+                    const messageEl = document.getElementById('notification-message');
+                    const closeBtn = document.getElementById('notification-close-btn');
+
+                    if (!notificationModal) {
+                        console.error("Top notification element not found!");
                         resolve();
+                        return;
+                    }
+
+                    if (notificationTimeout) clearTimeout(notificationTimeout);
+
+                    messageEl.textContent = message;
+                    titleEl.textContent = title;
+
+                    iconContainer.className = 'w-12 h-12 flex-shrink-0 text-white rounded-xl flex items-center justify-center shadow-lg';
+                    
+                    switch(type) {
+                        case 'success':
+                            titleEl.textContent = title === 'Notification' ? 'Success' : title;
+                            iconContainer.classList.add('bg-gradient-to-br', 'from-green-500', 'to-emerald-500', 'shadow-green-500/30');
+                            iconEl.dataset.lucide = 'check-circle';
+                            break;
+                        case 'error':
+                            titleEl.textContent = title === 'Notification' ? 'Error' : title;
+                            iconContainer.classList.add('bg-gradient-to-br', 'from-red-500', 'to-orange-500', 'shadow-red-500/30');
+                            iconEl.dataset.lucide = 'alert-triangle';
+                            break;
+                        case 'warning':
+                            titleEl.textContent = title === 'Notification' ? 'Warning' : title;
+                            iconContainer.classList.add('bg-gradient-to-br', 'from-amber-500', 'to-orange-400', 'shadow-amber-500/30');
+                            iconEl.dataset.lucide = 'alert-circle';
+                            break;
+                        default: // info
+                            titleEl.textContent = title === 'Notification' ? 'Information' : title;
+                            iconContainer.classList.add('bg-gradient-to-br', 'from-blue-500', 'to-cyan-400', 'shadow-blue-500/30');
+                            iconEl.dataset.lucide = 'info';
+                            break;
+                    }
+                    
+                    lucide.createIcons();
+
+                    const hideNotification = () => {
+                        if(notificationModal.classList.contains('hidden')) return;
+                        clearTimeout(notificationTimeout);
+                        notificationContent.classList.remove('notification-slide-in');
+                        notificationContent.classList.add('notification-slide-out');
+                        notificationTimeout = setTimeout(() => {
+                            notificationModal.classList.add('hidden');
+                            resolve();
+                        }, 500);
                     };
+                    
+                    closeBtn.onclick = hideNotification;
+
+                    notificationModal.classList.remove('hidden');
+                    notificationContent.classList.remove('notification-slide-out');
+                    notificationContent.classList.add('notification-slide-in');
+                    
+                    notificationTimeout = setTimeout(hideNotification, 5000);
                 });
             };
 
@@ -2373,6 +2784,63 @@
                 });
             };
 
+            const showRenewalNotification = (timeLeft, isUrgent) => {
+                if (!renewalNotificationModal) return;
+
+                // If already visible, don't show another one.
+                if(!renewalNotificationModal.classList.contains('hidden')) return;
+
+                const notificationContent = document.getElementById('renewal-notification-content');
+                const iconContainer = document.getElementById('renewal-icon-container');
+                const iconEl = document.getElementById('renewal-icon');
+                const titleEl = document.getElementById('renewal-title');
+                const timeLeftEl = document.getElementById('renewal-time-left');
+
+                // Reset classes
+                iconContainer.className = 'w-12 h-12 flex-shrink-0 text-white rounded-xl flex items-center justify-center shadow-lg';
+                titleEl.className = 'text-lg font-bold';
+                if(timeLeftEl) timeLeftEl.className = 'font-bold';
+                
+                if (isUrgent) {
+                    iconContainer.classList.add('bg-gradient-to-br', 'from-red-500', 'to-orange-500', 'shadow-red-500/30');
+                    if(iconEl) iconEl.dataset.lucide = 'alert-triangle';
+                    if(timeLeftEl) timeLeftEl.classList.add('text-red-700');
+                    titleEl.textContent = "Subscription Warning";
+                    titleEl.classList.add('text-red-700');
+                } else {
+                    iconContainer.classList.add('bg-gradient-to-br', 'from-amber-500', 'to-orange-400', 'shadow-amber-500/30');
+                    if(iconEl) iconEl.dataset.lucide = 'bell-ring';
+                    if(timeLeftEl) timeLeftEl.classList.add('text-amber-600');
+                    titleEl.textContent = "Subscription Renewal Notice";
+                    titleEl.classList.add('text-amber-700');
+                }
+
+                const renewalDays = Math.floor(timeLeft / 86400);
+                const renewalHours = Math.floor((timeLeft % 86400) / 3600);
+                const renewalMinutes = Math.floor((timeLeft % 3600) / 60);
+
+                let renewalString = '';
+                if (renewalDays > 0) renewalString += `${renewalDays} day(s), `;
+                if (renewalHours > 0) renewalString += `${renewalHours} hour(s), `;
+                renewalString += `${renewalMinutes} minute(s)`;
+                
+                if(timeLeftEl) timeLeftEl.textContent = renewalString;
+
+                renewalNotificationModal.classList.remove('hidden');
+                notificationContent.classList.remove('notification-slide-out');
+                notificationContent.classList.add('notification-slide-in');
+                lucide.createIcons();
+                
+                // Auto-hide after 10 seconds
+                setTimeout(() => {
+                    if (!renewalNotificationModal.classList.contains('hidden')) {
+                         notificationContent.classList.remove('notification-slide-in');
+                         notificationContent.classList.add('notification-slide-out');
+                         setTimeout(() => renewalNotificationModal.classList.add('hidden'), 500);
+                    }
+                }, 10000);
+            };
+
             const defaultExpenseTypes = []; // All types are now custom and stored in Firestore
             let customExpenseTypes = [];
             let allExpenseTypes = [];
@@ -2454,6 +2922,26 @@
                     signOut(auth);
                     return;
                 }
+
+                const oneDayInSeconds = 1 * 24 * 60 * 60;
+                const threeDaysInSeconds = 3 * 24 * 60 * 60;
+
+                const notifiedOneDayKey = `notifiedExpiry_1_day_${sessionExpiryTimestamp}_${userId}`;
+                const notifiedThreeDayKey = `notifiedExpiry_3_days_${sessionExpiryTimestamp}_${userId}`;
+
+                // Check for 1-day warning
+                if (timeLeft <= oneDayInSeconds && !localStorage.getItem(notifiedOneDayKey)) {
+                    showRenewalNotification(timeLeft, true); // urgent
+                    localStorage.setItem(notifiedOneDayKey, 'true');
+                    // Mark 3-day as shown too, to prevent it from showing if the page is reloaded.
+                    localStorage.setItem(notifiedThreeDayKey, 'true');
+                } 
+                // Check for 3-day warning
+                else if (timeLeft <= threeDaysInSeconds && !localStorage.getItem(notifiedThreeDayKey)) {
+                    showRenewalNotification(timeLeft, false); // normal
+                    localStorage.setItem(notifiedThreeDayKey, 'true');
+                }
+                
                 let displayString = "";
                 const days = Math.floor(timeLeft / 86400);
                 const hours = Math.floor((timeLeft % 86400) / 3600);
@@ -3043,7 +3531,7 @@
                 const legacyIsActive = itemData.discount > 0 && (!itemData.discountEndDate || itemData.discountEndDate > now) && (!itemData.discountStartDate || itemData.discountStartDate <= now);
                 if (legacyIsActive && itemData.discount > productDiscountPercentage) {
                     productDiscountPercentage = itemData.discount;
-                    discountName = itemData.discountName;
+                    discountName = itemData.discountName || null; // FIX: Ensure discountName is not undefined
                 }
 
                 if (itemData.discounts && Array.isArray(itemData.discounts)) {
@@ -3176,7 +3664,7 @@
                 const selectedCashierIndex = cashierSelect.value;
 
                 if (selectedCashierIndex === '') {
-                    showAlert('Please select a cashier.');
+                    showAlert('Please select a cashier.', 'warning', 'Missing Information');
                     cashierSelect.classList.add('border-red-500', 'border-2');
                     cashierSelect.focus();
                     return;
@@ -3244,7 +3732,8 @@
                         notes: invoiceNotes,
                         items: cart,
                         subtotal: subtotal,
-                        discount: itemsDiscount, 
+                        itemsDiscount: itemsDiscount, 
+                        invoiceDiscount: 0, // Added for consistency
                         total: -total, 
                         tendered: -total,
                         paymentMethod: paymentMethodSelect.value,
@@ -3258,7 +3747,7 @@
                     invoiceData = {
                         ...originalData,
                         date: saleDate, customerName: customerName || 'N/A', customerPhone: customerPhone || 'N/A',
-                        items: cart, subtotal: subtotal, discount: itemsDiscount, invoiceDiscount: invoiceDiscount, total: total, tendered: finalTendered,
+                        items: cart, subtotal: subtotal, itemsDiscount: itemsDiscount, invoiceDiscount: invoiceDiscount, total: total, tendered: finalTendered,
                         paymentMethod: paymentMethodSelect.value, editedTimestamp: Date.now(),
                         originalInvoiceData: originalData.originalInvoiceData || originalData,
                         status: 'unconfirmed' // <-- ADD THIS
@@ -3267,7 +3756,7 @@
                      invoiceData = {
                         id: generateInvoiceId(), date: saleDate, timestamp: Date.now(),
                         customerName: customerName || 'N/A', customerPhone: customerPhone || 'N/A',
-                        items: cart, subtotal: subtotal, discount: itemsDiscount, invoiceDiscount: invoiceDiscount, total: total, tendered: finalTendered,
+                        items: cart, subtotal: subtotal, itemsDiscount: itemsDiscount, invoiceDiscount: invoiceDiscount, total: total, tendered: finalTendered,
                         paymentMethod: paymentMethodSelect.value,
                         notes: invoiceNotes,
                         cashierCode,
@@ -3388,8 +3877,7 @@
                     ? { text: 'var(--text-primary)', heading: 'var(--text-primary)', faint: 'var(--panel-border)', border: 'var(--panel-border)' } 
                     : { text: '#000000', heading: '#000000', faint: '#000000', border: '#000000' };
                 
-                const { id, customerName, customerPhone, items, subtotal, total, tendered, paymentMethod, originalInvoiceId, cashierCode, sellerName, timestamp, editedTimestamp, discount, invoiceDiscount, notes } = invoiceData;
-                const itemsDiscount = discount || 0;
+                const { id, customerName, customerPhone, items, subtotal, total, tendered, paymentMethod, originalInvoiceId, cashierCode, sellerName, timestamp, editedTimestamp, itemsDiscount, invoiceDiscount, notes } = invoiceData;
                 const change = tendered - total;
                 const hasItemDiscounts = itemsDiscount > 0 || items.some(item => (item.productDiscountPercentage || 0) > 0);
                 const hasInvoiceDiscount = invoiceDiscount > 0;
@@ -3734,7 +4222,7 @@
                     customerName: customerNameInput.value,
                     customerPhone: customerPhoneInput.value,
                     items: cart,
-                    subtotal, discount: itemsDiscount, invoiceDiscount, total, tendered: finalTendered,
+                    subtotal, itemsDiscount: itemsDiscount, invoiceDiscount, total, tendered: finalTendered,
                     paymentMethod: paymentMethodSelect.value,
                     originalInvoiceId: originalInvoiceForReturn ? originalInvoiceForReturn.id : null,
                     timestamp: Date.now(),
@@ -4161,7 +4649,7 @@
                         
                         actionsHTML += `</div>`;
                         
-                        const totalDiscount = (invoice.discount || 0) + (invoice.invoiceDiscount || 0);
+                        const totalDiscount = (invoice.itemsDiscount || 0) + (invoice.invoiceDiscount || 0);
 
                         let statusHTML = `<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700">
                             <i data-lucide="check-circle" class="w-3.5 h-3.5"></i> Paid
@@ -4217,66 +4705,66 @@
                 const invoicesSummaryDiv = document.getElementById('invoices-summary');
                 invoicesSummaryDiv.innerHTML = `
                     <div class="max-w-6xl mx-auto">
-                        <h3 class="text-xl font-bold text-center text-slate-700 mb-6">Payments Summary (Current Filter)</h3>
-                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                        <h3 class="text-lg font-bold text-center text-slate-700 mb-4">Payments Summary (Current Filter)</h3>
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
                             <!-- Grand Total Payments Card -->
-                            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
-                                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-xl shadow-md shadow-green-500/30">
-                                    <i data-lucide="wallet" class="w-7 h-7"></i>
+                            <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200/80 flex items-center gap-4">
+                                <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-600 text-white rounded-lg shadow-sm shadow-green-500/30">
+                                    <i data-lucide="wallet" class="w-6 h-6"></i>
                                 </div>
                                 <div>
-                                    <p class="text-base font-semibold text-slate-500">Total Payments</p>
-                                    <p class="text-3xl font-black text-slate-800 tracking-tight">${grandTotal.toFixed(2)} EGP</p>
+                                    <p class="text-sm font-semibold text-slate-500">Total Payments</p>
+                                    <p class="text-2xl font-bold text-slate-800 tracking-tight">${grandTotal.toFixed(2)} EGP</p>
                                 </div>
                             </div>
                             <!-- Total Returns Card -->
-                            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
-                                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-xl shadow-md shadow-red-500/30">
-                                    <i data-lucide="arrow-down-circle" class="w-7 h-7"></i>
+                            <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200/80 flex items-center gap-4">
+                                <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-red-500 to-rose-600 text-white rounded-lg shadow-sm shadow-red-500/30">
+                                    <i data-lucide="arrow-down-circle" class="w-6 h-6"></i>
                                 </div>
                                 <div>
-                                    <p class="text-base font-semibold text-slate-500">Total Returns</p>
-                                    <p class="text-3xl font-black text-slate-800 tracking-tight">${totalReturns.toFixed(2)} EGP</p>
+                                    <p class="text-sm font-semibold text-slate-500">Total Returns</p>
+                                    <p class="text-2xl font-bold text-slate-800 tracking-tight">${totalReturns.toFixed(2)} EGP</p>
                                 </div>
                             </div>
                             <!-- Net Total Card -->
-                            <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80 flex items-start gap-5">
-                                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-xl shadow-md shadow-blue-500/30">
-                                    <i data-lucide="receipt" class="w-7 h-7"></i>
+                            <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200/80 flex items-center gap-4">
+                                <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-gradient-to-br from-blue-500 to-cyan-500 text-white rounded-lg shadow-sm shadow-blue-500/30">
+                                    <i data-lucide="receipt" class="w-6 h-6"></i>
                                 </div>
                                 <div>
-                                    <p class="text-base font-semibold text-slate-500">Net Total</p>
-                                    <p class="text-3xl font-black text-slate-800 tracking-tight">${(grandTotal + totalReturns).toFixed(2)} EGP</p>
+                                    <p class="text-sm font-semibold text-slate-500">Net Total</p>
+                                    <p class="text-2xl font-bold text-slate-800 tracking-tight">${(grandTotal + totalReturns).toFixed(2)} EGP</p>
                                 </div>
                             </div>
                         </div>
                         
-                        <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80">
-                            <h4 class="text-lg font-bold text-slate-600 mb-4 text-center">Payment Method Breakdown</h4>
-                            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-white p-4 rounded-xl shadow-md border border-slate-200/80">
+                            <h4 class="text-base font-bold text-slate-600 mb-3 text-center">Payment Method Breakdown</h4>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                                 <!-- Cash -->
-                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
-                                    <div class="w-10 h-10 mx-auto flex items-center justify-center bg-teal-100 text-teal-600 rounded-full mb-2"><i data-lucide="banknote" class="w-6 h-6"></i></div>
-                                    <p class="text-sm text-slate-500 font-semibold">Cash</p>
-                                    <p class="font-bold text-slate-800 text-xl">${totalCash.toFixed(2)}</p>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200/80 text-center">
+                                    <div class="w-8 h-8 mx-auto flex items-center justify-center bg-teal-100 text-teal-600 rounded-full mb-1"><i data-lucide="banknote" class="w-5 h-5"></i></div>
+                                    <p class="text-xs text-slate-500 font-semibold">Cash</p>
+                                    <p class="font-bold text-slate-800 text-lg">${totalCash.toFixed(2)}</p>
                                 </div>
                                 <!-- Vodafone -->
-                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
-                                    <div class="w-10 h-10 mx-auto flex items-center justify-center bg-red-100 text-red-600 rounded-full mb-2"><i data-lucide="smartphone" class="w-6 h-6"></i></div>
-                                    <p class="text-sm text-slate-500 font-semibold">Vodafone</p>
-                                    <p class="font-bold text-slate-800 text-xl">${totalVodafone.toFixed(2)}</p>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200/80 text-center">
+                                    <div class="w-8 h-8 mx-auto flex items-center justify-center bg-red-100 text-red-600 rounded-full mb-1"><i data-lucide="smartphone" class="w-5 h-5"></i></div>
+                                    <p class="text-xs text-slate-500 font-semibold">Vodafone</p>
+                                    <p class="font-bold text-slate-800 text-lg">${totalVodafone.toFixed(2)}</p>
                                 </div>
                                 <!-- InstaPay -->
-                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
-                                    <div class="w-10 h-10 mx-auto flex items-center justify-center bg-sky-100 text-sky-600 rounded-full mb-2"><i data-lucide="scan" class="w-6 h-6"></i></div>
-                                    <p class="text-sm text-slate-500 font-semibold">InstaPay</p>
-                                    <p class="font-bold text-slate-800 text-xl">${totalInstaPay.toFixed(2)}</p>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200/80 text-center">
+                                    <div class="w-8 h-8 mx-auto flex items-center justify-center bg-sky-100 text-sky-600 rounded-full mb-1"><i data-lucide="scan" class="w-5 h-5"></i></div>
+                                    <p class="text-xs text-slate-500 font-semibold">InstaPay</p>
+                                    <p class="font-bold text-slate-800 text-lg">${totalInstaPay.toFixed(2)}</p>
                                 </div>
                                 <!-- Credit -->
-                                <div class="bg-slate-50 p-4 rounded-xl border border-slate-200/80 text-center">
-                                    <div class="w-10 h-10 mx-auto flex items-center justify-center bg-indigo-100 text-indigo-600 rounded-full mb-2"><i data-lucide="credit-card" class="w-6 h-6"></i></div>
-                                    <p class="text-sm text-slate-500 font-semibold">Credit</p>
-                                    <p class="font-bold text-slate-800 text-xl">${totalCredit.toFixed(2)}</p>
+                                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200/80 text-center">
+                                    <div class="w-8 h-8 mx-auto flex items-center justify-center bg-indigo-100 text-indigo-600 rounded-full mb-1"><i data-lucide="credit-card" class="w-5 h-5"></i></div>
+                                    <p class="text-xs text-slate-500 font-semibold">Credit</p>
+                                    <p class="font-bold text-slate-800 text-lg">${totalCredit.toFixed(2)}</p>
                                 </div>
                             </div>
                         </div>
@@ -4566,7 +5054,7 @@
                     });
                     
                     const subtotalForSummary = invoiceData.items.reduce((sum, item) => sum + (item.originalPrice || item.price) * item.quantity, 0);
-                    const totalDiscount = (invoiceData.discount || 0) + (invoiceData.invoiceDiscount || 0);
+                    const totalDiscount = (invoiceData.itemsDiscount || 0) + (invoiceData.invoiceDiscount || 0);
                     const change = invoiceData.tendered - invoiceData.total;
 
                     return `
@@ -4750,6 +5238,11 @@
 
                     dropdownHTML += `
                         <div class="border-t border-slate-200/60 p-2">
+                             <a href="#" id="theme-toggle-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 transition-colors">
+                                <i data-lucide="sun" class="w-5 h-5 text-slate-500 light-icon"></i>
+                                <i data-lucide="moon" class="w-5 h-5 text-slate-500 dark-icon hidden"></i>
+                                <span class="font-semibold text-sm text-slate-700">Toggle Theme</span>
+                            </a>
                             <a href="#" id="developer-mode-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
                                 <i data-lucide="shield-check" class="w-5 h-5 ${isDeveloperMode ? 'text-green-500' : 'text-slate-500'}"></i>
                                 <span class="font-semibold text-sm">${isDeveloperMode ? 'Disable Manager Mode' : 'Enable Manager Mode'}</span>
@@ -4759,7 +5252,9 @@
                                 <span class="font-semibold text-sm">Developer Info</span>
                             </a>
                             <a href="#" id="version-info-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
-                                <i data-lucide="info" class="w-5 h-5 text-slate-500"></i>
+                                <span id="version-info-icon-wrapper" class="relative">
+                                    <i data-lucide="info" class="w-5 h-5 text-slate-500"></i>
+                                </span>
                                 <span class="font-semibold text-sm">Version Info</span>
                             </a>
                         </div>`;
@@ -4779,7 +5274,7 @@
                             <p class="font-bold text-sm text-slate-800 leading-tight">${user.displayName}</p>
                             <div id="developer-mode-status" class="text-xs text-cyan-600 font-semibold leading-tight"></div>
                         </div>
-                        <button id="settings-btn" class="w-10 h-10 flex-shrink-0 bg-white rounded-full hover:bg-slate-100 border border-slate-200/80 flex items-center justify-center transition-all transform hover:scale-110">
+                        <button id="settings-btn" class="relative w-10 h-10 flex-shrink-0 bg-white rounded-full hover:bg-slate-100 border border-slate-200/80 flex items-center justify-center transition-all transform hover:scale-110">
                             <i data-lucide="settings-2" class="h-5 w-5 text-slate-600"></i>
                         </button>
                     </div>
@@ -4794,10 +5289,33 @@
                         e.stopPropagation();
                         settingsDropdown.classList.toggle('hidden');
                         if (!settingsDropdown.classList.contains('hidden')) {
-                             lucide.createIcons();
+                             // Update theme icons on open
+                            updateThemeIcons(settingsDropdown);
+                            lucide.createIcons();
                         }
                     });
+
+                    const updateThemeIcons = (dropdown) => {
+                        const lightIcon = dropdown.querySelector('.light-icon');
+                        const darkIcon = dropdown.querySelector('.dark-icon');
+                        
+                        lightIcon.classList.add('hidden');
+                        darkIcon.classList.add('hidden');
+
+                        if (currentTheme === 'dark') {
+                            darkIcon.classList.remove('hidden');
+                        } else {
+                            lightIcon.classList.remove('hidden');
+                        }
+                    };
                     
+                    document.getElementById('theme-toggle-btn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        toggleTheme();
+                        // Update icons
+                        updateThemeIcons(settingsDropdown);
+                    });
+
                     document.getElementById('developer-mode-btn').addEventListener('click', () => {
                         toggleDeveloperMode();
                         settingsDropdown.classList.add('hidden');
@@ -4813,6 +5331,10 @@
                         versionInfoModal.classList.remove('hidden');
                         lucide.createIcons();
                         settingsDropdown.classList.add('hidden');
+                        if (latestVersionNumber) {
+                            localStorage.setItem('lastSeenVersion', latestVersionNumber);
+                        }
+                        updateVersionNotificationIndicator();
                     });
 
                     document.getElementById('view-expenses-btn').addEventListener('click', () => {
@@ -5146,7 +5668,7 @@
             };
 
             const showArchiveInvoiceDetails = (archiveEntry) => {
-                const receiptHTML = generateReceiptHTML(archiveEntry.invoiceData, 'copy', false); // Reuse existing function
+                const receiptHTML = generateReceiptHTML(archiveEntry.invoiceData, 'copy', true); // Reuse existing function
                 
                 let notesHTML = '';
                 if (archiveEntry.cancellationNotes) {
@@ -5192,7 +5714,7 @@
                 `).join('');
 
                 const subtotalForSummary = invoice.items.reduce((sum, item) => sum + (item.originalPrice || item.price) * item.quantity, 0);
-                const totalDiscountForSummary = (invoice.discount || 0) + (invoice.invoiceDiscount || 0);
+                const totalDiscountForSummary = (invoice.itemsDiscount || 0) + (invoice.invoiceDiscount || 0);
 
                 unconfirmedInvoiceDetails.innerHTML = `
                     <h4 class="font-bold text-lg text-slate-800 mb-2 pb-2 border-b">Details for ${invoice.id}</h4>
@@ -6539,6 +7061,24 @@
                 });
                 renderProducts(filteredProducts);
             });
+
+            searchToggleBtn.addEventListener('click', () => {
+                if (searchContainer.classList.contains('active')) {
+                    searchInput.value = '';
+                    renderProducts(products); 
+                    searchContainer.classList.remove('active');
+                } else {
+                    searchContainer.classList.add('active');
+                    searchInput.focus();
+                }
+            });
+
+            searchInput.addEventListener('blur', () => {
+                 if (searchInput.value === '') {
+                    searchContainer.classList.remove('active');
+                 }
+            });
+
             productsGrid.addEventListener('click', async (e) => {
                 const editBtn = e.target.closest('.edit-product-btn');
                 const productCard = e.target.closest('.product-card');
@@ -6739,7 +7279,7 @@
                     const invoiceId = viewButton.dataset.id;
                     const invoice = firestoreInvoices.find(inv => inv.id === invoiceId);
                     if (invoice) {
-                        const receiptHTML = generateReceiptHTML(invoice, 'copy', false);
+                        const receiptHTML = generateReceiptHTML(invoice, 'copy', true);
                         const detailsView = document.getElementById('customer-details-view');
                         detailsView.innerHTML = `
                             <div class="flex-shrink-0 flex items-center justify-between mb-4">
@@ -7322,6 +7862,15 @@
                         lucide.createIcons();
                     });
             });
+
+            renewalCloseBtn.addEventListener('click', () => {
+                const notificationContent = document.getElementById('renewal-notification-content');
+                notificationContent.classList.remove('notification-slide-in');
+                notificationContent.classList.add('notification-slide-out');
+                setTimeout(() => {
+                    renewalNotificationModal.classList.add('hidden');
+                }, 500); // Wait for animation to finish
+            });
             
             ownerDeleteAllInvoicesBtn.addEventListener('click', deleteAllInvoices);
             ownerDeleteAllReturnsBtn.addEventListener('click', deleteAllReturns);
@@ -7430,6 +7979,7 @@
             lucide.createIcons();
             setInterval(updateClock, 1000);
             initializeFirebase();
+            loadTheme();
 
             if (auth) {
                 onAuthStateChanged(auth, async (user) => {
@@ -7622,7 +8172,12 @@
                 const docRef = doc(db, 'configuration', 'version');
                 unsubscribeFromVersionInfo = onSnapshot(docRef, (docSnap) => {
                     if (docSnap.exists()) {
-                        renderVersionInfo(docSnap.data().history);
+                        const history = docSnap.data().history;
+                        renderVersionInfo(history);
+                        if (history && history.length > 0) {
+                            latestVersionNumber = history[0].version;
+                        }
+                        updateVersionNotificationIndicator();
                     } else {
                         console.log("No version document found!");
                         renderVersionInfo(null); // Render with default message
@@ -8763,3 +9318,5 @@
 
 </body>
 </html>
+
+
