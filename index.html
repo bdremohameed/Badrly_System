@@ -99,6 +99,21 @@
             animation-delay: 4s;
         }
 
+        .maintenance-bg {
+            background-color: #111827;
+            opacity: 1;
+            background-image:  radial-gradient(#4f46e5 1.5px, transparent 1.5px), radial-gradient(#4f46e5 1.5px, #111827 1.5px);
+            background-size: 60px 60px;
+            background-position: 0 0,30px 30px;
+            animation: pulse-bg 10s infinite linear;
+        }
+
+        @keyframes pulse-bg {
+            0% { background-color: #111827; }
+            50% { background-color: #1f2937; }
+            100% { background-color: #111827; }
+        }
+
 
         /* Enhanced animation for smoother screen entry */
         @keyframes smoothEnter {
@@ -313,6 +328,41 @@
             animation: slideUp 0.5s ease-out forwards;
         }
 
+        /* --- Cart Animations --- */
+        .fly-to-cart {
+            position: fixed;
+            z-index: 1000;
+            transition: transform 0.6s cubic-bezier(0.5, -0.45, 0.735, 0.045), opacity 0.5s ease-out;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            object-fit: cover;
+        }
+
+        @keyframes fadeOutAndShrink {
+            from {
+                opacity: 1;
+                transform: scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: scale(0.9);
+                height: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+                border-width: 0;
+            }
+        }
+        .cart-item-exit {
+            animation: fadeOutAndShrink 0.4s ease-out forwards;
+        }
+        .cart-item-exit > td {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            border: none;
+            transition: padding 0.4s ease-out, border 0.4s ease-out;
+        }
+        /* --- End Cart Animations --- */
+
         .inventory-card-details {
             max-height: 0;
             overflow: hidden;
@@ -520,6 +570,9 @@
         [data-theme="dark"] #cashier-profiles-modal .bg-blue-100 { background-color: rgba(166, 133, 105, 0.2) !important; }
         [data-theme="dark"] #cashier-profiles-modal .text-blue-600 { color: var(--accent-color) !important; }
 
+        [data-theme="dark"] #expenses-view .bg-red-50 { background-color: rgba(239, 68, 68, 0.2) !important; }
+        [data-theme="dark"] #expenses-view .bg-slate-50\/80 { background-color: var(--panel-bg) !important; }
+
         [data-theme="dark"] #unconfirmed-invoices-modal .from-yellow-500 { --tw-gradient-from: #a68569; --tw-gradient-to: rgba(166, 133, 105, 0); --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to); }
         [data-theme="dark"] #unconfirmed-invoices-modal .to-orange-400 { --tw-gradient-to: #7b5f48; }
         [data-theme="dark"] #unconfirmed-invoices-modal .bg-yellow-100 { background-color: rgba(166, 133, 105, 0.2) !important; }
@@ -630,17 +683,20 @@
     </div>
 
     <div id="app-container" class="hidden">
-        <div id="in-app-maintenance-view" class="hidden fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-[200] flex items-center justify-center p-4 text-center">
-            <div class="login-panel-enter w-full max-w-lg">
-                <div class="relative panel bg-slate-800/50 backdrop-blur-xl p-8 sm:p-12 rounded-2xl shadow-2xl shadow-slate-900/20">
-                    <button id="maintenance-help-btn" class="absolute top-4 right-4 p-2 rounded-full text-slate-300 hover:bg-slate-700 hover:text-white transition-colors" title="Help Center">
-                        <i data-lucide="life-buoy" class="w-6 h-6"></i>
+        <div id="in-app-maintenance-view" class="hidden fixed inset-0 z-[200] flex flex-col items-center justify-center p-4 text-center maintenance-bg text-white">
+            <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
+            <div class="relative z-10 login-panel-enter">
+                <div class="w-28 h-28 bg-gradient-to-br from-yellow-400 to-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg shadow-yellow-500/20 animate-pulse">
+                    <i data-lucide="alert-triangle" class="w-14 h-14"></i>
+                </div>
+                <h1 class="text-5xl font-black text-white mb-4 tracking-tight">System Maintenance</h1>
+                <p id="in-app-maintenance-message" class="text-slate-300 text-xl max-w-2xl mx-auto leading-relaxed">The system is currently down for scheduled maintenance. We'll be back shortly. Thank you for your patience.</p>
+                
+                <div class="mt-12">
+                    <button id="maintenance-help-btn" class="inline-flex items-center justify-center gap-2 bg-white/10 hover:bg-white/20 text-white font-semibold py-3 px-6 rounded-lg shadow-sm border border-white/20 transition-all transform hover:scale-105" title="Help Center">
+                        <i data-lucide="life-buoy" class="w-5 h-5"></i>
+                        <span>Contact Support</span>
                     </button>
-                    <div class="w-24 h-24 bg-gradient-to-br from-amber-500 to-orange-500 text-white rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-lg shadow-amber-500/30 animate-pulse">
-                        <i data-lucide="wrench" class="w-12 h-12"></i>
-                    </div>
-                    <h1 class="text-4xl font-black text-white mb-4">Under Maintenance</h1>
-                    <p id="in-app-maintenance-message" class="text-slate-300 text-lg max-w-md mx-auto">The system is currently down for scheduled maintenance. Please check back later.</p>
                 </div>
             </div>
         </div>
@@ -997,60 +1053,81 @@
                 </div>
             </div>
 
-            <div id="expenses-view" class="hidden-view h-[calc(100vh-2rem)] p-6 flex-col panel view-enter-effect">
-                <div class="flex justify-between items-center mb-6 pb-4 border-b border-slate-200">
-                     <div class="flex items-center gap-4">
-                        <div class="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-red-500/30">
-                            <i data-lucide="trending-down" class="w-7 h-7"></i>
+            <div id="expenses-view" class="hidden-view h-[calc(100vh-2rem)] p-4 sm:p-6 flex flex-col panel view-enter-effect bg-slate-50/50">
+                <!-- Header -->
+                <div class="flex-shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-red-500/30">
+                            <i data-lucide="trending-down" class="w-8 h-8"></i>
                         </div>
                         <div>
                             <h2 class="text-3xl font-bold text-slate-800">Expenses</h2>
                             <p class="text-sm text-slate-500">Track and manage your business expenses.</p>
                         </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                         <button id="print-expenses-btn" class="flex items-center justify-center gap-2 bg-sky-600 hover:bg-sky-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors"><i data-lucide="printer"></i><span>Print</span></button>
+                    <div class="flex items-center gap-2 mt-4 sm:mt-0">
+                        <button id="print-expenses-btn" class="flex items-center justify-center gap-2 bg-white hover:bg-slate-100 text-slate-600 font-semibold py-2 px-4 rounded-lg shadow-sm border border-slate-200/80 transition-all transform hover:scale-105" title="Print Expenses">
+                            <i data-lucide="printer" class="w-4 h-4"></i>
+                            <span>Print</span>
+                        </button>
                          <button id="delete-all-expenses-btn" class="flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-lg transition-colors"><i data-lucide="trash-2"></i><span>Delete All</span></button>
-                        <button id="back-to-pos-from-expenses-btn" class="flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg shadow-lg"><i data-lucide="arrow-left"></i><span>Back</span></button>
+                        <button id="back-to-pos-from-expenses-btn" class="flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg shadow-lg transform hover:scale-105"><i data-lucide="arrow-left" class="w-4 h-4"></i><span>Back</span></button>
                     </div>
                 </div>
 
-                <!-- Add Expense Form -->
-                <div class="mb-6 p-5 bg-slate-50/70 rounded-xl border border-slate-200/80">
-                    <h3 class="text-lg font-semibold flex items-center gap-3 mb-4 text-slate-700"><i data-lucide="plus-circle" class="w-5 h-5 text-green-500"></i>Add New Expense</h4>
-                    <div class="space-y-4">
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label for="expense-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                                <input type="text" id="expense-description" class="w-full p-3 input-field">
-                            </div>
-                            <div>
-                                <label for="expense-type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                                <input type="text" id="expense-type" class="w-full p-3 input-field cursor-pointer" readonly placeholder="Select type...">
-                            </div>
-                            <div>
-                                <label for="expense-amount" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
-                                <input type="number" id="expense-amount" class="w-full p-3 input-field">
+                <div class="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden">
+                    <!-- Left Column: Add Form & Summary -->
+                    <div class="lg:col-span-4 flex flex-col gap-6">
+                        <!-- Add Form -->
+                        <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm">
+                            <h3 class="text-lg font-semibold flex items-center gap-3 mb-4 text-slate-700"><i data-lucide="plus-circle" class="w-5 h-5 text-green-500"></i>Add New Expense</h4>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="expense-description" class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                                    <input type="text" id="expense-description" class="w-full p-3 input-field">
+                                </div>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="expense-type" class="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                                        <input type="text" id="expense-type" class="w-full p-3 input-field cursor-pointer" readonly placeholder="Select type...">
+                                    </div>
+                                    <div>
+                                        <label for="expense-amount" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+                                        <input type="number" id="expense-amount" class="w-full p-3 input-field">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label for="expense-notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                                    <textarea id="expense-notes" class="w-full p-3 input-field" rows="2" placeholder="Optional notes..."></textarea>
+                                </div>
+                                <button id="add-expense-btn" class="w-full btn-primary py-3 rounded-lg flex items-center justify-center gap-2 transition-transform transform hover:scale-105 btn-glow">
+                                    <i data-lucide="plus" class="w-5 h-5"></i>
+                                    <span>Add Expense</span>
+                                </button>
                             </div>
                         </div>
-                        <div class="grid grid-cols-12 gap-4 items-end">
-                            <div class="col-span-10">
-                                <label for="expense-notes" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                                <textarea id="expense-notes" class="w-full p-3 input-field" rows="1" placeholder="Optional notes..."></textarea>
-                            </div>
-                            <div class="col-span-2 flex justify-end">
-                                 <button id="add-expense-btn" class="w-12 h-12 btn-primary rounded-full flex items-center justify-center transition-transform transform hover:scale-110 btn-glow">
-                                    <i data-lucide="plus" class="w-6 h-6"></i>
-                                 </button>
-                            </div>
+
+                        <!-- Summary -->
+                        <div id="expenses-summary-card" class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm">
+                            <!-- Summary will be injected by JS -->
                         </div>
                     </div>
-                </div>
-
-                <!-- Expenses List -->
-                <div class="flex-grow overflow-y-auto pr-2">
-                    <div id="expenses-grid" class="space-y-3">
-                        <!-- Expense items will be injected here -->
+                    
+                    <!-- Right Column: Expenses List -->
+                    <div class="lg:col-span-8 flex flex-col overflow-y-auto pr-2 bg-white rounded-xl border border-slate-200/80 shadow-sm">
+                        <table class="w-full text-sm text-left">
+                            <thead class="sticky top-0 bg-slate-50/80 backdrop-blur-sm z-10">
+                                <tr>
+                                    <th class="p-4 text-slate-500 font-semibold uppercase text-xs tracking-wider">Description</th>
+                                    <th class="p-4 text-slate-500 font-semibold uppercase text-xs tracking-wider">Date</th>
+                                    <th class="p-4 text-slate-500 font-semibold uppercase text-xs tracking-wider text-right">Amount</th>
+                                    <th class="p-4 text-right text-slate-500 font-semibold uppercase text-xs tracking-wider">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="expenses-grid">
+                                <!-- Expense items will be injected here as table rows -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -1091,6 +1168,155 @@
                 </div>
             </div>
 
+        </div>
+    </div>
+    <div id="salaries-view" class="hidden-view h-[calc(100vh-2rem)] p-4 sm:p-6 flex flex-col panel view-enter-effect bg-slate-50/50">
+        <!-- Header -->
+        <div class="flex-shrink-0 flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+            <div class="flex items-center gap-4">
+                <div class="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                    <i data-lucide="wallet" class="w-8 h-8"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-bold text-slate-800">Salaries Management</h2>
+                    <p class="text-sm text-slate-500">Track and manage employee salaries.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 mt-4 sm:mt-0">
+                <button id="back-to-pos-from-salaries-btn" class="flex items-center justify-center gap-2 btn-primary py-2 px-4 rounded-lg shadow-lg transform hover:scale-105"><i data-lucide="arrow-left" class="w-4 h-4"></i><span>Back</span></button>
+            </div>
+        </div>
+    
+        <div class="flex-grow grid grid-cols-1 lg:grid-cols-12 gap-6 overflow-hidden">
+            <!-- Left Column: Add Salary Payment Form -->
+            <div class="lg:col-span-4 flex flex-col gap-6">
+                <div class="bg-white p-5 rounded-xl border border-slate-200/80 shadow-sm">
+                    <h3 class="text-lg font-semibold flex items-center gap-3 mb-4 text-slate-700"><i data-lucide="plus-circle" class="w-5 h-5 text-green-500"></i>Add New Salary Payment</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="salary-month-input" class="block text-sm font-medium text-gray-700 mb-1">Month</label>
+                            <input type="month" id="salary-month-input" class="w-full p-3 input-field">
+                        </div>
+                        <div>
+                            <label for="salary-employee-select" class="block text-sm font-medium text-gray-700 mb-1">Employee</label>
+                            <select id="salary-employee-select" class="w-full p-3 input-field"></select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="salary-base-input" class="block text-sm font-medium text-gray-700 mb-1">Base Salary</label>
+                                <input type="number" id="salary-base-input" class="w-full p-3 input-field" placeholder="0.00">
+                            </div>
+                            <div>
+                                <label for="salary-bonus-input" class="block text-sm font-medium text-gray-700 mb-1">Bonuses</label>
+                                <input type="number" id="salary-bonus-input" class="w-full p-3 input-field" placeholder="0.00">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                             <div>
+                                <label for="salary-absence-days-input" class="block text-sm font-medium text-gray-700 mb-1">Absence Days</label>
+                                <input type="number" id="salary-absence-days-input" class="w-full p-3 input-field" placeholder="0">
+                            </div>
+                            <div>
+                                <label for="salary-late-hours-input" class="block text-sm font-medium text-gray-700 mb-1">Late Hours</label>
+                                <input type="number" id="salary-late-hours-input" class="w-full p-3 input-field" placeholder="0">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="salary-other-deduction-input" class="block text-sm font-medium text-gray-700 mb-1">Other Deductions</label>
+                            <input type="number" id="salary-other-deduction-input" class="w-full p-3 input-field" placeholder="0.00">
+                        </div>
+                        <div class="bg-slate-100 p-4 rounded-lg text-center">
+                            <p class="text-sm font-medium text-slate-600">Net Pay</p>
+                            <p id="salary-net-pay" class="text-3xl font-bold text-green-600 font-mono">0.00</p>
+                        </div>
+                        <div>
+                            <label for="salary-notes-input" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                            <textarea id="salary-notes-input" class="w-full p-3 input-field" rows="2" placeholder="Optional notes..."></textarea>
+                        </div>
+                        <button id="save-salary-btn" class="w-full btn-primary py-3 rounded-lg flex items-center justify-center gap-2 transition-transform transform hover:scale-105 btn-glow">
+                            <i data-lucide="save" class="w-5 h-5"></i>
+                            <span>Save Payment</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Salary History -->
+            <div class="lg:col-span-8 flex flex-col overflow-hidden">
+                <div class="flex-shrink-0 mb-4 flex items-center gap-4">
+                    <h3 class="text-lg font-semibold text-slate-700">Payment History</h3>
+                    <div class="relative flex-grow">
+                         <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400"></i>
+                        <input type="text" id="salary-search-input" placeholder="Search by employee name..." class="w-full p-3 pl-10 input-field rounded-lg"/>
+                    </div>
+                </div>
+                <div id="salaries-history-list" class="flex-grow overflow-y-auto pr-2 bg-white rounded-xl border border-slate-200/80 shadow-sm p-2 space-y-3">
+                    <!-- Salary history items will be injected here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="edit-salary-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="login-panel-enter w-full max-w-lg">
+            <div class="relative panel bg-white/80 backdrop-blur-xl p-8 rounded-2xl shadow-2xl shadow-slate-300/20">
+                <div class="flex items-center gap-4 mb-6">
+                    <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 text-white rounded-xl flex items-center justify-center shadow-lg shadow-green-500/30">
+                        <i data-lucide="edit" class="w-7 h-7"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-2xl font-bold text-slate-800">Edit Salary Payment</h3>
+                        <p class="text-sm text-slate-500">Update payment details below.</p>
+                    </div>
+                </div>
+                
+                <input type="hidden" id="edit-salary-id">
+                <div class="space-y-4">
+                     <div>
+                        <label for="edit-salary-month-input" class="block text-sm font-medium text-gray-700 mb-1">Month</label>
+                        <input type="month" id="edit-salary-month-input" class="w-full p-3 input-field">
+                    </div>
+                    <div>
+                        <label for="edit-salary-employee-select" class="block text-sm font-medium text-gray-700 mb-1">Employee</label>
+                        <select id="edit-salary-employee-select" class="w-full p-3 input-field"></select>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label for="edit-salary-base-input" class="block text-sm font-medium text-gray-700 mb-1">Base Salary</label>
+                            <input type="number" id="edit-salary-base-input" class="w-full p-3 input-field" placeholder="0.00">
+                        </div>
+                        <div>
+                            <label for="edit-salary-bonus-input" class="block text-sm font-medium text-gray-700 mb-1">Bonuses</label>
+                            <input type="number" id="edit-salary-bonus-input" class="w-full p-3 input-field" placeholder="0.00">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                         <div>
+                            <label for="edit-salary-absence-days-input" class="block text-sm font-medium text-gray-700 mb-1">Absence Days</label>
+                            <input type="number" id="edit-salary-absence-days-input" class="w-full p-3 input-field" placeholder="0">
+                        </div>
+                        <div>
+                            <label for="edit-salary-late-hours-input" class="block text-sm font-medium text-gray-700 mb-1">Late Hours</label>
+                            <input type="number" id="edit-salary-late-hours-input" class="w-full p-3 input-field" placeholder="0">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="edit-salary-other-deduction-input" class="block text-sm font-medium text-gray-700 mb-1">Other Deductions</label>
+                        <input type="number" id="edit-salary-other-deduction-input" class="w-full p-3 input-field" placeholder="0.00">
+                    </div>
+                    <div class="bg-slate-100 p-4 rounded-lg text-center">
+                        <p class="text-sm font-medium text-slate-600">Net Pay</p>
+                        <p id="edit-salary-net-pay" class="text-3xl font-bold text-green-600 font-mono">0.00</p>
+                    </div>
+                    <div>
+                        <label for="edit-salary-notes-input" class="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                        <textarea id="edit-salary-notes-input" class="w-full p-3 input-field" rows="2" placeholder="Optional notes..."></textarea>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-4 mt-8 pt-6 border-t border-slate-200/80">
+                    <button id="modal-edit-salary-cancel-btn" class="px-5 py-2.5 bg-white hover:bg-slate-50 text-slate-600 font-bold rounded-lg shadow-sm border border-slate-200 transition-all">Cancel</button>
+                    <button id="modal-save-salary-btn" class="px-5 py-2.5 btn-primary rounded-lg font-bold btn-glow transform transition-transform hover:scale-105">Save Changes</button>
+                </div>
+            </div>
         </div>
     </div>
     <div id="edit-expense-modal" class="hidden fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50 p-4">
@@ -2281,12 +2507,14 @@
             let firestoreExpenses = [];
             let firestoreUnconfirmedInvoices = []; // New variable
             let firestoreInvoiceArchive = [];
+            let firestoreSalaries = [];
             let unsubscribeFromInvoices = null;
             let unsubscribeFromReturns = null;
             let unsubscribeFromProducts = null;
             let unsubscribeFromExpenses = null;
             let unsubscribeFromArchive = null;
             let unsubscribeFromVersionInfo = null;
+            let unsubscribeFromSalaries = null;
             let isOnlineMode = false;
             let editingInvoiceId = null; 
             let editingInvoiceInternalId = null; 
@@ -2315,8 +2543,97 @@
             let currentReportData = null;
             let currentTheme = 'light';
             let latestVersionNumber = null;
+            let soundEnabled = true;
             
             let db, auth, userId, app;
+
+            // --- Sound Effects Function (using native Web Audio API) ---
+            let audioCtx;
+            const playSound = async (type = 'notification') => {
+                if (!soundEnabled) return;
+                try {
+                    // Initialize AudioContext on the first user interaction
+                    if (!audioCtx) {
+                        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    }
+
+                    // Resume context if it's suspended (e.g., due to browser autoplay policies)
+                    if (audioCtx.state === 'suspended') {
+                        await audioCtx.resume();
+                    }
+                    
+                    const now = audioCtx.currentTime;
+
+                    if (type === 'success') {
+                        // Short, pleasant rising arpeggio for success
+                        const oscillator = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        oscillator.type = 'sine';
+                        gainNode.gain.setValueAtTime(0.3, now);
+
+                        oscillator.frequency.setValueAtTime(523.25, now); // C5
+                        oscillator.frequency.linearRampToValueAtTime(659.25, now + 0.1); // E5
+                        oscillator.frequency.linearRampToValueAtTime(783.99, now + 0.2); // G5
+
+                        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.3);
+                        oscillator.start(now);
+                        oscillator.stop(now + 0.3);
+                    } else if (type === 'warning' || type === 'error') {
+                        // A more urgent, dissonant sound for warnings/errors
+                        const oscillator = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        oscillator.type = 'sawtooth';
+                        gainNode.gain.setValueAtTime(0.25, now);
+
+                        oscillator.frequency.setValueAtTime(440, now); // A4
+                        oscillator.frequency.linearRampToValueAtTime(220, now + 0.3); // A3
+
+                        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+                        oscillator.start(now);
+                        oscillator.stop(now + 0.4);
+                    } else if (type === 'click') {
+                        const oscillator = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        oscillator.type = 'triangle';
+                        oscillator.frequency.setValueAtTime(800, now);
+                        gainNode.gain.setValueAtTime(0.15, now);
+                        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.1);
+                        oscillator.start(now);
+                        oscillator.stop(now + 0.1);
+                    } else { // 'notification' or 'info'
+                        const oscillator = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        oscillator.type = 'sine';
+                        oscillator.frequency.setValueAtTime(880, now);
+                        gainNode.gain.setValueAtTime(0.7, now);
+                        gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.2);
+                        
+                        const oscillator2 = audioCtx.createOscillator();
+                        const gainNode2 = audioCtx.createGain();
+                        oscillator2.connect(gainNode2);
+                        gainNode2.connect(audioCtx.destination);
+                        oscillator2.type = 'sine';
+                        oscillator2.frequency.setValueAtTime(1046, now + 0.2);
+                        gainNode2.gain.setValueAtTime(0.7, now + 0.2);
+                        gainNode2.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+
+                        oscillator.start(now);
+                        oscillator.stop(now + 0.2);
+                        oscillator2.start(now + 0.2);
+                        oscillator2.stop(now + 0.4);
+                    }
+                } catch (e) {
+                    console.error("Could not play sound:", e);
+                }
+            };
 
             const versionInfoModal = document.getElementById('version-info-modal');
             const versionInfoCloseBtn = document.getElementById('version-info-close-btn');
@@ -2489,6 +2806,22 @@
             const developerInfoModal = document.getElementById('developer-info-modal');
             const developerInfoCloseBtn = document.getElementById('developer-info-close-btn');
             
+            // Salaries View Elements
+            const salariesView = document.getElementById('salaries-view');
+            const backToPosFromSalariesBtn = document.getElementById('back-to-pos-from-salaries-btn');
+            const salaryMonthInput = document.getElementById('salary-month-input');
+            const salaryEmployeeSelect = document.getElementById('salary-employee-select');
+            const salaryBaseInput = document.getElementById('salary-base-input');
+            const salaryBonusInput = document.getElementById('salary-bonus-input');
+            const salaryAbsenceDaysInput = document.getElementById('salary-absence-days-input');
+            const salaryLateHoursInput = document.getElementById('salary-late-hours-input');
+            const salaryOtherDeductionInput = document.getElementById('salary-other-deduction-input');
+            const salaryNetPay = document.getElementById('salary-net-pay');
+            const salaryNotesInput = document.getElementById('salary-notes-input');
+            const saveSalaryBtn = document.getElementById('save-salary-btn');
+            const salariesHistoryList = document.getElementById('salaries-history-list');
+            const salarySearchInput = document.getElementById('salary-search-input');
+
             // New Modal Elements
             const unconfirmedInvoicesModal = document.getElementById('unconfirmed-invoices-modal');
             const showUnconfirmedBtn = document.getElementById('show-unconfirmed-btn');
@@ -2550,6 +2883,15 @@
                     applyTheme('dark');
                 } else {
                     applyTheme('light');
+                }
+            };
+
+            const loadSoundSettings = () => {
+                const savedSoundSetting = localStorage.getItem('badrly-pos-sound');
+                if (savedSoundSetting !== null) {
+                    soundEnabled = savedSoundSetting === 'true';
+                } else {
+                    soundEnabled = true; // Default to on
                 }
             };
 
@@ -2628,6 +2970,13 @@
 
             let notificationTimeout;
             const showAlert = (message, type = 'info', title = 'Notification') => {
+                 if(type === 'warning' || type === 'error'){
+                    playSound('warning');
+                 } else if (type === 'success') {
+                    playSound('success');
+                 } else {
+                    playSound('notification');
+                 }
                  return new Promise((resolve) => {
                     const notificationModal = document.getElementById('top-notification');
                     const notificationContent = document.getElementById('top-notification-content');
@@ -2786,12 +3135,13 @@
 
             const showRenewalNotification = (timeLeft, isUrgent) => {
                 if (!renewalNotificationModal) return;
+                playSound('warning'); // Play warning sound for subscription notices
 
                 // If already visible, don't show another one.
                 if(!renewalNotificationModal.classList.contains('hidden')) return;
 
                 const notificationContent = document.getElementById('renewal-notification-content');
-                const iconContainer = document.getElementById('renewal-icon-container');
+                const iconContainer = document.getElementById('notification-icon-container');
                 const iconEl = document.getElementById('renewal-icon');
                 const titleEl = document.getElementById('renewal-title');
                 const timeLeftEl = document.getElementById('renewal-time-left');
@@ -3161,6 +3511,25 @@
                 });
             }
 
+            function setupSalariesListener() {
+                if (!userId || !isOnlineMode) return;
+                if (unsubscribeFromSalaries) unsubscribeFromSalaries();
+                const salariesCollectionPath = `users/${userId}/salaries`;
+                const q = collection(db, salariesCollectionPath);
+                unsubscribeFromSalaries = onSnapshot(q, (querySnapshot) => {
+                    firestoreSalaries = [];
+                    querySnapshot.forEach((doc) => {
+                        firestoreSalaries.push({ firestoreId: doc.id, ...doc.data() });
+                    });
+                    if (!salariesView.classList.contains('hidden-view')) {
+                        renderSalariesView();
+                    }
+                }, (error) => {
+                    console.error("Error listening to Salaries in Firestore:", error);
+                    showAlert('An error occurred while loading salary data.');
+                });
+            }
+
             function setupArchiveListener() {
                 if (!userId || !isOnlineMode) return;
                 if (unsubscribeFromArchive) unsubscribeFromArchive();
@@ -3350,6 +3719,7 @@
                     cart.forEach(item => {
                         const cartItemRow = document.createElement('tr');
                         cartItemRow.className = "border-b border-[var(--panel-border)]";
+                        cartItemRow.dataset.cartId = item.cartId;
                         const originalPrice = item.originalPrice || item.price;
                         const productDiscountValue = (originalPrice * item.quantity) * ((item.productDiscountPercentage || 0) / 100);
                         const manualDiscountValue = item.discount || 0;
@@ -3424,12 +3794,12 @@
                 return `${prefix}-${year}${month}${day}-${hours}${minutes}${seconds}`;
             };
 
-            const openProductCodeModal = (product) => {
+            const openProductCodeModal = (product, productCard) => {
                 productCodeModalTitle.textContent = product.name;
                 productCodesSelectionList.innerHTML = '';
                 
                 const handleAddToCart = (code, price) => {
-                    addToCart(product, 1, code, price);
+                    addToCart(product, 1, code, price, productCard);
                     productCodeModal.classList.add('hidden');
                 };
 
@@ -3507,9 +3877,45 @@
                 productCodeModal.classList.remove('hidden');
             };
 
-            const addToCart = (product, quantityToAdd = 1, selectedCode = null, selectedPrice = null) => {
+            const addToCart = (product, quantityToAdd = 1, selectedCode = null, selectedPrice = null, productCardElement = null) => {
+                playSound('click'); // Play click sound
+
                 if (!product || typeof product.id === 'undefined') {
                     return;
+                }
+
+                // Animate the product flying to the cart
+                if (productCardElement) {
+                    const cartIcon = document.getElementById('invoice-title'); // Target the invoice area
+                    const productImg = productCardElement.querySelector('img');
+                    
+                    if (productImg && cartIcon) {
+                        const imgRect = productImg.getBoundingClientRect();
+                        const cartRect = cartIcon.getBoundingClientRect();
+
+                        const flyingImg = productImg.cloneNode(true);
+                        flyingImg.classList.add('fly-to-cart');
+                        
+                        flyingImg.style.width = `${imgRect.width}px`;
+                        flyingImg.style.height = `${imgRect.height}px`;
+                        flyingImg.style.top = `${imgRect.top}px`;
+                        flyingImg.style.left = `${imgRect.left}px`;
+                        
+                        document.body.appendChild(flyingImg);
+
+                        // Trigger the animation
+                        requestAnimationFrame(() => {
+                            flyingImg.style.transform = `translate(${cartRect.left - imgRect.left + (cartRect.width / 2)}px, ${cartRect.top - imgRect.top + (cartRect.height / 2)}px) scale(0.1)`;
+                            flyingImg.style.opacity = '0.5';
+                        });
+
+                        flyingImg.addEventListener('transitionend', () => {
+                            flyingImg.remove();
+                            // Shake the cart icon slightly
+                            cartIcon.classList.add('shake');
+                            setTimeout(() => cartIcon.classList.remove('shake'), 400);
+                        }, { once: true });
+                    }
                 }
 
                 const cartItemName = selectedCode ? `${product.name} (${selectedCode})` : product.name;
@@ -3631,8 +4037,18 @@
             };
             
             const removeFromCart = (cartId) => {
-                cart = cart.filter(item => String(item.cartId) !== String(cartId));
-                renderCart();
+                const row = cartItemsTbody.querySelector(`tr[data-cart-id="${cartId}"]`);
+                if (row) {
+                    row.classList.add('cart-item-exit');
+                    row.addEventListener('animationend', () => {
+                        cart = cart.filter(item => String(item.cartId) !== String(cartId));
+                        renderCart(); // Re-render after animation
+                    }, { once: true });
+                } else {
+                    // Fallback for safety, though it shouldn't be needed
+                    cart = cart.filter(item => String(item.cartId) !== String(cartId));
+                    renderCart();
+                }
             };
 
             const clearSale = () => {
@@ -3676,6 +4092,8 @@
                 const correct = await showPasswordModal(`Confirm Cashier: ${selectedCashier.name}`, 'Please enter the activation key.', selectedCashier.key);
 
                 if (!correct) return; // User cancelled or failed password
+
+                playSound('success'); // Play sound on successful confirmation
 
                 const invoiceObject = await saveInvoice(selectedCashier);
                 if (invoiceObject) {
@@ -4293,57 +4711,74 @@
             const renderExpensesList = () => {
                 let expensesToRender = firestoreExpenses;
                 expensesToRender.sort((a, b) => b.timestamp - a.timestamp);
-                expensesGrid.innerHTML = '';
+                const expensesTbody = document.getElementById('expenses-grid');
+                expensesTbody.innerHTML = '';
+
+                let totalExpenses = 0;
+                const typeCounts = {};
 
                 if (expensesToRender.length === 0) {
-                    expensesGrid.innerHTML = `<div class="text-center text-slate-500 py-16"><i data-lucide="archive" class="mx-auto h-12 w-12"></i><p class="mt-2">No expenses recorded yet.</p></div>`;
-                    lucide.createIcons();
-                    return;
+                    expensesTbody.innerHTML = `<tr><td colspan="4" class="text-center text-slate-500 py-16"><i data-lucide="archive" class="mx-auto h-12 w-12"></i><p class="mt-2">No expenses recorded yet.</p></td></tr>`;
+                } else {
+                    expensesToRender.forEach(expense => {
+                        totalExpenses += expense.amount;
+                        typeCounts[expense.type] = (typeCounts[expense.type] || 0) + 1;
+                        
+                        const dateObj = new Date(expense.timestamp);
+                        const formattedDate = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+                        
+                        const actionsHTML = isDeveloperMode ? `
+                            <button data-firestore-id="${expense.firestoreId}" class="edit-expense-btn p-2 rounded-full hover:bg-yellow-100 text-slate-500 hover:text-yellow-600 transition-colors" title="Edit"><i data-lucide="pencil" class="h-4 w-4"></i></button>
+                            <button data-firestore-id="${expense.firestoreId}" class="delete-expense-btn p-2 rounded-full hover:bg-red-100 text-slate-500 hover:text-red-600 transition-colors" title="Delete"><i data-lucide="trash-2" class="h-4 w-4"></i></button>
+                        ` : '';
+
+                        const row = document.createElement('tr');
+                        row.className = 'border-b border-slate-100 last:border-b-0 hover:bg-slate-50/50 transition-colors';
+                        row.innerHTML = `
+                            <td class="p-4">
+                                <p class="font-bold text-slate-800">${expense.description}</p>
+                                <p class="text-xs text-slate-500">${expense.type}</p>
+                                ${expense.notes ? `<p class="text-xs text-slate-400 mt-1 italic">Note: ${expense.notes}</p>` : ''}
+                            </td>
+                            <td class="p-4 text-slate-600 text-sm font-medium">${formattedDate}</td>
+                            <td class="p-4 text-lg font-bold text-red-600 text-right font-mono">${parseFloat(expense.amount).toFixed(2)}</td>
+                            <td class="p-4 text-right">
+                                <div class="flex items-center justify-end gap-1">
+                                    ${actionsHTML}
+                                </div>
+                            </td>
+                        `;
+                        expensesTbody.appendChild(row);
+                    });
                 }
+                
+                // Update Summary Card
+                const summaryCard = document.getElementById('expenses-summary-card');
+                const topType = Object.entries(typeCounts).sort(([,a],[,b]) => b-a)[0];
 
-                expensesToRender.forEach(expense => {
-                    const dateObj = new Date(expense.timestamp);
-                    const formattedDate = dateObj.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-                    
-                    const editButtonHTML = isDeveloperMode ? `
-                        <button data-firestore-id="${expense.firestoreId}" class="edit-expense-btn flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-yellow-100 text-slate-500 hover:text-yellow-600 transition-colors" title="Edit Expense">
-                            <i data-lucide="pencil" class="h-5 w-5"></i>
-                        </button>
-                    ` : '';
-                    
-                    const deleteButtonHTML = isDeveloperMode ? `
-                        <button data-firestore-id="${expense.firestoreId}" class="delete-expense-btn flex items-center justify-center w-9 h-9 rounded-full bg-slate-100 hover:bg-red-100 text-slate-500 hover:text-red-600 transition-colors" title="Delete Expense">
-                            <i data-lucide="trash-2" class="h-5 w-5"></i>
-                        </button>
-                    ` : '';
-
-                    const card = document.createElement('div');
-                    card.className = 'bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden';
-                    card.innerHTML = `
-                        <div class="expense-card-header cursor-pointer p-4 grid grid-cols-12 gap-4 items-center hover:bg-slate-50 transition-colors">
-                            <div class="col-span-12 sm:col-span-4 flex items-center gap-3">
-                                <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-red-100 text-red-600 rounded-lg">
-                                     <i data-lucide="trending-down" class="w-5 h-5"></i>
-                                </div>
-                                <div>
-                                    <p class="font-bold text-slate-800">${expense.description}</p>
-                                    <p class="text-sm text-slate-500">${expense.type}</p>
-                                </div>
+                summaryCard.innerHTML = `
+                    <h3 class="text-lg font-semibold text-slate-700 mb-4">Expenses Summary</h3>
+                    <div class="space-y-4">
+                        <div class="bg-red-50 p-4 rounded-lg flex items-center gap-4">
+                            <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-red-100 text-red-600 rounded-lg">
+                                <i data-lucide="trending-down" class="w-5 h-5"></i>
                             </div>
-                            <div class="col-span-6 sm:col-span-3 text-slate-600 text-sm font-medium">${formattedDate}</div>
-                            <div class="col-span-6 sm:col-span-3 text-lg font-bold text-red-600 text-right sm:text-left">${parseFloat(expense.amount).toFixed(2)} EGP</div>
-                            <div class="col-span-12 sm:col-span-2 flex items-center justify-end gap-2">
-                                 ${editButtonHTML}
-                                 ${deleteButtonHTML}
-                                <i data-lucide="chevron-down" class="chevron-icon transition-transform"></i>
+                            <div>
+                                <p class="text-sm font-semibold text-slate-500">Total Expenses</p>
+                                <p class="text-2xl font-bold text-red-600">${totalExpenses.toFixed(2)} EGP</p>
                             </div>
                         </div>
-                        <div class="expense-card-details hidden bg-slate-50/70 border-t border-slate-200 p-4">
-                            <p class="text-sm text-slate-600"><span class="font-semibold">Notes:</span> ${expense.notes || 'No notes provided.'}</p>
+                        <div class="bg-slate-100 p-4 rounded-lg">
+                            <p class="text-sm font-semibold text-slate-500">Expense Count</p>
+                            <p class="text-xl font-bold text-slate-800">${expensesToRender.length}</p>
                         </div>
-                    `;
-                    expensesGrid.appendChild(card);
-                });
+                         <div class="bg-slate-100 p-4 rounded-lg">
+                            <p class="text-sm font-semibold text-slate-500">Most Frequent Type</p>
+                            <p class="text-xl font-bold text-slate-800">${topType ? `${topType[0]} (${topType[1]} times)` : 'N/A'}</p>
+                        </div>
+                    </div>
+                `;
+                
                 lucide.createIcons();
             };
 
@@ -4869,6 +5304,7 @@
                 invoiceDetailsView.classList.add('hidden-view');
                 expensesView.classList.add('hidden-view');
                 inventoryView.classList.add('hidden-view');
+                salariesView.classList.add('hidden-view');
                 posView.classList.remove('hidden-view');
                 posView.classList.add('flex'); 
             }
@@ -4882,6 +5318,7 @@
                 expensesView.classList.add('hidden-view');
                 inventoryView.classList.remove('hidden-view');
                 inventoryView.classList.add('flex');
+                salariesView.classList.add('hidden-view');
                 lucide.createIcons();
             };
 
@@ -4893,7 +5330,21 @@
                 invoiceDetailsView.classList.add('hidden-view');
                 expensesView.classList.remove('hidden-view');
                 expensesView.classList.add('flex');
+                salariesView.classList.add('hidden-view');
                 deleteAllExpensesBtn.style.display = isDeveloperMode ? 'flex' : 'none';
+                lucide.createIcons();
+            };
+
+            const showSalariesView = () => {
+                posView.classList.add('hidden-view');
+                invoicesView.classList.add('hidden-view');
+                returnsView.classList.add('hidden-view');
+                invoiceDetailsView.classList.add('hidden-view');
+                expensesView.classList.add('hidden-view');
+                inventoryView.classList.add('hidden-view');
+                salariesView.classList.remove('hidden-view');
+                salariesView.classList.add('flex');
+                renderSalariesView();
                 lucide.createIcons();
             };
 
@@ -5233,6 +5684,9 @@
                             <a href="#" id="new-tool-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
                                 <i data-lucide="tag" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">Event discounts</span>
                             </a>
+                            <a href="#" id="salaries-management-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
+                                <i data-lucide="wallet" class="w-5 h-5 text-slate-500"></i><span class="font-semibold text-sm">Salaries Management</span>
+                            </a>
                         </div>`;
                     }
 
@@ -5242,6 +5696,11 @@
                                 <i data-lucide="sun" class="w-5 h-5 text-slate-500 light-icon"></i>
                                 <i data-lucide="moon" class="w-5 h-5 text-slate-500 dark-icon hidden"></i>
                                 <span class="font-semibold text-sm text-slate-700">Toggle Theme</span>
+                            </a>
+                            <a href="#" id="sound-toggle-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 transition-colors">
+                                <i data-lucide="volume-2" class="w-5 h-5 text-slate-500 sound-on-icon"></i>
+                                <i data-lucide="volume-x" class="w-5 h-5 text-slate-500 sound-off-icon hidden"></i>
+                                <span class="font-semibold text-sm text-slate-700">Toggle Sound</span>
                             </a>
                             <a href="#" id="developer-mode-btn" class="w-full flex items-center gap-3 px-3 py-2 rounded-md hover:bg-slate-100 text-slate-700 transition-colors">
                                 <i data-lucide="shield-check" class="w-5 h-5 ${isDeveloperMode ? 'text-green-500' : 'text-slate-500'}"></i>
@@ -5291,6 +5750,7 @@
                         if (!settingsDropdown.classList.contains('hidden')) {
                              // Update theme icons on open
                             updateThemeIcons(settingsDropdown);
+                            updateSoundIcons(settingsDropdown);
                             lucide.createIcons();
                         }
                     });
@@ -5308,12 +5768,28 @@
                             lightIcon.classList.remove('hidden');
                         }
                     };
+
+                    const updateSoundIcons = (dropdown) => {
+                        const soundOnIcon = dropdown.querySelector('.sound-on-icon');
+                        const soundOffIcon = dropdown.querySelector('.sound-off-icon');
+                        if (!soundOnIcon || !soundOffIcon) return;
+                        soundOnIcon.classList.toggle('hidden', !soundEnabled);
+                        soundOffIcon.classList.toggle('hidden', soundEnabled);
+                    };
                     
                     document.getElementById('theme-toggle-btn').addEventListener('click', (e) => {
                         e.preventDefault();
                         toggleTheme();
                         // Update icons
                         updateThemeIcons(settingsDropdown);
+                    });
+
+                    document.getElementById('sound-toggle-btn').addEventListener('click', (e) => {
+                        e.preventDefault();
+                        soundEnabled = !soundEnabled;
+                        localStorage.setItem('badrly-pos-sound', soundEnabled);
+                        updateSoundIcons(settingsDropdown);
+                        if (soundEnabled) playSound('success');
                     });
 
                     document.getElementById('developer-mode-btn').addEventListener('click', () => {
@@ -5369,6 +5845,10 @@
                             updateAndRenderOffersList();
                             newToolModal.classList.remove('hidden');
                             lucide.createIcons();
+                        });
+                        document.getElementById('salaries-management-btn').addEventListener('click', () => {
+                            showSalariesView();
+                            settingsDropdown.classList.add('hidden');
                         });
                     }
                     
@@ -5841,9 +6321,11 @@
                     if (firestoreId === currentlyViewingUnconfirmedId) {
                         displayUnconfirmedInvoiceDetails(null);
                     }
+                    playSound('success'); // Play sound on success
                     showAlert('Invoice confirmed.');
                 } catch (error) {
                     console.error("Error confirming invoice:", error);
+                    playSound('warning'); // Play warning sound on error
                     showAlert(`Failed to confirm invoice: ${error}`);
                 }
             };
@@ -5954,9 +6436,11 @@
                     if (firestoreId === currentlyViewingUnconfirmedId) {
                         displayUnconfirmedInvoiceDetails(null);
                     }
+                    playSound('success'); // Play sound on success
                     showAlert('Invoice cancelled and stock restored.');
                 } catch (error) {
                     console.error("Error cancelling invoice:", error);
+                    playSound('warning'); // Play warning sound on error
                     showAlert(`Failed to cancel invoice: ${error}`);
                 }
             };
@@ -6552,7 +7036,7 @@
                             showAlert('Start date cannot be after the end date.');
                             return;
                         }
-                        title = `تقرير مخصص: من ${startDate.toLocaleString('ar-EG')} إلى ${endDate.toLocaleString('ar-EG')}`;
+                        title = `تقرير مخصص: من ${startDate.toLocaleDateString('ar-EG')} إلى ${endDate.toLocaleDateString('ar-EG')}`;
                         break;
                 }
 
@@ -6564,12 +7048,14 @@
                 const filteredInvoices = firestoreInvoices.filter(inv => inv.timestamp >= startDate.getTime() && inv.timestamp <= endDate.getTime());
                 const filteredReturns = firestoreReturns.filter(ret => ret.timestamp >= startDate.getTime() && ret.timestamp <= endDate.getTime());
                 const filteredExpenses = firestoreExpenses.filter(exp => exp.timestamp >= startDate.getTime() && exp.timestamp <= endDate.getTime());
+                const filteredSalaries = firestoreSalaries.filter(sal => sal.timestamp >= startDate.getTime() && sal.timestamp <= endDate.getTime());
                 
                 // --- Calculations ---
                 const totalSales = filteredInvoices.reduce((sum, inv) => sum + inv.total, 0);
                 const totalReturnValue = filteredReturns.reduce((sum, ret) => sum + ret.total, 0); // Returns are negative
                 const totalExpenses = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-                const netSales = totalSales + totalReturnValue - totalExpenses;
+                const totalSalariesPaid = (reportType === 'monthly') ? filteredSalaries.reduce((sum, sal) => sum + sal.netPay, 0) : 0;
+                const netSales = totalSales + totalReturnValue - totalExpenses - totalSalariesPaid;
                 const transactionCount = filteredInvoices.length;
 
                 const paymentMethodTotals = filteredInvoices.reduce((acc, inv) => {
@@ -6629,6 +7115,7 @@
                 const totalPurchaseValueOfAllProducts = allProductsSold.reduce((sum, product) => sum + product.totalPurchaseValue, 0);
                 const totalSalesValueOfAllProducts = allProductsSold.reduce((sum, product) => sum + product.totalSalesValue, 0);
                 const totalNetProfitOfAllProducts = totalSalesValueOfAllProducts - totalPurchaseValueOfAllProducts;
+                const ownerProfit = totalNetProfitOfAllProducts + totalReturnValue - totalExpenses - totalSalariesPaid;
 
                  // Store data for export functions
                 currentReportData = {
@@ -6638,6 +7125,7 @@
                     totalSales,
                     totalReturnValue,
                     totalExpenses,
+                    totalSalariesPaid,
                     transactionCount,
                     paymentRows: Object.entries(paymentMethodTotals).map(([method, total]) => [method, total.toFixed(2)]),
                     cashierRows: Object.entries(cashierTotals).map(([name, total]) => [name, total.toFixed(2)]),
@@ -6726,11 +7214,11 @@
                             <p class="text-base text-slate-600">${title}</p>
                         </div>
 
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-                            ${createStatCard('صافي المبيعات', netSales.toFixed(2) + ' ج.م', 'wallet', 'bg-green-500')}
-                            ${createStatCard('إجمالي المبيعات', totalSales.toFixed(2) + ' ج.م', 'trending-up', 'bg-blue-500')}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                            ${createStatCard('أرباح صاحب العمل', ownerProfit.toFixed(2) + ' ج.م', 'user-check', 'bg-green-500')}
                             ${createStatCard('إجمالي المرتجعات', Math.abs(totalReturnValue).toFixed(2) + ' ج.م', 'trending-down', 'bg-red-500')}
                             ${createStatCard('إجمالي المصروفات', totalExpenses.toFixed(2) + ' ج.م', 'minus-circle', 'bg-orange-500')}
+                            ${(reportType === 'monthly') ? createStatCard('إجمالي الرواتب', totalSalariesPaid.toFixed(2) + ' ج.م', 'users', 'bg-cyan-500') : ''}
                             ${createStatCard('عدد الفواتير', transactionCount, 'file-text', 'bg-indigo-500')}
                         </div>
 
@@ -6804,6 +7292,7 @@
                     showAlert("Please generate a report first.");
                     return;
                 }
+                playSound('success'); // Play sound when printing report
                 
                 // Re-calculate ranges and filter data for printing
                 const reportType = reportTypeSelect.value;
@@ -6857,6 +7346,7 @@
                 const filteredInvoices = firestoreInvoices.filter(inv => inv.timestamp >= startDate.getTime() && inv.timestamp <= endDate.getTime());
                 const filteredReturns = firestoreReturns.filter(ret => ret.timestamp >= startDate.getTime() && ret.timestamp <= endDate.getTime());
                 const filteredExpenses = firestoreExpenses.filter(exp => exp.timestamp >= startDate.getTime() && exp.timestamp <= endDate.getTime());
+                const filteredSalaries = firestoreSalaries.filter(sal => sal.timestamp >= startDate.getTime() && sal.timestamp <= endDate.getTime());
 
                 const createPrintSection = (title, items, isReturn = false) => {
                     let rows = items.map(item => `
@@ -6892,7 +7382,8 @@
                 const totalSales = filteredInvoices.reduce((sum, inv) => sum + inv.total, 0);
                 const totalReturnValue = filteredReturns.reduce((sum, ret) => sum + ret.total, 0);
                 const totalExpenses = filteredExpenses.reduce((sum, exp) => sum + exp.amount, 0);
-                const netSales = totalSales + totalReturnValue - totalExpenses;
+                const totalSalariesPaid = (reportType === 'monthly') ? filteredSalaries.reduce((sum, sal) => sum + sal.netPay, 0) : 0;
+                const netSales = totalSales + totalReturnValue - totalExpenses - totalSalariesPaid;
 
                 const printLayoutHTML = `
                     <div class="p-4" dir="rtl">
@@ -6918,6 +7409,12 @@
                                     <span class="text-slate-600">إجمالي المصروفات:</span>
                                     <span class="font-mono text-orange-500">${totalExpenses.toFixed(2)} ج.م</span>
                                 </div>
+                                ${(reportType === 'monthly') ? `
+                                <div class="flex justify-between font-semibold">
+                                    <span class="text-slate-600">إجمالي الرواتب:</span>
+                                    <span class="font-mono text-cyan-500">${totalSalariesPaid.toFixed(2)} ج.م</span>
+                                </div>
+                                ` : ''}
                                 <div class="flex justify-between font-bold text-2xl mt-2 pt-2 border-t border-slate-300">
                                     <span class="text-slate-800">صافي الإجمالي:</span>
                                     <span class="font-mono">${netSales.toFixed(2)} ج.م</span>
@@ -6944,38 +7441,40 @@
                     return;
                 }
 
-                const { title, netSales, totalSales, totalReturnValue, transactionCount, paymentRows, cashierRows, productRowsForExport } = currentReportData;
+                const { title, netSales, totalSales, totalReturnValue, totalExpenses, totalSalariesPaid, transactionCount, paymentRows, cashierRows, productRowsForExport } = currentReportData;
 
                 const wb = XLSX.utils.book_new();
 
                 // Summary Sheet
                 const summaryData = [
-                    ["Report Title", title],
+                    ["عنوان التقرير", title],
                     [],
-                    ["Metric", "Value"],
-                    ["Net Sales", netSales.toFixed(2)],
-                    ["Total Sales", totalSales.toFixed(2)],
-                    ["Total Returns", Math.abs(totalReturnValue).toFixed(2)],
-                    ["Transaction Count", transactionCount]
+                    ["المقياس", "القيمة"],
+                    ["صافي المبيعات", netSales.toFixed(2)],
+                    ["إجمالي المبيعات", totalSales.toFixed(2)],
+                    ["إجمالي المرتجعات", Math.abs(totalReturnValue).toFixed(2)],
+                    ["إجمالي المصروفات", totalExpenses.toFixed(2)],
+                    ["إجمالي الرواتب", totalSalariesPaid.toFixed(2)],
+                    ["عدد الفواتير", transactionCount]
                 ];
                 const wsSummary = XLSX.utils.aoa_to_sheet(summaryData);
-                XLSX.utils.book_append_sheet(wb, wsSummary, "Summary");
+                XLSX.utils.book_append_sheet(wb, wsSummary, "الملخص");
 
                 // Payment Method Sheet
-                const paymentData = [["Payment Method", "Total (EGP)"], ...paymentRows];
+                const paymentData = [["وسيلة الدفع", "المجموع (ج.م)"], ...paymentRows];
                 const wsPayments = XLSX.utils.aoa_to_sheet(paymentData);
-                XLSX.utils.book_append_sheet(wb, wsPayments, "Payments Breakdown");
+                XLSX.utils.book_append_sheet(wb, wsPayments, "تفاصيل الدفع");
 
                 // Cashier Sheet
-                const cashierData = [["Cashier", "Total Sales (EGP)"], ...cashierRows];
+                const cashierData = [["البائع", "إجمالي المبيعات (ج.م)"], ...cashierRows];
                 const wsCashiers = XLSX.utils.aoa_to_sheet(cashierData);
-                XLSX.utils.book_append_sheet(wb, wsCashiers, "Cashier Sales");
+                XLSX.utils.book_append_sheet(wb, wsCashiers, "مبيعات البائع");
 
                 // Products Sheet
-                const productHeaders = ['Product', 'Quantity Sold', 'Purchase Price', 'Profit Margin', 'Selling Price', 'Total Discount', 'Total Purchase Value', 'Total Sales Value', 'Net Profit'];
+                const productHeaders = ['المنتج', 'الكمية المباعة', 'سعر الشراء', 'هامش الربح', 'سعر البيع', 'إجمالي الخصم', 'إجمالي قيمة الشراء', 'إجمالي قيمة المبيعات', 'صافي الربح'];
                 const productData = [productHeaders, ...productRowsForExport];
                 const wsProducts = XLSX.utils.aoa_to_sheet(productData);
-                XLSX.utils.book_append_sheet(wb, wsProducts, "Top Product Sales");
+                XLSX.utils.book_append_sheet(wb, wsProducts, "أفضل المنتجات مبيعًا");
 
                 // Download the file
                 const fileName = `Sales_Report_${new Date().toISOString().split('T')[0]}.xlsx`;
@@ -6987,11 +7486,12 @@
                     showAlert('No expenses to print.');
                     return;
                 }
+                playSound('success'); // Play sound when printing expenses
 
                 let totalAmount = 0;
                 const expensesRows = firestoreExpenses.map(expense => {
                     totalAmount += parseFloat(expense.amount);
-                    const expenseDate = expense.date ? new Date(expense.date).toLocaleDateString('ar-EG-u-nu-latn') : 'N/A';
+                    const expenseDate = expense.date ? new Date(expense.date).toLocaleDateString('en-GB') : 'N/A';
                     return `
                         <tr class="border-b border-slate-200">
                             <td class="p-2">${expense.description}</td>
@@ -7006,13 +7506,12 @@
                     <div dir="rtl" class="text-right p-4 bg-white">
                         <div class="text-center mb-6 pb-4 border-b-2 border-slate-300">
                             <h3 class="text-2xl font-bold text-slate-800">${workerPermissions.shopName} - تقرير المصروفات</h3>
-                            <p class="text-base text-slate-600">تاريخ الطباعة: ${new Date().toLocaleString('ar-EG-u-nu-latn')}</p>
+                            <p class="text-base text-slate-600">تاريخ الطباعة: ${new Date().toLocaleString('ar-EG')}</p>
                         </div>
 
                         <div class="grid grid-cols-1 gap-4 mb-6">
                              <div class="bg-red-100 p-4 rounded-lg flex items-center gap-4">
                                  <div class="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-red-500 text-white rounded-lg">
-                                     <!-- Icon placeholder for print -->
                                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/><path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/><path d="M18 12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2h-4a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2h4z"/></svg>
                                  </div>
                                  <div>
@@ -7027,7 +7526,7 @@
                             <table class="w-full text-sm text-right">
                                 <thead class="bg-slate-100">
                                     <tr>
-                                        <th class="p-2 font-semibold text-slate-600 text-right">البيان</th>
+                                        <th class="p-2 font-semibold text-slate-600 text-right">الوصف</th>
                                         <th class="p-2 font-semibold text-slate-600 text-right">النوع</th>
                                         <th class="p-2 font-semibold text-slate-600 text-right">التاريخ</th>
                                         <th class="p-2 font-semibold text-slate-600 text-left">المبلغ (ج.م)</th>
@@ -7096,9 +7595,9 @@
                     const productToAdd = products.find(p => p.id === productCard.dataset.id);
                     if(productToAdd) {
                         if (productToAdd.codes && productToAdd.codes.length > 0) {
-                            openProductCodeModal(productToAdd);
+                            openProductCodeModal(productToAdd, productCard);
                         } else {
-                            addToCart(productToAdd);
+                            addToCart(productToAdd, 1, null, null, productCard);
                         }
                     }
                 }
@@ -8005,6 +8504,7 @@
                 if (unsubscribeFromExpenses) unsubscribeFromExpenses();
                 if (unsubscribeFromArchive) unsubscribeFromArchive();
                 if (unsubscribeFromVersionInfo) unsubscribeFromVersionInfo();
+                if (unsubscribeFromSalaries) unsubscribeFromSalaries();
             }
 
             async function initializeUserSession(user) {
@@ -8092,6 +8592,7 @@
                 setupArchiveListener();
                 setupInAppMaintenanceListener(); // Call the maintenance listener after login
                 setupVersionInfoListener();
+                setupSalariesListener();
 
                 if (systemLockInterval) clearInterval(systemLockInterval);
                 checkSystemLock(); // Initial check on login
@@ -8129,6 +8630,24 @@
                 allExpenseTypes = [...customExpenseTypes].sort(); // Only use custom types
             };
 
+            const calculateNetSalary = () => {
+                const base = parseFloat(salaryBaseInput.value) || 0;
+                const bonus = parseFloat(salaryBonusInput.value) || 0;
+                const absenceDays = parseInt(salaryAbsenceDaysInput.value, 10) || 0;
+                const lateHours = parseInt(salaryLateHoursInput.value, 10) || 0;
+                const otherDeductions = parseFloat(salaryOtherDeductionInput.value) || 0;
+
+                const dailyRate = base / 30; // Assuming 30 days in a month
+                const hourlyRate = dailyRate / 8; // Assuming 8-hour work day
+
+                const absenceDeduction = absenceDays * dailyRate;
+                const lateDeduction = lateHours * hourlyRate;
+
+                const totalDeductions = absenceDeduction + lateDeduction + otherDeductions;
+                const net = base + bonus - totalDeductions;
+                salaryNetPay.textContent = net.toFixed(2);
+            };
+
             const saveCustomExpenseTypes = async () => {
                 if (!isOnlineMode || !userId) return;
                 try {
@@ -8137,6 +8656,242 @@
                 } catch (error) {
                     console.error("Error saving custom expense types:", error);
                     showAlert('Failed to save the new expense type.');
+                }
+            };
+
+            const renderSalariesView = (searchTerm = '') => {
+                // Populate employee dropdown
+                salaryEmployeeSelect.innerHTML = '<option value="">-- Select Employee --</option>';
+                workerPermissions.cashiers.forEach(cashier => {
+                    const option = document.createElement('option');
+                    option.value = cashier.name;
+                    option.textContent = `${cashier.name} (${cashier.code})`;
+                    salaryEmployeeSelect.appendChild(option);
+                });
+
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = (today.getMonth() + 1).toString().padStart(2, '0');
+                salaryMonthInput.value = `${year}-${month}`;
+
+
+                // Render history list
+                let salariesToRender = firestoreSalaries;
+                if (searchTerm) {
+                    salariesToRender = firestoreSalaries.filter(s => s.employeeName.toLowerCase().includes(searchTerm.toLowerCase()));
+                }
+                salariesToRender.sort((a, b) => b.timestamp - a.timestamp);
+
+                salariesHistoryList.innerHTML = '';
+                if (salariesToRender.length === 0) {
+                    salariesHistoryList.innerHTML = `<div class="text-center text-slate-500 py-16"><i data-lucide="archive" class="mx-auto h-12 w-12"></i><p class="mt-2">No salary records yet.</p></div>`;
+                    lucide.createIcons();
+                    return;
+                }
+
+                salariesToRender.forEach(payment => {
+                    const card = document.createElement('div');
+                    card.className = 'bg-white p-4 rounded-lg border border-slate-200 relative group';
+                     const actionsHTML = isDeveloperMode ? `
+                        <div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button data-firestore-id="${payment.firestoreId}" class="edit-salary-btn p-2 rounded-full bg-white/50 hover:bg-yellow-100 text-slate-500 hover:text-yellow-600 transition-colors" title="Edit"><i data-lucide="pencil" class="h-4 w-4 pointer-events-none"></i></button>
+                            <button data-firestore-id="${payment.firestoreId}" class="delete-salary-btn p-2 rounded-full bg-white/50 hover:bg-red-100 text-slate-500 hover:text-red-600 transition-colors" title="Delete"><i data-lucide="trash-2" class="h-4 w-4 pointer-events-none"></i></button>
+                        </div>
+                    ` : '';
+
+                    card.innerHTML = `
+                        ${actionsHTML}
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="font-bold text-slate-800">${payment.employeeName}</p>
+                                <p class="text-sm text-slate-500">Month: ${payment.month}</p>
+                                <p class="text-xs text-slate-500">${new Date(payment.timestamp).toLocaleString()}</p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-green-600 font-mono">${payment.netPay.toFixed(2)}</p>
+                                <p class="text-xs text-slate-400">Net Pay</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-3 border-t border-slate-100 text-xs text-slate-600 space-y-1">
+                            <div class="flex justify-between"><span>Base Salary:</span> <span class="font-mono">${payment.baseSalary.toFixed(2)}</span></div>
+                            <div class="flex justify-between text-blue-600"><span>Bonuses:</span> <span class="font-mono">${payment.bonus.toFixed(2)}</span></div>
+                            <div class="flex justify-between text-orange-600"><span>Absence Days:</span> <span class="font-mono">${payment.absenceDays || 0}</span></div>
+                            <div class="flex justify-between text-orange-600"><span>Late Hours:</span> <span class="font-mono">${payment.lateHours || 0}</span></div>
+                            <div class="flex justify-between text-red-600"><span>Other Deductions:</span> <span class="font-mono">${payment.otherDeductions.toFixed(2)}</span></div>
+                            ${payment.notes ? `<p class="pt-2 text-slate-500 italic">Notes: ${payment.notes}</p>` : ''}
+                        </div>
+                    `;
+                    salariesHistoryList.appendChild(card);
+                });
+            };
+
+            const saveSalaryPayment = async () => {
+                const month = salaryMonthInput.value;
+                const employeeName = salaryEmployeeSelect.value;
+                const baseSalary = parseFloat(salaryBaseInput.value) || 0;
+                const bonus = parseFloat(salaryBonusInput.value) || 0;
+                const absenceDays = parseInt(salaryAbsenceDaysInput.value, 10) || 0;
+                const lateHours = parseInt(salaryLateHoursInput.value, 10) || 0;
+                const otherDeductions = parseFloat(salaryOtherDeductionInput.value) || 0;
+                const notes = salaryNotesInput.value.trim();
+
+                const dailyRate = baseSalary / 30;
+                const hourlyRate = dailyRate / 8;
+                const absenceDeduction = absenceDays * dailyRate;
+                const lateDeduction = lateHours * hourlyRate;
+                const totalDeductions = absenceDeduction + lateDeduction + otherDeductions;
+                const netPay = baseSalary + bonus - totalDeductions;
+
+                if (!month) {
+                    showAlert('Please select the month for the salary.');
+                    return;
+                }
+                if (!employeeName) {
+                    showAlert('Please select an employee.');
+                    return;
+                }
+                if (baseSalary <= 0 && bonus <= 0) {
+                    showAlert('Please enter a base salary or a bonus amount.');
+                    return;
+                }
+
+                if (!isOnlineMode || !userId) {
+                    showAlert('You must be in online mode to save salary payments.');
+                    return;
+                }
+
+                try {
+                    const salariesCollectionPath = `users/${userId}/salaries`;
+                    await addDoc(collection(db, salariesCollectionPath), {
+                        month,
+                        employeeName,
+                        baseSalary,
+                        bonus,
+                        absenceDays,
+                        lateHours,
+                        otherDeductions,
+                        netPay,
+                        notes,
+                        date: new Date().toISOString().split('T')[0],
+                        timestamp: Date.now()
+                    });
+                    showAlert('Salary payment saved successfully.');
+                    // Clear form
+                    salaryEmployeeSelect.value = '';
+                    salaryBaseInput.value = '';
+                    salaryBonusInput.value = '';
+                    salaryAbsenceDaysInput.value = '';
+                    salaryLateHoursInput.value = '';
+                    salaryOtherDeductionInput.value = '';
+                    salaryNotesInput.value = '';
+                    calculateNetSalary();
+
+                } catch (error) {
+                    console.error("Error adding salary payment:", error);
+                    showAlert('An error occurred while saving the salary payment.');
+                }
+            };
+
+            const openEditSalaryModal = (salaryId) => {
+                const salaryData = firestoreSalaries.find(s => s.firestoreId === salaryId);
+                if (!salaryData) {
+                    showAlert('Salary record not found.', 'error');
+                    return;
+                }
+
+                // Populate employee dropdown in edit modal
+                const editSelect = document.getElementById('edit-salary-employee-select');
+                editSelect.innerHTML = '';
+                workerPermissions.cashiers.forEach(cashier => {
+                    const option = document.createElement('option');
+                    option.value = cashier.name;
+                    option.textContent = `${cashier.name} (${cashier.code})`;
+                    editSelect.appendChild(option);
+                });
+
+                // Set values
+                document.getElementById('edit-salary-id').value = salaryId;
+                document.getElementById('edit-salary-month-input').value = salaryData.month;
+                editSelect.value = salaryData.employeeName;
+                document.getElementById('edit-salary-base-input').value = salaryData.baseSalary;
+                document.getElementById('edit-salary-bonus-input').value = salaryData.bonus;
+                document.getElementById('edit-salary-absence-days-input').value = salaryData.absenceDays || 0;
+                document.getElementById('edit-salary-late-hours-input').value = salaryData.lateHours || 0;
+                document.getElementById('edit-salary-other-deduction-input').value = salaryData.otherDeductions;
+                document.getElementById('edit-salary-notes-input').value = salaryData.notes || '';
+                
+                calculateNetSalaryForEdit();
+                document.getElementById('edit-salary-modal').classList.remove('hidden');
+                lucide.createIcons();
+            };
+
+            const calculateNetSalaryForEdit = () => {
+                const base = parseFloat(document.getElementById('edit-salary-base-input').value) || 0;
+                const bonus = parseFloat(document.getElementById('edit-salary-bonus-input').value) || 0;
+                const absenceDays = parseInt(document.getElementById('edit-salary-absence-days-input').value, 10) || 0;
+                const lateHours = parseInt(document.getElementById('edit-salary-late-hours-input').value, 10) || 0;
+                const otherDeductions = parseFloat(document.getElementById('edit-salary-other-deduction-input').value) || 0;
+
+                const dailyRate = base / 30;
+                const hourlyRate = dailyRate / 8;
+                const absenceDeduction = absenceDays * dailyRate;
+                const lateDeduction = lateHours * hourlyRate;
+                const totalDeductions = absenceDeduction + lateDeduction + otherDeductions;
+                const net = base + bonus - totalDeductions;
+                document.getElementById('edit-salary-net-pay').textContent = net.toFixed(2);
+            };
+
+            const updateSalaryPayment = async () => {
+                const salaryId = document.getElementById('edit-salary-id').value;
+                if (!salaryId) return;
+
+                const baseSalary = parseFloat(document.getElementById('edit-salary-base-input').value) || 0;
+                const bonus = parseFloat(document.getElementById('edit-salary-bonus-input').value) || 0;
+                const dailyRate = baseSalary / 30;
+                const hourlyRate = dailyRate / 8;
+
+                const updatedData = {
+                    month: document.getElementById('edit-salary-month-input').value,
+                    employeeName: document.getElementById('edit-salary-employee-select').value,
+                    baseSalary: baseSalary,
+                    bonus: bonus,
+                    absenceDays: parseInt(document.getElementById('edit-salary-absence-days-input').value, 10) || 0,
+                    lateHours: parseInt(document.getElementById('edit-salary-late-hours-input').value, 10) || 0,
+                    otherDeductions: parseFloat(document.getElementById('edit-salary-other-deduction-input').value) || 0,
+                    notes: document.getElementById('edit-salary-notes-input').value.trim(),
+                    editedTimestamp: Date.now()
+                };
+
+                const totalDeductions = (updatedData.absenceDays * dailyRate) + (updatedData.lateHours * hourlyRate) + updatedData.otherDeductions;
+                updatedData.netPay = updatedData.baseSalary + updatedData.bonus - totalDeductions;
+
+                if (!updatedData.month || !updatedData.employeeName) {
+                    showAlert('Please select month and employee.', 'warning');
+                    return;
+                }
+
+                try {
+                    const docRef = doc(db, `users/${userId}/salaries`, salaryId);
+                    await updateDoc(docRef, updatedData);
+                    showAlert('Salary payment updated successfully.');
+                    document.getElementById('edit-salary-modal').classList.add('hidden');
+                } catch (error) {
+                    console.error("Error updating salary:", error);
+                    showAlert('Failed to update salary payment.', 'error');
+                }
+            };
+            
+            const deleteSalaryPayment = async (salaryId) => {
+                const confirmed = await confirmDangerousAction('Confirm Deletion', 'Are you sure you want to permanently delete this salary record?');
+                if (confirmed && isOnlineMode) {
+                    try {
+                        const docRef = doc(db, `users/${userId}/salaries`, salaryId);
+                        await deleteDoc(docRef);
+                        showAlert('Salary record deleted successfully.');
+                    } catch (error) {
+                        console.error("Error deleting salary:", error);
+                        showAlert('An error occurred while deleting the salary record.', 'error');
+                    }
                 }
             };
 
@@ -8175,7 +8930,18 @@
                         const history = docSnap.data().history;
                         renderVersionInfo(history);
                         if (history && history.length > 0) {
-                            latestVersionNumber = history[0].version;
+                            const newVersion = history[0];
+                            latestVersionNumber = newVersion.version;
+                            const lastNotifiedVersion = localStorage.getItem('lastNotifiedVersion');
+
+                            if (latestVersionNumber && latestVersionNumber !== lastNotifiedVersion) {
+                                showAlert(
+                                    `تم تحديث التطبيق إلى الإصدار ${newVersion.version} بتاريخ ${newVersion.releaseDate}.`,
+                                    'success',
+                                    'تحديث جديد'
+                                );
+                                localStorage.setItem('lastNotifiedVersion', latestVersionNumber);
+                            }
                         }
                         updateVersionNotificationIndicator();
                     } else {
@@ -9041,6 +9807,47 @@
             document.getElementById('view-customers-btn-mobile').addEventListener('click', openCustomersModal);
             document.getElementById('clear-sale-btn-mobile').addEventListener('click', clearSale);
 
+            salaryBaseInput.addEventListener('input', calculateNetSalary);
+            salaryBonusInput.addEventListener('input', calculateNetSalary);
+            salaryAbsenceDaysInput.addEventListener('input', calculateNetSalary);
+            salaryLateHoursInput.addEventListener('input', calculateNetSalary);
+            salaryOtherDeductionInput.addEventListener('input', calculateNetSalary);
+            saveSalaryBtn.addEventListener('click', saveSalaryPayment);
+            salarySearchInput.addEventListener('input', (e) => renderSalariesView(e.target.value));
+            backToPosFromSalariesBtn.addEventListener('click', () => {
+                showPosView();
+                // Clear salary form on exit
+                salaryEmployeeSelect.value = '';
+                salaryBaseInput.value = '';
+                salaryBonusInput.value = '';
+                salaryAbsenceDaysInput.value = '';
+                salaryLateHoursInput.value = '';
+                salaryOtherDeductionInput.value = '';
+                salaryNotesInput.value = '';
+                calculateNetSalary();
+            });
+
+            salariesHistoryList.addEventListener('click', (e) => {
+                const editBtn = e.target.closest('.edit-salary-btn');
+                const deleteBtn = e.target.closest('.delete-salary-btn');
+                if (editBtn) {
+                    openEditSalaryModal(editBtn.dataset.firestoreId);
+                } else if (deleteBtn) {
+                    deleteSalaryPayment(deleteBtn.dataset.firestoreId);
+                }
+            });
+
+            document.getElementById('modal-save-salary-btn').addEventListener('click', updateSalaryPayment);
+            document.getElementById('modal-edit-salary-cancel-btn').addEventListener('click', () => {
+                document.getElementById('edit-salary-modal').classList.add('hidden');
+            });
+
+            const editSalaryInputs = ['edit-salary-base-input', 'edit-salary-bonus-input', 'edit-salary-absence-days-input', 'edit-salary-late-hours-input', 'edit-salary-other-deduction-input'];
+            editSalaryInputs.forEach(id => {
+                const el = document.getElementById(id);
+                if(el) el.addEventListener('input', calculateNetSalaryForEdit);
+            });
+
 
             const newProductPurchasePriceInput = document.getElementById('new-product-purchase-price');
             const newProductProfitMarginInput = document.getElementById('new-product-profit-margin');
@@ -9172,113 +9979,119 @@
                     const invoices = firestoreInvoices.filter(inv => inv.timestamp >= start.getTime() && inv.timestamp <= end.getTime());
                     const returns = firestoreReturns.filter(ret => ret.timestamp >= start.getTime() && ret.timestamp <= end.getTime());
                     const expenses = firestoreExpenses.filter(exp => exp.timestamp >= start.getTime() && exp.timestamp <= end.getTime());
-                    const totalSales = invoices.reduce((sum, inv) => sum + inv.total, 0);
-                    const totalReturnValue = returns.reduce((sum, ret) => sum + ret.total, 0);
-                    const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
-                    const netSales = totalSales + totalReturnValue - totalExpenses;
-                    const transactionCount = invoices.length;
-                    return { netSales, totalSales, totalReturnValue, transactionCount, totalExpenses };
-                };
-                
-                const currentMetrics = calculateMetricsForPeriod(currentStartDate, currentEndDate);
-                const previousMetrics = calculateMetricsForPeriod(previousStartDate, previousEndDate);
-                
-                const calculateChange = (current, previous) => {
-                    if (previous === 0) {
-                        return current > 0 ? Infinity : 0; // Handle division by zero
-                    }
-                    return ((current - previous) / Math.abs(previous)) * 100;
-                };
+                    const salaries = firestoreSalaries.filter(sal => sal.timestamp >= start.getTime() && sal.timestamp <= end.getTime());
+                const filteredSalaries = firestoreSalaries.filter(sal => sal.timestamp >= start.getTime() && sal.timestamp <= end.getTime());
+                const totalSales = invoices.reduce((sum, inv) => sum + inv.total, 0);
+                const totalReturnValue = returns.reduce((sum, ret) => sum + ret.total, 0);
+                const totalExpenses = expenses.reduce((sum, exp) => sum + exp.amount, 0);
+                const totalSalaries = salaries.reduce((sum, sal) => sum + sal.netPay, 0);
+                const netSales = totalSales + totalReturnValue - totalExpenses - totalSalaries;
+                const transactionCount = invoices.length;
+                return { netSales, totalSales, totalReturnValue, transactionCount, totalExpenses, totalSalaries };
+            };
+            
+            const currentMetrics = calculateMetricsForPeriod(currentStartDate, currentEndDate);
+            const previousMetrics = calculateMetricsForPeriod(previousStartDate, previousEndDate);
+            
+            const calculateChange = (current, previous) => {
+                if (previous === 0) {
+                    return current > 0 ? Infinity : 0; // Handle division by zero
+                }
+                return ((current - previous) / Math.abs(previous)) * 100;
+            };
 
-                const netSalesChange = calculateChange(currentMetrics.netSales, previousMetrics.netSales);
-                const totalSalesChange = calculateChange(currentMetrics.totalSales, previousMetrics.totalSales);
-                const totalReturnsChange = calculateChange(currentMetrics.totalReturnValue, previousMetrics.totalReturnValue);
-                const transactionsChange = calculateChange(currentMetrics.transactionCount, previousMetrics.transactionCount);
-                const expensesChange = calculateChange(currentMetrics.totalExpenses, previousMetrics.totalExpenses);
+            const netSalesChange = calculateChange(currentMetrics.netSales, previousMetrics.netSales);
+            const totalSalesChange = calculateChange(currentMetrics.totalSales, previousMetrics.totalSales);
+            const totalReturnsChange = calculateChange(currentMetrics.totalReturnValue, previousMetrics.totalReturnValue);
+            const transactionsChange = calculateChange(currentMetrics.transactionCount, previousMetrics.transactionCount);
+            const expensesChange = calculateChange(currentMetrics.totalExpenses, previousMetrics.totalExpenses);
+            const salariesChange = calculateChange(currentMetrics.totalSalaries, previousMetrics.totalSalaries);
 
-                currentReportData = {
-                    reportType: 'monthly_comparison',
-                    title,
-                    metrics: [
-                        { label: 'Net Sales', current: currentMetrics.netSales, previous: previousMetrics.netSales, change: netSalesChange },
-                        { label: 'Total Sales', current: currentMetrics.totalSales, previous: previousMetrics.totalSales, change: totalSalesChange },
-                        { label: 'Total Returns', current: currentMetrics.totalReturnValue, previous: previousMetrics.totalReturnValue, change: totalReturnsChange },
-                        { label: 'Transactions', current: currentMetrics.transactionCount, previous: previousMetrics.transactionCount, change: transactionsChange },
-                        { label: 'Total Expenses', current: currentMetrics.totalExpenses, previous: previousMetrics.totalExpenses, change: expensesChange }
-                    ]
-                };
+            currentReportData = {
+                reportType: 'monthly_comparison',
+                title,
+                metrics: [
+                    { label: 'صافي المبيعات', current: currentMetrics.netSales, previous: previousMetrics.netSales, change: netSalesChange },
+                    { label: 'إجمالي المبيعات', current: currentMetrics.totalSales, previous: previousMetrics.totalSales, change: totalSalesChange },
+                    { label: 'إجمالي المرتجعات', current: currentMetrics.totalReturnValue, previous: previousMetrics.totalReturnValue, change: totalReturnsChange },
+                    { label: 'عدد الفواتير', current: currentMetrics.transactionCount, previous: previousMetrics.transactionCount, change: transactionsChange },
+                    { label: 'إجمالي المصروفات', current: currentMetrics.totalExpenses, previous: previousMetrics.totalExpenses, change: expensesChange },
+                    { label: 'إجمالي الرواتب', current: currentMetrics.totalSalaries, previous: previousMetrics.totalSalaries, change: salariesChange }
+                ]
+            };
 
-                const createComparisonCard = (label, current, previous, change, icon, colorClass) => {
-                    const isInfinite = !isFinite(change);
-                    const changeValue = isInfinite ? 'N/A' : `${change.toFixed(1)}%`;
-                    const changeColor = isInfinite ? 'text-slate-500' : (change >= 0 ? 'text-green-500' : 'text-red-500');
-                    const changeIcon = isInfinite ? 'minus' : (change >= 0 ? 'arrow-up' : 'arrow-down');
+            const createComparisonCard = (label, current, previous, change, icon, colorClass) => {
+                const isInfinite = !isFinite(change);
+                const changeValue = isInfinite ? 'N/A' : `${change.toFixed(1)}%`;
+                const changeColor = isInfinite ? 'text-slate-500' : (change >= 0 ? 'text-green-500' : 'text-red-500');
+                const changeIcon = isInfinite ? 'minus' : (change >= 0 ? 'arrow-up' : 'arrow-down');
 
-                    return `
-                        <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80">
-                            <div class="flex items-start gap-5">
-                                <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br ${colorClass} text-white rounded-xl shadow-md">
-                                    <i data-lucide="${icon}" class="w-7 h-7"></i>
-                                </div>
-                                <div>
-                                    <p class="text-base font-semibold text-slate-500">${label}</p>
-                                    <p class="text-3xl font-black text-slate-800 tracking-tight">${current.toFixed(2)} ج.م</p>
-                                    <p class="text-sm text-slate-400 font-medium mt-1">الشهر الماضي: ${previous.toFixed(2)} ج.م</p>
-                                </div>
+                return `
+                    <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200/80">
+                        <div class="flex items-start gap-5">
+                            <div class="w-12 h-12 flex-shrink-0 flex items-center justify-center bg-gradient-to-br ${colorClass} text-white rounded-xl shadow-md">
+                                <i data-lucide="${icon}" class="w-7 h-7"></i>
                             </div>
-                            <div class="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-center gap-2 font-semibold ${changeColor}">
-                                <i data-lucide="${changeIcon}" class="w-5 h-5"></i>
-                                <span>${changeValue}</span>
+                            <div>
+                                <p class="text-base font-semibold text-slate-500">${label}</p>
+                                <p class="text-3xl font-black text-slate-800 tracking-tight">${current.toFixed(2)} ج.م</p>
+                                <p class="text-sm text-slate-400 font-medium mt-1">الشهر الماضي: ${previous.toFixed(2)} ج.م</p>
                             </div>
                         </div>
-                    `;
-                };
-                
-                reportContent.innerHTML = `
-                     <div dir="rtl" class="text-right">
-                        <div class="text-center mb-8 pb-4 border-b-2 border-slate-300">
-                            <h3 class="text-2xl font-bold text-slate-800">${workerPermissions.shopName} - مقارنة المبيعات الشهرية</h3>
-                            <p class="text-base text-slate-600">${title}</p>
-                        </div>
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-                            ${createComparisonCard('صافي المبيعات', currentMetrics.netSales, previousMetrics.netSales, netSalesChange, 'wallet', 'from-green-500 to-emerald-600')}
-                            ${createComparisonCard('إجمالي المبيعات', currentMetrics.totalSales, previousMetrics.totalSales, totalSalesChange, 'trending-up', 'from-blue-500 to-cyan-500')}
-                            ${createComparisonCard('إجمالي المرتجعات', Math.abs(currentMetrics.totalReturnValue), Math.abs(previousMetrics.totalReturnValue), totalReturnsChange, 'trending-down', 'from-red-500 to-rose-600')}
-                            ${createComparisonCard('إجمالي المصروفات', currentMetrics.totalExpenses, previousMetrics.totalExpenses, expensesChange, 'minus-circle', 'from-orange-500 to-amber-600')}
-                            ${createComparisonCard('عدد الفواتير', currentMetrics.transactionCount, previousMetrics.transactionCount, transactionsChange, 'file-text', 'from-indigo-500 to-purple-600').replace(/ ج\.م/g, '')}
+                        <div class="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-center gap-2 font-semibold ${changeColor}">
+                            <i data-lucide="${changeIcon}" class="w-5 h-5"></i>
+                            <span>${changeValue}</span>
                         </div>
                     </div>
                 `;
-                lucide.createIcons();
-                printReportBtn.disabled = false;
-                document.getElementById('export-excel-btn').disabled = false;
             };
+            
+            reportContent.innerHTML = `
+                 <div dir="rtl" class="text-right">
+                    <div class="text-center mb-8 pb-4 border-b-2 border-slate-300">
+                        <h3 class="text-2xl font-bold text-slate-800">${workerPermissions.shopName} - مقارنة المبيعات الشهرية</h3>
+                        <p class="text-base text-slate-600">${title}</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        
+                        
+                        ${createComparisonCard('إجمالي المرتجعات', Math.abs(currentMetrics.totalReturnValue), Math.abs(previousMetrics.totalReturnValue), totalReturnsChange, 'trending-down', 'from-red-500 to-rose-600')}
+                        ${createComparisonCard('إجمالي المصروفات', currentMetrics.totalExpenses, previousMetrics.totalExpenses, expensesChange, 'minus-circle', 'from-orange-500 to-amber-600')}
+                        ${createComparisonCard('إجمالي الرواتب', currentMetrics.totalSalaries, previousMetrics.totalSalaries, salariesChange, 'users', 'from-cyan-500 to-teal-600')}
+                        ${createComparisonCard('عدد الفواتير', currentMetrics.transactionCount, previousMetrics.transactionCount, transactionsChange, 'file-text', 'from-indigo-500 to-purple-600').replace(/ ج\.م/g, '')}
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+            printReportBtn.disabled = false;
+            document.getElementById('export-excel-btn').disabled = false;
+        };
 
-            const exportComparisonToExcel = () => {
-                if (!currentReportData || currentReportData.reportType !== 'monthly_comparison') return;
+        const exportComparisonToExcel = () => {
+            if (!currentReportData || currentReportData.reportType !== 'monthly_comparison') return;
 
-                const { title, metrics } = currentReportData;
-                const wb = XLSX.utils.book_new();
+            const { title, metrics } = currentReportData;
+            const wb = XLSX.utils.book_new();
 
-                const data = [
-                    ["Metric", "Current Month", "Previous Month", "Change (%)"],
-                    ...metrics.map(m => [
-                        m.label,
-                        m.current.toFixed(2),
-                        m.previous.toFixed(2),
-                        isFinite(m.change) ? m.change.toFixed(2) : 'N/A'
-                    ])
-                ];
+            const data = [
+                ["المقياس", "الشهر الحالي", "الشهر السابق", "التغيير (٪)"],
+                ...metrics.map(m => [
+                    m.label,
+                    m.current.toFixed(2),
+                    m.previous.toFixed(2),
+                    isFinite(m.change) ? m.change.toFixed(2) : 'N/A'
+                ])
+            ];
 
-                const ws = XLSX.utils.aoa_to_sheet(data);
-                XLSX.utils.book_append_sheet(wb, ws, "Monthly Comparison");
-                const fileName = `Sales_Comparison_${new Date().toISOString().split('T')[0]}.xlsx`;
-                XLSX.writeFile(wb, fileName);
-            };
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            XLSX.utils.book_append_sheet(wb, ws, "مقارنة شهرية");
+            const fileName = `Sales_Comparison_${new Date().toISOString().split('T')[0]}.xlsx`;
+            XLSX.writeFile(wb, fileName);
+        };
 
-            function setupInAppMaintenanceListener() {
-                if (!isOnlineMode || !userId) return;
-                const maintenanceView = document.getElementById('in-app-maintenance-view');
+        function setupInAppMaintenanceListener() {
+            if (!isOnlineMode || !userId) return;
+            const maintenanceView = document.getElementById('in-app-maintenance-view');
                 const maintenanceMessageEl = document.getElementById('in-app-maintenance-message');
                 
                 const docRef = doc(db, 'configuration', 'maintenance');
@@ -9302,6 +10115,8 @@
             
             // --- App Initialization ---
             initializeFirebase();
+            loadTheme();
+            loadSoundSettings();
 
             if (auth) {
                 onAuthStateChanged(auth, async (user) => {
@@ -9318,5 +10133,13 @@
 
 </body>
 </html>
+
+
+
+
+
+
+
+
 
 
